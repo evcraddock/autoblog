@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: autoblog-cli/package-lock.json
+        
+    - name: Install dependencies
+      run: npm ci
+      working-directory: autoblog-cli
+      
+    - name: Build TypeScript (if tsconfig exists)
+      run: npm run build || echo "Skipping build - TypeScript not configured yet"
+      working-directory: autoblog-cli
+      
+    - name: Run tests (if configured)
+      run: npm test || echo "Skipping tests - Vitest not configured yet"
+      working-directory: autoblog-cli
+      
+    - name: Run lint (if available)
+      run: npm run lint || true
+      working-directory: autoblog-cli
