@@ -23,5 +23,25 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@automerge/automerge": "^2.2.9",
+    "@automerge/automerge-repo": "^2.0.7",
+    "@automerge/automerge-repo-network-websocket": "^2.0.7",
+    "@automerge/automerge-repo-storage-nodefs": "^2.0.7",
+    "chalk": "^5.4.1",
+    "commander": "^14.0.0",
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.10",
+    "@vitest/ui": "^3.2.4",
+    "execa": "^9.6.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
+    "memfs": "^4.17.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
 }
