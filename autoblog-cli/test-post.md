@@ -1,9 +1,9 @@
 ---
-title: "Test Blog Post"
-author: "Claude"
+title: 'Test Blog Post'
+author: 'Claude'
 published: 2025-07-02
-status: "draft"
-description: "A test markdown file for testing the CLI"
+status: 'draft'
+description: 'A test markdown file for testing the CLI'
 ---
 
 # Test Blog Post
