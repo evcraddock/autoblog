@@ -1,0 +1,4 @@
+{
+  "*.{ts,js}": ["npm run test --passWithNoTests"],
+  "*.ts": ["tsc --noEmit"]
+}
