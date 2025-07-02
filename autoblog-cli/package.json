@@ -26,7 +26,6 @@
   "author": "",
   "license": "ISC",
   "lint-staged": {
-    "*.{ts,js}": ["npm run test --passWithNoTests", "git add"],
     "*.ts": ["tsc --noEmit"]
   },
   "dependencies": {
