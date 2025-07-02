@@ -23,14 +23,22 @@ jobs:
       run: npm ci
       working-directory: autoblog-cli
       
-    - name: Build TypeScript (if tsconfig exists)
-      run: npm run build || echo "Skipping build - TypeScript not configured yet"
+    - name: Check code formatting with Prettier
+      run: npx prettier --check .
       working-directory: autoblog-cli
       
-    - name: Run tests (if configured)
-      run: npm test || echo "Skipping tests - Vitest not configured yet"
+    - name: Run TypeScript type checking
+      run: npx tsc --noEmit --skipLibCheck
       working-directory: autoblog-cli
       
-    - name: Run lint (if available)
-      run: npm run lint || true
+    - name: Build TypeScript
+      run: npm run build
+      working-directory: autoblog-cli
+      
+    - name: Run tests
+      run: npm test -- --run
+      working-directory: autoblog-cli
+      
+    - name: Run lint command
+      run: npm run lint
       working-directory: autoblog-cli
