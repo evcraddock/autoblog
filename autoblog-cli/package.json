@@ -1,0 +1,27 @@
+{
+  "name": "autoblog-cli",
+  "version": "0.1.0",
+  "description": "CLI tool for managing markdown files to Autoblog",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "autoblog": "dist/index.js"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:watch": "vitest --watch"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
