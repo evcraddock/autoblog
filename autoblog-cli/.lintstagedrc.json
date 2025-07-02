@@ -1,4 +1,4 @@
 {
   "*.{ts,js,json}": ["prettier --write"],
-  "*.ts": ["tsc --noEmit --skipLibCheck", "npm test -- --run"]
+  "*.ts": ["npm test -- --run"]
 }

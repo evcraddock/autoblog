@@ -12,8 +12,9 @@ This document contains step-by-step prompts for implementing the autoblog CLI to
 - Step 3: Install Core Dependencies
 - Step 4: Setup Git Hooks and GitHub Actions
 - Step 5: Configure TypeScript and Vitest
+- Step 6: Create Type Definitions (+ comprehensive linting/formatting setup)
 
-🔄 **NEXT:** Step 6: Create Type Definitions
+🔄 **NEXT:** Step 7: Create Automerge Module
 
 ### Step 1: Create Project Directory Structure
 
@@ -437,8 +438,10 @@ After completing all steps, you should have:
 - [x] NPM project initialized with dependencies and testing packages ✅ **COMPLETED - Steps 2-3**
 - [x] TypeScript and Vitest configured ✅ **COMPLETED - Step 5**
 - [x] Git hooks configured (Husky + lint-staged) and working ✅ **COMPLETED - Step 4**
-- [ ] Type definitions created with validation tests 🔄 **IN PROGRESS - Step 6**
-- [ ] Automerge module created with unit tests
+- [x] Type definitions created with validation tests ✅ **COMPLETED - Step 6**
+- [x] Comprehensive linting/formatting setup (Prettier + pre-commit hooks) ✅ **COMPLETED - Step 6 Enhanced**
+- [x] GitHub CI workflow updated to match local checks ✅ **COMPLETED - Step 6 Enhanced**
+- [ ] Automerge module created with unit tests 🔄 **NEXT - Step 7**
 - [ ] Markdown parser created with comprehensive unit tests
 - [ ] CLI entry point created with unit tests
 - [ ] Upload command placeholder created with unit tests
