@@ -2,6 +2,7 @@
 
 import { Command } from 'commander';
 import chalk from 'chalk';
+import { uploadCommand } from './commands/upload.js';
 
 const program = new Command();
 
@@ -13,10 +14,18 @@ program
 program
   .command('upload <file>')
   .description('Upload a markdown file to the blog')
-  .action((file: string) => {
-    console.log(
-      chalk.blue(`Upload functionality coming soon for file: ${file}`)
-    );
+  .action(async (file: string) => {
+    try {
+      await uploadCommand(file);
+    } catch (error) {
+      console.error(
+        chalk.red(
+          'Error:',
+          error instanceof Error ? error.message : 'Unknown error'
+        )
+      );
+      process.exit(1);
+    }
   });
 
 process.on('uncaughtException', (error) => {

@@ -31,6 +31,11 @@ vi.mock('commander', () => ({
   Command: vi.fn(() => mockCommand),
 }));
 
+// Mock the upload command module
+vi.mock('../../src/commands/upload.js', () => ({
+  uploadCommand: vi.fn(),
+}));
+
 describe('CLI Entry Point', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -65,22 +70,22 @@ describe('CLI Entry Point', () => {
   });
 
   it('should handle upload command action correctly', async () => {
-    const chalk = await import('chalk');
-    let capturedAction: (file: string) => void;
+    const { uploadCommand } = await import('../../src/commands/upload.js');
+    let capturedAction: (file: string) => Promise<void>;
 
-    mockCommand.action.mockImplementation((action: (file: string) => void) => {
-      capturedAction = action;
-      return mockCommand;
-    });
+    mockCommand.action.mockImplementation(
+      (action: (file: string) => Promise<void>) => {
+        capturedAction = action;
+        return mockCommand;
+      }
+    );
 
     await import('../../src/index.js');
 
     const testFile = 'test-post.md';
-    capturedAction!(testFile);
+    await capturedAction!(testFile);
 
-    expect(chalk.default.blue).toHaveBeenCalledWith(
-      `Upload functionality coming soon for file: ${testFile}`
-    );
+    expect(uploadCommand).toHaveBeenCalledWith(testFile);
   });
 
   it('should handle uncaught exceptions gracefully', async () => {
