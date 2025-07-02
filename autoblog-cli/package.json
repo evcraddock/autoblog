@@ -17,6 +17,9 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:watch": "vitest --watch",
+    "lint": "prettier --check . && tsc --noEmit",
+    "lint:fix": "prettier --write .",
+    "format": "prettier --write .",
     "prepare": "husky"
   },
   "engines": {
@@ -26,7 +29,9 @@
   "author": "",
   "license": "ISC",
   "lint-staged": {
-    "*.ts": ["tsc --noEmit"]
+    "*.ts": [
+      "tsc --noEmit"
+    ]
   },
   "dependencies": {
     "@automerge/automerge": "^2.2.9",
@@ -44,6 +49,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
     "memfs": "^4.17.2",
+    "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"

@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import type { BlogPost, BlogIndex, ParsedMarkdown } from '../../src/types/index.js';
+import type {
+  BlogPost,
+  BlogIndex,
+  ParsedMarkdown,
+} from '../../src/types/index.js';
 
 describe('Type Definitions', () => {
   describe('BlogPost interface', () => {
@@ -12,7 +16,7 @@ describe('Type Definitions', () => {
         slug: 'test-post',
         description: 'A test post description',
         content: '# Test Post\n\nThis is test content.',
-        imageUrl: 'https://example.com/image.jpg'
+        imageUrl: 'https://example.com/image.jpg',
       };
 
       expect(validPost.title).toBe('Test Post');
@@ -29,7 +33,7 @@ describe('Type Definitions', () => {
         status: 'published',
         slug: 'test-post-without-image',
         description: 'A test post without image',
-        content: '# Test Post\n\nContent without image.'
+        content: '# Test Post\n\nContent without image.',
       };
 
       expect(postWithoutImage.imageUrl).toBeUndefined();
@@ -44,7 +48,7 @@ describe('Type Definitions', () => {
         status: 'draft',
         slug: 'draft-post',
         description: 'Draft description',
-        content: 'Draft content'
+        content: 'Draft content',
       };
 
       const publishedPost: BlogPost = {
@@ -54,7 +58,7 @@ describe('Type Definitions', () => {
         status: 'published',
         slug: 'published-post',
         description: 'Published description',
-        content: 'Published content'
+        content: 'Published content',
       };
 
       expect(draftPost.status).toBe('draft');
@@ -68,9 +72,9 @@ describe('Type Definitions', () => {
         posts: {
           'first-post': 'doc-id-1',
           'second-post': 'doc-id-2',
-          'third-post': 'doc-id-3'
+          'third-post': 'doc-id-3',
         },
-        lastUpdated: new Date('2024-01-01')
+        lastUpdated: new Date('2024-01-01'),
       };
 
       expect(Object.keys(validIndex.posts)).toHaveLength(3);
@@ -81,7 +85,7 @@ describe('Type Definitions', () => {
     it('should accept empty posts record', () => {
       const emptyIndex: BlogIndex = {
         posts: {},
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       };
 
       expect(Object.keys(emptyIndex.posts)).toHaveLength(0);
@@ -95,9 +99,9 @@ describe('Type Definitions', () => {
         frontmatter: {
           title: 'Test Title',
           author: 'Test Author',
-          published: '2024-01-01'
+          published: '2024-01-01',
         },
-        content: '# Heading\n\nContent here.'
+        content: '# Heading\n\nContent here.',
       };
 
       expect(validParsed.frontmatter.title).toBe('Test Title');
@@ -107,21 +111,27 @@ describe('Type Definitions', () => {
     it('should accept empty frontmatter', () => {
       const parsedWithEmptyFrontmatter: ParsedMarkdown = {
         frontmatter: {},
-        content: 'Just content without frontmatter.'
+        content: 'Just content without frontmatter.',
       };
 
-      expect(Object.keys(parsedWithEmptyFrontmatter.frontmatter)).toHaveLength(0);
-      expect(parsedWithEmptyFrontmatter.content).toBe('Just content without frontmatter.');
+      expect(Object.keys(parsedWithEmptyFrontmatter.frontmatter)).toHaveLength(
+        0
+      );
+      expect(parsedWithEmptyFrontmatter.content).toBe(
+        'Just content without frontmatter.'
+      );
     });
 
     it('should accept null frontmatter', () => {
       const parsedWithNullFrontmatter: ParsedMarkdown = {
         frontmatter: null,
-        content: 'Content with null frontmatter.'
+        content: 'Content with null frontmatter.',
       };
 
       expect(parsedWithNullFrontmatter.frontmatter).toBeNull();
-      expect(parsedWithNullFrontmatter.content).toBe('Content with null frontmatter.');
+      expect(parsedWithNullFrontmatter.content).toBe(
+        'Content with null frontmatter.'
+      );
     });
   });
 
@@ -168,14 +178,14 @@ describe('Type Definitions', () => {
         status: 'draft' as const,
         slug: 'valid-post',
         description: 'Description',
-        content: 'Content'
+        content: 'Content',
       };
 
       const invalidPost = {
         title: 'Invalid Post',
         author: 'Author',
         status: 'invalid-status',
-        slug: 'invalid-post'
+        slug: 'invalid-post',
       };
 
       expect(isBlogPost(validPost)).toBe(true);
@@ -185,12 +195,12 @@ describe('Type Definitions', () => {
     it('should validate BlogIndex objects with helper function', () => {
       const validIndex = {
         posts: { 'post-1': 'id-1' },
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       };
 
       const invalidIndex = {
         posts: 'not-an-object',
-        lastUpdated: 'not-a-date'
+        lastUpdated: 'not-a-date',
       };
 
       expect(isBlogIndex(validIndex)).toBe(true);
@@ -200,11 +210,11 @@ describe('Type Definitions', () => {
     it('should validate ParsedMarkdown objects with helper function', () => {
       const validParsed = {
         frontmatter: { title: 'Test' },
-        content: 'Content'
+        content: 'Content',
       };
 
       const invalidParsed = {
-        content: 'Content only'
+        content: 'Content only',
       };
 
       expect(isParsedMarkdown(validParsed)).toBe(true);
@@ -221,7 +231,7 @@ describe('Type Definitions', () => {
         status: 'draft',
         slug: '',
         description: '',
-        content: ''
+        content: '',
       };
 
       expect(postWithEmptyStrings.title).toBe('');
@@ -238,7 +248,7 @@ describe('Type Definitions', () => {
         status: 'draft',
         slug: 'test',
         description: 'Description',
-        content: 'Content'
+        content: 'Content',
       };
 
       expect(isNaN(postWithInvalidDate.published.getTime())).toBe(true);

@@ -1,3 +1,4 @@
 {
-  "*.ts": ["echo 'TypeScript check skipped - will fix in separate commit'"]
+  "*.{ts,js,json}": ["prettier --write"],
+  "*.ts": ["tsc --noEmit --skipLibCheck", "npm test -- --run"]
 }
