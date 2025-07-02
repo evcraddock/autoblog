@@ -58,6 +58,11 @@ Command-line interface for authors to upload markdown files to the blog system.
   - `commander` (CLI framework)
   - `gray-matter` (frontmatter parsing)
   - `chalk` (terminal styling)
+- **Testing Stack**:
+  - `vitest` (test runner and assertions)
+  - `@vitest/ui` (optional web UI for tests)
+  - `memfs` (mock file system operations)
+  - `execa` (CLI execution testing)
 
 ### Project Structure
 ```
@@ -298,9 +303,27 @@ console.log("Sync server running on ws://localhost:3030")
 ## Testing Strategy
 
 ### CLI Tool
-- Unit tests for parser and Automerge operations
-- Integration tests for file uploads
-- E2E tests for full workflow
+**Framework**: Vitest with TypeScript support
+
+**Unit Tests**:
+- Markdown parser (frontmatter extraction, slug generation)
+- Automerge integration (document creation, error handling)
+- Utility functions and type validation
+
+**Integration Tests**:
+- CLI commands with mocked file system (using `memfs`)
+- Upload workflow with mocked Automerge repo
+- Error scenarios and edge cases
+
+**E2E Tests**:
+- Full CLI execution using `execa`
+- Real markdown file processing
+- Actual Automerge document creation
+
+**Mocking Strategy**:
+- Use `vi.mock()` to stub `@automerge/automerge-repo`
+- Mock file system operations with `memfs`
+- Create test doubles for network operations
 
 ### Web Viewer
 - Component tests for UI elements
