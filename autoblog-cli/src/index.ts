@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import { uploadCommand } from './commands/upload.js';
 import { listCommand } from './commands/list.js';
+import { deleteCommand } from './commands/delete.js';
 
 const program = new Command();
 
@@ -35,6 +36,23 @@ program
   .action(async () => {
     try {
       await listCommand();
+    } catch (error) {
+      console.error(
+        chalk.red(
+          'Error:',
+          error instanceof Error ? error.message : 'Unknown error'
+        )
+      );
+      process.exit(1);
+    }
+  });
+
+program
+  .command('delete <slug>')
+  .description('Delete a blog post by its slug')
+  .action(async (slug: string) => {
+    try {
+      await deleteCommand(slug);
     } catch (error) {
       console.error(
         chalk.red(

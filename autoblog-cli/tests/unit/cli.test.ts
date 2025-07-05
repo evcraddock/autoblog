@@ -41,6 +41,11 @@ vi.mock('../../src/commands/list.js', () => ({
   listCommand: vi.fn(),
 }));
 
+// Mock the delete command module
+vi.mock('../../src/commands/delete.js', () => ({
+  deleteCommand: vi.fn(),
+}));
+
 describe('CLI Entry Point', () => {
   beforeEach(() => {
     vi.clearAllMocks();
