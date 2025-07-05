@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import { uploadCommand } from './commands/upload.js';
 import { listCommand } from './commands/list.js';
 import { deleteCommand } from './commands/delete.js';
+import { syncCommand } from './commands/sync.js';
 
 const program = new Command();
 
@@ -53,6 +54,23 @@ program
   .action(async (slug: string) => {
     try {
       await deleteCommand(slug);
+    } catch (error) {
+      console.error(
+        chalk.red(
+          'Error:',
+          error instanceof Error ? error.message : 'Unknown error'
+        )
+      );
+      process.exit(1);
+    }
+  });
+
+program
+  .command('sync')
+  .description('Manually trigger synchronization with remote server')
+  .action(async () => {
+    try {
+      await syncCommand();
     } catch (error) {
       console.error(
         chalk.red(
