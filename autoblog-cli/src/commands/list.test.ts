@@ -2,13 +2,11 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { listCommand } from './list.js';
 import * as automergeLib from '../lib/automerge.js';
 import * as indexLib from '../lib/index.js';
-import * as originLib from '../lib/document-origin.js';
 import chalk from 'chalk';
 import type { BlogPost, BlogIndex } from '../types/index.js';
 
 vi.mock('../lib/automerge.js');
 vi.mock('../lib/index.js');
-vi.mock('../lib/document-origin.js');
 vi.mock('chalk', () => ({
   default: {
     blue: (str: string) => `BLUE: ${str}`,
@@ -84,17 +82,6 @@ describe('List Command', () => {
 
     vi.mocked(automergeLib.initRepo).mockResolvedValue(mockRepo);
     vi.mocked(indexLib.getOrCreateIndex).mockResolvedValue(mockIndexHandle);
-
-    // Mock origin analysis
-    vi.mocked(originLib.analyzeDocumentOrigin).mockResolvedValue({
-      originatedLocally: true,
-      firstActorId: 'actor123',
-      createdAt: Date.now(),
-      totalActors: 1,
-      totalChanges: 1,
-      syncStatus: 'local',
-    });
-    vi.mocked(originLib.formatOriginInfo).mockReturnValue('📝 local');
   });
 
   afterEach(() => {

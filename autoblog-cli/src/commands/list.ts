@@ -3,10 +3,6 @@ import Table from 'cli-table3';
 import { DocumentId } from '@automerge/automerge-repo';
 import { initRepo, SyncSource } from '../lib/automerge.js';
 import { getOrCreateIndex } from '../lib/index.js';
-import {
-  analyzeDocumentOrigin,
-  formatOriginInfo,
-} from '../lib/document-origin.js';
 import type { BlogPost } from '../types/index.js';
 
 export async function listCommand(
@@ -29,8 +25,8 @@ export async function listCommand(
       return;
     }
 
-    // Load all posts with origin information
-    const postsWithOrigin: Array<BlogPost & { _origin: string }> = [];
+    // Load all posts
+    const posts: BlogPost[] = [];
     for (const [slug, docId] of Object.entries(index.posts)) {
       try {
         const postHandle = await repo.find<BlogPost>(docId as DocumentId);
@@ -39,14 +35,7 @@ export async function listCommand(
         await postHandle.whenReady();
         const post = await postHandle.doc();
         if (post) {
-          // Analyze document origin
-          const origin = await analyzeDocumentOrigin(postHandle);
-          const originDisplay = formatOriginInfo(origin);
-
-          postsWithOrigin.push({
-            ...post,
-            _origin: originDisplay,
-          });
+          posts.push(post);
         }
       } catch (error) {
         // Skip posts that fail to load
@@ -55,7 +44,7 @@ export async function listCommand(
     }
 
     // Sort posts by published date (newest first)
-    postsWithOrigin.sort((a, b) => {
+    posts.sort((a, b) => {
       const dateA = new Date(a.published).getTime();
       const dateB = new Date(b.published).getTime();
       return dateB - dateA;
@@ -64,9 +53,7 @@ export async function listCommand(
     const sourceIndicator =
       source === 'local' ? '📱 Local (offline)' : '🌐 Remote (with sync)';
     console.log(
-      chalk.green(
-        `\nFound ${postsWithOrigin.length} posts (${sourceIndicator}):\n`
-      )
+      chalk.green(`\nFound ${posts.length} posts (${sourceIndicator}):\n`)
     );
 
     // Create a table for display
@@ -77,14 +64,13 @@ export async function listCommand(
         chalk.bold.blue('Author'),
         chalk.bold.blue('Published'),
         chalk.bold.blue('Status'),
-        chalk.bold.blue('Origin'),
       ],
-      colWidths: [25, 20, 18, 12, 10, 18],
+      colWidths: [30, 25, 20, 12, 10],
       wordWrap: true,
     });
 
     // Add posts to the table
-    postsWithOrigin.forEach((post) => {
+    posts.forEach((post) => {
       const publishedDate = new Date(post.published).toLocaleDateString();
       const statusColor =
         post.status === 'published' ? chalk.green : chalk.yellow;
@@ -95,7 +81,6 @@ export async function listCommand(
         post.author,
         publishedDate,
         statusColor(post.status),
-        post._origin,
       ]);
     });
 
