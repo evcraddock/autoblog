@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { listCommand } from './list.js';
-import * as automergeLib from '../lib/automerge.js';
-import * as indexLib from '../lib/index.js';
+import { listBlogPosts } from '../lib/automerge.js';
 import chalk from 'chalk';
-import type { BlogPost, BlogIndex } from '../types/index.js';
+import type { BlogPost } from '../types/index.js';
 
-vi.mock('../lib/automerge.js');
-vi.mock('../lib/index.js');
+vi.mock('../lib/automerge.js', () => ({
+  listBlogPosts: vi.fn(),
+}));
 vi.mock('chalk', () => ({
   default: {
     blue: (str: string) => `BLUE: ${str}`,
@@ -24,9 +24,7 @@ describe('List Command', () => {
   let consoleLogSpy: any;
   let consoleErrorSpy: any;
   let processExitSpy: any;
-  let mockRepo: any;
-  let mockIndexHandle: any;
-  let mockPostHandle: any;
+  const mockListBlogPosts = vi.mocked(listBlogPosts);
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -38,50 +36,6 @@ describe('List Command', () => {
       .mockImplementation((code?: any) => {
         return undefined as never;
       });
-
-    // Mock post document
-    const mockPost: BlogPost = {
-      title: 'Test Post',
-      author: 'Test Author',
-      published: new Date('2024-01-01'),
-      status: 'published',
-      slug: 'test-post',
-      description: 'Test description',
-      content: 'Test content',
-    };
-
-    mockPostHandle = {
-      doc: vi.fn().mockResolvedValue(mockPost),
-      whenReady: vi.fn().mockResolvedValue(undefined),
-      documentId: 'post-123',
-    };
-
-    // Mock index document
-    const mockIndex: BlogIndex = {
-      posts: {
-        'test-post': 'post-123',
-        'another-post': 'post-456',
-      },
-      lastUpdated: new Date('2024-01-01'),
-    };
-
-    mockIndexHandle = {
-      doc: vi.fn().mockResolvedValue(mockIndex),
-      whenReady: vi.fn().mockResolvedValue(undefined),
-      documentId: 'index-123',
-    };
-
-    mockRepo = {
-      find: vi.fn().mockImplementation((id: string) => {
-        if (id === 'post-123' || id === 'post-456') {
-          return mockPostHandle;
-        }
-        return null;
-      }),
-    };
-
-    vi.mocked(automergeLib.initRepo).mockResolvedValue(mockRepo);
-    vi.mocked(indexLib.getOrCreateIndex).mockResolvedValue(mockIndexHandle);
   });
 
   afterEach(() => {
@@ -90,48 +44,34 @@ describe('List Command', () => {
   });
 
   it('should list all posts in table format', async () => {
-    // Mock first post
-    const mockPost1: BlogPost = {
-      title: 'Test Post',
-      author: 'Test Author',
-      published: new Date('2024-01-01'),
-      status: 'published',
-      slug: 'test-post',
-      description: 'Test description',
-      content: 'Test content',
-    };
+    // Mock blog posts
+    const mockPosts: BlogPost[] = [
+      {
+        title: 'Another Post',
+        author: 'Another Author',
+        published: new Date('2024-01-02'),
+        status: 'draft',
+        slug: 'another-post',
+        description: 'Another description',
+        content: 'Another content',
+      },
+      {
+        title: 'Test Post',
+        author: 'Test Author',
+        published: new Date('2024-01-01'),
+        status: 'published',
+        slug: 'test-post',
+        description: 'Test description',
+        content: 'Test content',
+      },
+    ];
 
-    // Mock second post
-    const mockPost2: BlogPost = {
-      title: 'Another Post',
-      author: 'Another Author',
-      published: new Date('2024-01-02'),
-      status: 'draft',
-      slug: 'another-post',
-      description: 'Another description',
-      content: 'Another content',
-    };
-
-    mockRepo.find.mockImplementation((id: string) => {
-      if (id === 'post-123') {
-        return {
-          doc: vi.fn().mockResolvedValue(mockPost1),
-          whenReady: vi.fn().mockResolvedValue(undefined),
-          documentId: 'post-123',
-        };
-      } else if (id === 'post-456') {
-        return {
-          doc: vi.fn().mockResolvedValue(mockPost2),
-          whenReady: vi.fn().mockResolvedValue(undefined),
-          documentId: 'post-456',
-        };
-      }
-      return null;
-    });
+    mockListBlogPosts.mockResolvedValue(mockPosts);
 
     await listCommand();
     vi.runAllTimers();
 
+    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining(
         'BLUE: 📚 Fetching blog posts from remote source...'
@@ -141,25 +81,21 @@ describe('List Command', () => {
       expect.stringContaining('Found 2 posts (🌐 Remote (with sync))')
     );
     expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Test Post')
+      expect.stringContaining('Another Post')
     );
     expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Another Post')
+      expect.stringContaining('Test Post')
     );
     expect(processExitSpy).toHaveBeenCalledWith(0);
   });
 
   it('should handle empty blog index', async () => {
-    const emptyIndex: BlogIndex = {
-      posts: {},
-      lastUpdated: new Date('2024-01-01'),
-    };
-
-    mockIndexHandle.doc.mockResolvedValue(emptyIndex);
+    mockListBlogPosts.mockResolvedValue([]);
 
     await listCommand();
     vi.runAllTimers();
 
+    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('YELLOW: No blog posts found')
     );
@@ -167,11 +103,12 @@ describe('List Command', () => {
   });
 
   it('should handle missing index document', async () => {
-    mockIndexHandle.doc.mockResolvedValue(null);
+    mockListBlogPosts.mockResolvedValue([]);
 
     await listCommand();
     vi.runAllTimers();
 
+    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('YELLOW: No blog posts found')
     );
@@ -179,18 +116,25 @@ describe('List Command', () => {
   });
 
   it('should handle post loading errors gracefully', async () => {
-    mockRepo.find.mockImplementation((id: string) => {
-      if (id === 'post-123') {
-        return null; // Simulate post not found
-      } else if (id === 'post-456') {
-        return mockPostHandle;
-      }
-      return null;
-    });
+    // listBlogPosts handles loading errors internally and only returns successfully loaded posts
+    const mockPosts: BlogPost[] = [
+      {
+        title: 'Test Post',
+        author: 'Test Author',
+        published: new Date('2024-01-01'),
+        status: 'published',
+        slug: 'test-post',
+        description: 'Test description',
+        content: 'Test content',
+      },
+    ];
+
+    mockListBlogPosts.mockResolvedValue(mockPosts);
 
     await listCommand();
     vi.runAllTimers();
 
+    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('Found 1 posts')
     );
@@ -201,62 +145,40 @@ describe('List Command', () => {
   });
 
   it('should handle initialization errors', async () => {
-    vi.mocked(automergeLib.initRepo).mockRejectedValue(
-      new Error('Init failed')
-    );
+    mockListBlogPosts.mockRejectedValue(new Error('Init failed'));
 
     await expect(listCommand()).rejects.toThrow('List failed: Init failed');
   });
 
   it('should sort posts by published date (newest first)', async () => {
-    const olderPost: BlogPost = {
-      title: 'Older Post',
-      author: 'Author',
-      published: new Date('2023-12-01'),
-      status: 'published',
-      slug: 'older-post',
-      description: 'Older description',
-      content: 'Older content',
-    };
-
-    const newerPost: BlogPost = {
-      title: 'Newer Post',
-      author: 'Author',
-      published: new Date('2024-01-15'),
-      status: 'published',
-      slug: 'newer-post',
-      description: 'Newer description',
-      content: 'Newer content',
-    };
-
-    mockIndexHandle.doc.mockResolvedValue({
-      posts: {
-        'older-post': 'post-old',
-        'newer-post': 'post-new',
+    // listBlogPosts returns posts already sorted by published date (newest first)
+    const mockPosts: BlogPost[] = [
+      {
+        title: 'Newer Post',
+        author: 'Author',
+        published: new Date('2024-01-15'),
+        status: 'published',
+        slug: 'newer-post',
+        description: 'Newer description',
+        content: 'Newer content',
       },
-      lastUpdated: new Date('2024-01-01'),
-    });
+      {
+        title: 'Older Post',
+        author: 'Author',
+        published: new Date('2023-12-01'),
+        status: 'published',
+        slug: 'older-post',
+        description: 'Older description',
+        content: 'Older content',
+      },
+    ];
 
-    mockRepo.find.mockImplementation((id: string) => {
-      if (id === 'post-old') {
-        return {
-          doc: vi.fn().mockResolvedValue(olderPost),
-          whenReady: vi.fn().mockResolvedValue(undefined),
-          documentId: 'post-old',
-        };
-      } else if (id === 'post-new') {
-        return {
-          doc: vi.fn().mockResolvedValue(newerPost),
-          whenReady: vi.fn().mockResolvedValue(undefined),
-          documentId: 'post-new',
-        };
-      }
-      return null;
-    });
+    mockListBlogPosts.mockResolvedValue(mockPosts);
 
     await listCommand();
     vi.runAllTimers();
 
+    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
     const calls = consoleLogSpy.mock.calls.map((call: any[]) => call[0]);
     const tableOutput = calls.find(
       (output: string) =>
@@ -271,10 +193,12 @@ describe('List Command', () => {
   });
 
   it('should use remote source by default', async () => {
+    mockListBlogPosts.mockResolvedValue([]);
+
     await listCommand();
     vi.runAllTimers();
 
-    expect(automergeLib.initRepo).toHaveBeenCalledWith('remote');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining(
         'BLUE: 📚 Fetching blog posts from remote source...'
@@ -283,10 +207,12 @@ describe('List Command', () => {
   });
 
   it('should use local source when specified', async () => {
+    mockListBlogPosts.mockResolvedValue([]);
+
     await listCommand('local');
     vi.runAllTimers();
 
-    expect(automergeLib.initRepo).toHaveBeenCalledWith('local');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('local');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining(
         'BLUE: 📚 Fetching blog posts from local source...'
@@ -295,10 +221,12 @@ describe('List Command', () => {
   });
 
   it('should use remote source when explicitly specified', async () => {
+    mockListBlogPosts.mockResolvedValue([]);
+
     await listCommand('remote');
     vi.runAllTimers();
 
-    expect(automergeLib.initRepo).toHaveBeenCalledWith('remote');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining(
         'BLUE: 📚 Fetching blog posts from remote source...'

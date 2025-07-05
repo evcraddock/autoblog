@@ -1,6 +1,7 @@
 import { Repo } from '@automerge/automerge-repo';
 import { NodeFSStorageAdapter } from '@automerge/automerge-repo-storage-nodefs';
 import { WebSocketClientAdapter } from '@automerge/automerge-repo-network-websocket';
+import { DocumentId } from '@automerge/automerge-repo';
 import { getOrCreateIndex, updateIndex } from './index.js';
 import type { BlogPost } from '../types/index.js';
 
@@ -71,5 +72,58 @@ export async function uploadBlogPost(
     const message =
       error instanceof Error ? error.message : 'Unknown error occurred';
     throw new Error(`Failed to upload blog post: ${message}`);
+  }
+}
+
+/**
+ * List all blog posts from the Automerge repository
+ * @param source - The sync source to use ('local' or 'remote'), defaults to 'local'
+ * @returns Promise<BlogPost[]> - Array of blog posts sorted by published date (newest first)
+ * @throws Error if listing fails
+ */
+export async function listBlogPosts(source?: SyncSource): Promise<BlogPost[]> {
+  try {
+    // Initialize Automerge repo
+    const repo = await initRepo(source);
+
+    // Get the blog index
+    const indexHandle = await getOrCreateIndex(repo);
+    const index = await indexHandle.doc();
+
+    // Check if we have any posts
+    if (!index || !index.posts || Object.keys(index.posts).length === 0) {
+      return [];
+    }
+
+    // Load all posts
+    const posts: BlogPost[] = [];
+    for (const [slug, docId] of Object.entries(index.posts)) {
+      try {
+        const postHandle = await repo.find<BlogPost>(docId as DocumentId);
+        if (!postHandle) continue;
+
+        await postHandle.whenReady();
+        const post = await postHandle.doc();
+        if (post) {
+          posts.push(post);
+        }
+      } catch (error) {
+        // Skip posts that fail to load, but don't throw - continue with other posts
+        console.error(`Failed to load post with slug: ${slug}`);
+      }
+    }
+
+    // Sort posts by published date (newest first)
+    posts.sort((a, b) => {
+      const dateA = new Date(a.published).getTime();
+      const dateB = new Date(b.published).getTime();
+      return dateB - dateA;
+    });
+
+    return posts;
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Unknown error occurred';
+    throw new Error(`Failed to list blog posts: ${message}`);
   }
 }
