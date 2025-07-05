@@ -18,6 +18,7 @@ vi.mock('chalk', () => ({
 // Mock automerge and parser modules
 vi.mock('../../src/lib/automerge.js', () => ({
   initRepo: vi.fn(),
+  uploadBlogPost: vi.fn(),
 }));
 
 vi.mock('../../src/lib/parser.js', () => ({
@@ -31,10 +32,11 @@ vi.mock('@automerge/automerge', () => ({
 }));
 
 // Import mocked modules
-import { initRepo } from '../../src/lib/automerge.js';
+import { initRepo, uploadBlogPost } from '../../src/lib/automerge.js';
 import { parseMarkdownFile, generateSlug } from '../../src/lib/parser.js';
 
 const mockInitRepo = vi.mocked(initRepo);
+const mockUploadBlogPost = vi.mocked(uploadBlogPost);
 const mockParseMarkdownFile = vi.mocked(parseMarkdownFile);
 const mockGenerateSlug = vi.mocked(generateSlug);
 
@@ -125,15 +127,8 @@ describe('Upload Command', () => {
 
       mockGenerateSlug.mockReturnValue('test-blog-post');
 
-      // Mock Automerge repo
-      const mockDocHandle = {
-        documentId: 'test-doc-id-123',
-        change: vi.fn(),
-      };
-      const mockRepo = {
-        create: vi.fn().mockReturnValue(mockDocHandle),
-      };
-      mockInitRepo.mockResolvedValue(mockRepo as any);
+      // Mock uploadBlogPost
+      mockUploadBlogPost.mockResolvedValue('test-doc-id-123');
     });
 
     it('should successfully upload valid .md file with complete frontmatter', async () => {
@@ -145,7 +140,15 @@ describe('Upload Command', () => {
       expect(mockFs.access).toHaveBeenCalledWith(filePath);
       expect(mockParseMarkdownFile).toHaveBeenCalledWith(filePath);
       expect(mockGenerateSlug).toHaveBeenCalledWith('Test Blog Post');
-      expect(mockInitRepo).toHaveBeenCalled();
+      expect(mockUploadBlogPost).toHaveBeenCalledWith({
+        title: 'Test Blog Post',
+        author: 'Test Author',
+        published: new Date('2025-07-02'),
+        status: 'draft',
+        slug: 'test-blog-post',
+        description: 'A test blog post',
+        content: '# Test Blog Post\n\nThis is test content.',
+      });
       expect(chalk.green).toHaveBeenCalledWith(
         '✅ Successfully uploaded blog post!'
       );
@@ -169,6 +172,15 @@ describe('Upload Command', () => {
       expect(mockFs.access).toHaveBeenCalledWith(filePath);
       expect(mockParseMarkdownFile).toHaveBeenCalledWith(filePath);
       expect(mockGenerateSlug).toHaveBeenCalledWith('Minimal Post');
+      expect(mockUploadBlogPost).toHaveBeenCalledWith({
+        title: 'Minimal Post',
+        author: 'Test Author',
+        published: expect.any(Date),
+        status: 'draft',
+        slug: 'test-blog-post',
+        description: '',
+        content: 'Minimal content.',
+      });
       expect(chalk.green).toHaveBeenCalledWith(
         '✅ Successfully uploaded blog post!'
       );
@@ -183,6 +195,7 @@ describe('Upload Command', () => {
 
       expect(mockFs.access).toHaveBeenCalledWith(filePath);
       expect(mockParseMarkdownFile).toHaveBeenCalledWith(filePath);
+      expect(mockUploadBlogPost).toHaveBeenCalled();
       expect(chalk.green).toHaveBeenCalledWith(
         '✅ Successfully uploaded blog post!'
       );
@@ -247,7 +260,7 @@ describe('Upload Command', () => {
     });
 
     it('should handle Automerge initialization failure', async () => {
-      mockInitRepo.mockRejectedValue(
+      mockUploadBlogPost.mockRejectedValue(
         new Error('Failed to connect to sync server')
       );
 

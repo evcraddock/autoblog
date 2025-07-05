@@ -98,23 +98,15 @@ describe('Automerge Module', () => {
       expect(Repo).toHaveBeenCalledTimes(1);
     });
 
-    it('should default to remote source when no source is specified', async () => {
+    it('should default to local source when no source is specified', async () => {
       await initRepo();
 
-      expect(WebSocketClientAdapter).toHaveBeenCalledWith(
-        'wss://sync.automerge.org'
-      );
+      expect(WebSocketClientAdapter).not.toHaveBeenCalled();
       expect(Repo).toHaveBeenCalledWith({
         storage: expect.objectContaining({
           path: './autoblog-data',
           type: 'NodeFSStorageAdapter',
         }),
-        network: [
-          expect.objectContaining({
-            url: 'wss://sync.automerge.org',
-            type: 'WebSocketClientAdapter',
-          }),
-        ],
       });
     });
 
@@ -142,7 +134,7 @@ describe('Automerge Module', () => {
         throw new Error('Network connection failed');
       });
 
-      await expect(initRepo()).rejects.toThrow(
+      await expect(initRepo('remote')).rejects.toThrow(
         'Failed to initialize Automerge repository: Network connection failed'
       );
     });
@@ -187,13 +179,13 @@ describe('Automerge Module', () => {
         return { config, storage: config.storage, network: config.network };
       });
 
-      await initRepo();
+      await initRepo('remote');
 
       expect(calls).toEqual(['storage', 'network', 'repo']);
     });
 
     it('should pass network adapter as array to Repo', async () => {
-      await initRepo();
+      await initRepo('remote');
 
       const repoCall = vi.mocked(Repo).mock.calls[0][0];
       expect(Array.isArray(repoCall.network)).toBe(true);
@@ -210,7 +202,7 @@ describe('Automerge Module', () => {
     });
 
     it('should use correct WebSocket URL for Automerge sync server', async () => {
-      await initRepo();
+      await initRepo('remote');
 
       const networkCall = vi.mocked(WebSocketClientAdapter).mock.calls[0];
       expect(networkCall[0]).toBe('wss://sync.automerge.org');

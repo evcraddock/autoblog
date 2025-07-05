@@ -1,11 +1,9 @@
 import fs from 'fs/promises';
 import path from 'path';
 import chalk from 'chalk';
-import { initRepo } from '../lib/automerge.js';
+import { uploadBlogPost } from '../lib/automerge.js';
 import { parseMarkdownFile, generateSlug } from '../lib/parser.js';
-import { getOrCreateIndex, updateIndex } from '../lib/index.js';
 import type { BlogPost } from '../types/index.js';
-import { next as A } from '@automerge/automerge';
 
 export async function uploadCommand(filePath: string): Promise<void> {
   // Validate file path is provided
@@ -64,27 +62,10 @@ export async function uploadCommand(filePath: string): Promise<void> {
       blogPost.imageUrl = frontmatter.imageUrl;
     }
 
-    console.log(chalk.blue('🔄 Initializing Automerge repository...'));
+    console.log(chalk.blue('🔄 Uploading blog post...'));
 
-    // Initialize Automerge repo
-    const repo = await initRepo();
-
-    console.log(chalk.blue('🔄 Creating blog post document...'));
-
-    // Create a new document for the blog post
-    const docHandle = repo.create<BlogPost>();
-    docHandle.change((doc) => {
-      Object.assign(doc, blogPost);
-    });
-
-    // Get the document ID
-    const documentId = docHandle.documentId;
-
-    console.log(chalk.blue('🔄 Updating blog index...'));
-
-    // Get or create the blog index and add this post
-    const indexHandle = await getOrCreateIndex(repo);
-    await updateIndex(indexHandle, slug, documentId);
+    // Upload the blog post
+    const documentId = await uploadBlogPost(blogPost);
 
     console.log(chalk.green(`✅ Successfully uploaded blog post!`));
     console.log(chalk.blue(`   📄 Title: ${blogPost.title}`));
