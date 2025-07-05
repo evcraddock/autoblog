@@ -98,6 +98,12 @@ export async function uploadCommand(filePath: string): Promise<void> {
     console.log(chalk.blue(`   🏷️  Slug: ${slug}`));
     console.log(chalk.blue(`   📅 Status: ${blogPost.status}`));
     console.log(chalk.blue(`   🔗 Document ID: ${documentId}`));
+
+    // Force process exit after a short delay to allow output to flush
+    // This is needed because the WebSocket connection keeps the process alive
+    setTimeout(() => {
+      process.exit(0);
+    }, 100);
   } catch (error) {
     throw new Error(
       `Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`

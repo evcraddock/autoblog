@@ -41,6 +41,18 @@ const mockGenerateSlug = vi.mocked(generateSlug);
 // Mock console methods
 const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
 
+// Mock process.exit to do nothing
+const mockProcessExit = vi.spyOn(process, 'exit').mockImplementation(() => {
+  // Do nothing - just prevent actual exit
+  return undefined as never;
+});
+
+// Mock setTimeout to execute immediately
+vi.spyOn(global, 'setTimeout').mockImplementation((fn: any) => {
+  fn(); // Execute immediately instead of delaying
+  return 0 as any;
+});
+
 describe('Upload Command', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -137,6 +149,7 @@ describe('Upload Command', () => {
       expect(chalk.green).toHaveBeenCalledWith(
         '✅ Successfully uploaded blog post!'
       );
+      expect(mockProcessExit).toHaveBeenCalledWith(0);
     });
 
     it('should handle .md file with minimal frontmatter', async () => {
@@ -159,6 +172,7 @@ describe('Upload Command', () => {
       expect(chalk.green).toHaveBeenCalledWith(
         '✅ Successfully uploaded blog post!'
       );
+      expect(mockProcessExit).toHaveBeenCalledWith(0);
     });
 
     it('should handle file in subdirectory', async () => {
@@ -172,6 +186,7 @@ describe('Upload Command', () => {
       expect(chalk.green).toHaveBeenCalledWith(
         '✅ Successfully uploaded blog post!'
       );
+      expect(mockProcessExit).toHaveBeenCalledWith(0);
     });
   });
 
@@ -180,7 +195,9 @@ describe('Upload Command', () => {
       mockFs.access.mockResolvedValue(undefined);
       mockGenerateSlug.mockReturnValue('test-post');
       const mockDocHandle = { documentId: 'test-id', change: vi.fn() };
-      const mockRepo = { create: vi.fn().mockReturnValue(mockDocHandle) };
+      const mockRepo = {
+        create: vi.fn().mockReturnValue(mockDocHandle),
+      };
       mockInitRepo.mockResolvedValue(mockRepo as any);
     });
 
