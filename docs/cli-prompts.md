@@ -15,8 +15,11 @@ This document contains step-by-step prompts for implementing the autoblog CLI to
 - Step 6: Create Type Definitions (+ comprehensive linting/formatting setup)
 - Step 7: Create Automerge Module (+ comprehensive unit testing)
 - Step 8: Create Markdown Parser Module (+ comprehensive unit testing + test fixtures)
+- Step 9: Create Entry Point (+ comprehensive unit testing + CLI functionality verified)
+- Step 10: Create Upload Command with Automerge Integration (+ comprehensive unit testing + real functionality)
+- Step 11: Update Package.json for Binary
 
-🔄 **NEXT:** Step 9: Create Entry Point
+🔄 **NEXT:** Step 12: Create Basic Documentation
 
 ### Step 1: Create Project Directory Structure
 
@@ -445,8 +448,8 @@ After completing all steps, you should have:
 - [x] GitHub CI workflow updated to match local checks ✅ **COMPLETED - Step 6 Enhanced**
 - [x] Automerge module created with unit tests ✅ **COMPLETED - Step 7**
 - [x] Markdown parser created with comprehensive unit tests ✅ **COMPLETED - Step 8**
-- [ ] CLI entry point created with unit tests
-- [ ] Upload command placeholder created with unit tests
+- [x] CLI entry point created with unit tests ✅ **COMPLETED - Step 9**
+- [x] Upload command with full Automerge integration created with unit tests ✅ **COMPLETED - Step 10**
 - [ ] Test fixtures created for all test scenarios
 - [ ] Pre-commit tests enforced and tested
 - [ ] Documentation written (including testing info)
