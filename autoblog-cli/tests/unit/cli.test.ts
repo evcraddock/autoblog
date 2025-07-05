@@ -23,6 +23,7 @@ const mockCommand = {
   description: vi.fn().mockReturnThis(),
   version: vi.fn().mockReturnThis(),
   command: vi.fn().mockReturnThis(),
+  option: vi.fn().mockReturnThis(),
   action: vi.fn().mockReturnThis(),
   parse: vi.fn(),
 };

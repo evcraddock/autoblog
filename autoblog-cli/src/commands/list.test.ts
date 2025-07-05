@@ -2,11 +2,13 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { listCommand } from './list.js';
 import * as automergeLib from '../lib/automerge.js';
 import * as indexLib from '../lib/index.js';
+import * as originLib from '../lib/document-origin.js';
 import chalk from 'chalk';
 import type { BlogPost, BlogIndex } from '../types/index.js';
 
 vi.mock('../lib/automerge.js');
 vi.mock('../lib/index.js');
+vi.mock('../lib/document-origin.js');
 vi.mock('chalk', () => ({
   default: {
     blue: (str: string) => `BLUE: ${str}`,
@@ -82,6 +84,17 @@ describe('List Command', () => {
 
     vi.mocked(automergeLib.initRepo).mockResolvedValue(mockRepo);
     vi.mocked(indexLib.getOrCreateIndex).mockResolvedValue(mockIndexHandle);
+
+    // Mock origin analysis
+    vi.mocked(originLib.analyzeDocumentOrigin).mockResolvedValue({
+      originatedLocally: true,
+      firstActorId: 'actor123',
+      createdAt: Date.now(),
+      totalActors: 1,
+      totalChanges: 1,
+      syncStatus: 'local',
+    });
+    vi.mocked(originLib.formatOriginInfo).mockReturnValue('📝 local');
   });
 
   afterEach(() => {
@@ -133,10 +146,12 @@ describe('List Command', () => {
     vi.runAllTimers();
 
     expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('BLUE: 📚 Fetching blog posts...')
+      expect.stringContaining(
+        'BLUE: 📚 Fetching blog posts from remote source...'
+      )
     );
     expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Found 2 posts')
+      expect.stringContaining('Found 2 posts (🌐 Remote (with sync))')
     );
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('Test Post')
@@ -266,5 +281,41 @@ describe('List Command', () => {
     const olderIndex = tableOutput.indexOf('Older Post');
     expect(newerIndex).toBeLessThan(olderIndex);
     expect(processExitSpy).toHaveBeenCalledWith(0);
+  });
+
+  it('should use remote source by default', async () => {
+    await listCommand();
+    vi.runAllTimers();
+
+    expect(automergeLib.initRepo).toHaveBeenCalledWith('remote');
+    expect(consoleLogSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'BLUE: 📚 Fetching blog posts from remote source...'
+      )
+    );
+  });
+
+  it('should use local source when specified', async () => {
+    await listCommand('local');
+    vi.runAllTimers();
+
+    expect(automergeLib.initRepo).toHaveBeenCalledWith('local');
+    expect(consoleLogSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'BLUE: 📚 Fetching blog posts from local source...'
+      )
+    );
+  });
+
+  it('should use remote source when explicitly specified', async () => {
+    await listCommand('remote');
+    vi.runAllTimers();
+
+    expect(automergeLib.initRepo).toHaveBeenCalledWith('remote');
+    expect(consoleLogSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'BLUE: 📚 Fetching blog posts from remote source...'
+      )
+    );
   });
 });
