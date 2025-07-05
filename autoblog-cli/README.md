@@ -56,6 +56,19 @@ autoblog list
 npm run start list
 ```
 
+### Delete a Blog Post
+
+```bash
+# Delete a post by its slug
+autoblog delete <slug>
+
+# Or using npm scripts
+npm run start delete <slug>
+
+# Example
+autoblog delete my-post-slug
+```
+
 ### Show Help
 
 ```bash
@@ -108,7 +121,8 @@ autoblog-cli/
 │   ├── index.ts           # CLI entry point
 │   ├── commands/          # CLI command implementations
 │   │   ├── upload.ts      # Upload command
-│   │   └── list.ts        # List command
+│   │   ├── list.ts        # List command
+│   │   └── delete.ts      # Delete command
 │   ├── lib/               # Core library modules
 │   │   ├── automerge.ts   # Automerge repository setup
 │   │   ├── parser.ts      # Markdown parsing utilities
