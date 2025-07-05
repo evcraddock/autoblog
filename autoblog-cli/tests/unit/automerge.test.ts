@@ -58,8 +58,8 @@ describe('Automerge Module', () => {
       expect(NodeFSStorageAdapter).toHaveBeenCalledTimes(1);
     });
 
-    it('should create WebSocketClientAdapter with correct URL', async () => {
-      await initRepo();
+    it('should create WebSocketClientAdapter with correct URL for remote source', async () => {
+      await initRepo('remote');
 
       expect(WebSocketClientAdapter).toHaveBeenCalledWith(
         'wss://sync.automerge.org'
@@ -67,8 +67,8 @@ describe('Automerge Module', () => {
       expect(WebSocketClientAdapter).toHaveBeenCalledTimes(1);
     });
 
-    it('should create Repo with both storage and network adapters', async () => {
-      await initRepo();
+    it('should create Repo with both storage and network adapters for remote source', async () => {
+      await initRepo('remote');
 
       expect(Repo).toHaveBeenCalledWith({
         storage: expect.objectContaining({
@@ -83,6 +83,39 @@ describe('Automerge Module', () => {
         ],
       });
       expect(Repo).toHaveBeenCalledTimes(1);
+    });
+
+    it('should create Repo with only storage adapter for local source', async () => {
+      await initRepo('local');
+
+      expect(WebSocketClientAdapter).not.toHaveBeenCalled();
+      expect(Repo).toHaveBeenCalledWith({
+        storage: expect.objectContaining({
+          path: './autoblog-data',
+          type: 'NodeFSStorageAdapter',
+        }),
+      });
+      expect(Repo).toHaveBeenCalledTimes(1);
+    });
+
+    it('should default to remote source when no source is specified', async () => {
+      await initRepo();
+
+      expect(WebSocketClientAdapter).toHaveBeenCalledWith(
+        'wss://sync.automerge.org'
+      );
+      expect(Repo).toHaveBeenCalledWith({
+        storage: expect.objectContaining({
+          path: './autoblog-data',
+          type: 'NodeFSStorageAdapter',
+        }),
+        network: [
+          expect.objectContaining({
+            url: 'wss://sync.automerge.org',
+            type: 'WebSocketClientAdapter',
+          }),
+        ],
+      });
     });
 
     it('should return a Repo instance', async () => {

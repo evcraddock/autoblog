@@ -27,11 +27,14 @@ All completed features include:
 > - ✅ Sorts posts by published date (newest first)
 > - ✅ Color-coded status indicators
 > - ✅ Handles empty state and missing posts gracefully
-> - ✅ 6 comprehensive unit tests covering all scenarios
+> - ✅ 9 comprehensive unit tests covering all scenarios
+> - ✅ **NEW**: Added --source option to choose between local and remote sync sources
 
 ### Command Specification
-- **Command**: `autoblog list`
+- **Command**: `autoblog list [--source <local|remote>]`
 - **Description**: List all blog posts with their metadata
+- **Options**: 
+  - `--source <source>`: Choose sync source - 'local' (offline) or 'remote' (with sync server) (default: 'remote')
 - **Output**: Table or list format showing title, slug, author, published date, and status
 
 ### Technical Context
