@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { deleteCommand } from './delete.js';
-import { deleteBlogPost } from '../lib/automerge.js';
+import { deleteCommand } from '../../src/commands/delete.js';
+import { deleteBlogPost } from '../../src/lib/automerge.js';
 import chalk from 'chalk';
 
-vi.mock('../lib/automerge.js', () => ({
+vi.mock('../../src/lib/automerge.js', () => ({
   deleteBlogPost: vi.fn(),
 }));
 vi.mock('chalk', () => ({
@@ -41,10 +41,10 @@ describe('Delete Command', () => {
   it('should successfully delete an existing post', async () => {
     mockDeleteBlogPost.mockResolvedValue(true);
 
-    await deleteCommand('test-post');
+    await deleteCommand('test-post', 'local');
     vi.runAllTimers();
 
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post');
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post', 'local');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('BLUE: 🗑️ Deleting post with slug: test-post')
     );
@@ -57,10 +57,13 @@ describe('Delete Command', () => {
   it('should handle non-existent slug gracefully', async () => {
     mockDeleteBlogPost.mockResolvedValue(false);
 
-    await deleteCommand('non-existent-slug');
+    await deleteCommand('non-existent-slug', 'local');
     vi.runAllTimers();
 
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('non-existent-slug');
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith(
+      'non-existent-slug',
+      'local'
+    );
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining(
         'BLUE: 🗑️ Deleting post with slug: non-existent-slug'
@@ -78,10 +81,10 @@ describe('Delete Command', () => {
     // deleteBlogPost handles internal errors but still returns true for successful index removal
     mockDeleteBlogPost.mockResolvedValue(true);
 
-    await deleteCommand('test-post');
+    await deleteCommand('test-post', 'local');
     vi.runAllTimers();
 
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post');
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post', 'local');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('GREEN: ✅ Successfully deleted post: test-post')
     );
@@ -92,10 +95,10 @@ describe('Delete Command', () => {
     // deleteBlogPost handles internal errors but still returns true for successful index removal
     mockDeleteBlogPost.mockResolvedValue(true);
 
-    await deleteCommand('test-post');
+    await deleteCommand('test-post', 'local');
     vi.runAllTimers();
 
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post');
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post', 'local');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('GREEN: ✅ Successfully deleted post: test-post')
     );
@@ -103,14 +106,18 @@ describe('Delete Command', () => {
   });
 
   it('should validate slug parameter', async () => {
-    await expect(deleteCommand('')).rejects.toThrow('Slug is required');
-    await expect(deleteCommand('   ')).rejects.toThrow('Slug is required');
+    await expect(deleteCommand('', 'local')).rejects.toThrow(
+      'Slug is required'
+    );
+    await expect(deleteCommand('   ', 'local')).rejects.toThrow(
+      'Slug is required'
+    );
   });
 
   it('should handle initialization errors', async () => {
     mockDeleteBlogPost.mockRejectedValue(new Error('Init failed'));
 
-    await expect(deleteCommand('test-post')).rejects.toThrow(
+    await expect(deleteCommand('test-post', 'local')).rejects.toThrow(
       'Delete failed: Init failed'
     );
   });
@@ -118,7 +125,7 @@ describe('Delete Command', () => {
   it('should handle index errors', async () => {
     mockDeleteBlogPost.mockRejectedValue(new Error('Index failed'));
 
-    await expect(deleteCommand('test-post')).rejects.toThrow(
+    await expect(deleteCommand('test-post', 'local')).rejects.toThrow(
       'Delete failed: Index failed'
     );
   });
@@ -127,10 +134,10 @@ describe('Delete Command', () => {
     // deleteBlogPost handles internal errors and returns true for successful deletion
     mockDeleteBlogPost.mockResolvedValue(true);
 
-    await deleteCommand('test-post');
+    await deleteCommand('test-post', 'local');
     vi.runAllTimers();
 
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post');
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post', 'local');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('GREEN: ✅ Successfully deleted post: test-post')
     );
@@ -140,10 +147,10 @@ describe('Delete Command', () => {
   it('should handle empty index gracefully', async () => {
     mockDeleteBlogPost.mockResolvedValue(false);
 
-    await deleteCommand('any-slug');
+    await deleteCommand('any-slug', 'local');
     vi.runAllTimers();
 
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('any-slug');
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('any-slug', 'local');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('YELLOW: Post not found with slug: any-slug')
     );

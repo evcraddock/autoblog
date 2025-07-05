@@ -1,11 +1,14 @@
 import fs from 'fs/promises';
 import path from 'path';
 import chalk from 'chalk';
-import { uploadBlogPost } from '../lib/automerge.js';
+import { uploadBlogPost, SyncSource } from '../lib/automerge.js';
 import { parseMarkdownFile, generateSlug } from '../lib/parser.js';
 import type { BlogPost } from '../types/index.js';
 
-export async function uploadCommand(filePath: string): Promise<void> {
+export async function uploadCommand(
+  filePath: string,
+  source: SyncSource = 'local'
+): Promise<void> {
   // Validate file path is provided
   if (!filePath || filePath.trim() === '') {
     throw new Error('File path is required');
@@ -65,7 +68,7 @@ export async function uploadCommand(filePath: string): Promise<void> {
     console.log(chalk.blue('🔄 Uploading blog post...'));
 
     // Upload the blog post
-    const documentId = await uploadBlogPost(blogPost);
+    const documentId = await uploadBlogPost(blogPost, source);
 
     console.log(chalk.green(`✅ Successfully uploaded blog post!`));
     console.log(chalk.blue(`   📄 Title: ${blogPost.title}`));

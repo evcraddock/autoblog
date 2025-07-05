@@ -17,9 +17,14 @@ program
 program
   .command('upload <file>')
   .description('Upload a markdown file to the blog')
-  .action(async (file: string) => {
+  .option('--source [source]', 'Sync source: local or remote', 'local')
+  .action(async (file: string, options) => {
     try {
-      await uploadCommand(file);
+      const source = options.source as SyncSource;
+      if (source !== 'local' && source !== 'remote') {
+        throw new Error('Source must be either "local" or "remote"');
+      }
+      await uploadCommand(file, source);
     } catch (error) {
       console.error(
         chalk.red(
@@ -34,7 +39,7 @@ program
 program
   .command('list')
   .description('List all blog posts')
-  .option('--source <source>', 'Sync source: local or remote', 'remote')
+  .option('--source [source]', 'Sync source: local or remote', 'local')
   .action(async (options) => {
     try {
       const source = options.source as SyncSource;
@@ -56,9 +61,14 @@ program
 program
   .command('delete <slug>')
   .description('Delete a blog post by its slug')
-  .action(async (slug: string) => {
+  .option('--source [source]', 'Sync source: local or remote', 'local')
+  .action(async (slug: string, options) => {
     try {
-      await deleteCommand(slug);
+      const source = options.source as SyncSource;
+      if (source !== 'local' && source !== 'remote') {
+        throw new Error('Source must be either "local" or "remote"');
+      }
+      await deleteCommand(slug, source);
     } catch (error) {
       console.error(
         chalk.red(

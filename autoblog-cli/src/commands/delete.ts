@@ -1,7 +1,10 @@
 import chalk from 'chalk';
-import { deleteBlogPost } from '../lib/automerge.js';
+import { deleteBlogPost, SyncSource } from '../lib/automerge.js';
 
-export async function deleteCommand(slug: string): Promise<void> {
+export async function deleteCommand(
+  slug: string,
+  source: SyncSource = 'local'
+): Promise<void> {
   // Validate slug parameter
   if (!slug || slug.trim() === '') {
     throw new Error('Slug is required');
@@ -13,7 +16,7 @@ export async function deleteCommand(slug: string): Promise<void> {
     console.log(chalk.blue(`🗑️ Deleting post with slug: ${trimmedSlug}`));
 
     // Delete the blog post
-    const wasDeleted = await deleteBlogPost(trimmedSlug);
+    const wasDeleted = await deleteBlogPost(trimmedSlug, source);
 
     if (!wasDeleted) {
       console.log(chalk.yellow(`Post not found with slug: ${trimmedSlug}`));

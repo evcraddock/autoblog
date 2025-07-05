@@ -140,15 +140,18 @@ describe('Upload Command', () => {
       expect(mockFs.access).toHaveBeenCalledWith(filePath);
       expect(mockParseMarkdownFile).toHaveBeenCalledWith(filePath);
       expect(mockGenerateSlug).toHaveBeenCalledWith('Test Blog Post');
-      expect(mockUploadBlogPost).toHaveBeenCalledWith({
-        title: 'Test Blog Post',
-        author: 'Test Author',
-        published: new Date('2025-07-02'),
-        status: 'draft',
-        slug: 'test-blog-post',
-        description: 'A test blog post',
-        content: '# Test Blog Post\n\nThis is test content.',
-      });
+      expect(mockUploadBlogPost).toHaveBeenCalledWith(
+        {
+          title: 'Test Blog Post',
+          author: 'Test Author',
+          published: new Date('2025-07-02'),
+          status: 'draft',
+          slug: 'test-blog-post',
+          description: 'A test blog post',
+          content: '# Test Blog Post\n\nThis is test content.',
+        },
+        'local'
+      );
       expect(chalk.green).toHaveBeenCalledWith(
         '✅ Successfully uploaded blog post!'
       );
@@ -172,15 +175,18 @@ describe('Upload Command', () => {
       expect(mockFs.access).toHaveBeenCalledWith(filePath);
       expect(mockParseMarkdownFile).toHaveBeenCalledWith(filePath);
       expect(mockGenerateSlug).toHaveBeenCalledWith('Minimal Post');
-      expect(mockUploadBlogPost).toHaveBeenCalledWith({
-        title: 'Minimal Post',
-        author: 'Test Author',
-        published: expect.any(Date),
-        status: 'draft',
-        slug: 'test-blog-post',
-        description: '',
-        content: 'Minimal content.',
-      });
+      expect(mockUploadBlogPost).toHaveBeenCalledWith(
+        {
+          title: 'Minimal Post',
+          author: 'Test Author',
+          published: expect.any(Date),
+          status: 'draft',
+          slug: 'test-blog-post',
+          description: '',
+          content: 'Minimal content.',
+        },
+        'local'
+      );
       expect(chalk.green).toHaveBeenCalledWith(
         '✅ Successfully uploaded blog post!'
       );

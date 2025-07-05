@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { listCommand } from './list.js';
-import { listBlogPosts } from '../lib/automerge.js';
+import { listCommand } from '../../src/commands/list.js';
+import { listBlogPosts } from '../../src/lib/automerge.js';
 import chalk from 'chalk';
-import type { BlogPost } from '../types/index.js';
+import type { BlogPost } from '../../src/types/index.js';
 
-vi.mock('../lib/automerge.js', () => ({
+vi.mock('../../src/lib/automerge.js', () => ({
   listBlogPosts: vi.fn(),
 }));
 vi.mock('chalk', () => ({
@@ -71,14 +71,14 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('local');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining(
-        'BLUE: 📚 Fetching blog posts from remote source...'
+        'BLUE: 📚 Fetching blog posts from local source...'
       )
     );
     expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Found 2 posts (🌐 Remote (with sync))')
+      expect.stringContaining('Found 2 posts (📱 Local)')
     );
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('Another Post')
@@ -95,7 +95,7 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('local');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('YELLOW: No blog posts found')
     );
@@ -108,7 +108,7 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('local');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('YELLOW: No blog posts found')
     );
@@ -134,7 +134,7 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('local');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('Found 1 posts')
     );
@@ -178,7 +178,7 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('local');
     const calls = consoleLogSpy.mock.calls.map((call: any[]) => call[0]);
     const tableOutput = calls.find(
       (output: string) =>
@@ -192,16 +192,16 @@ describe('List Command', () => {
     expect(processExitSpy).toHaveBeenCalledWith(0);
   });
 
-  it('should use remote source by default', async () => {
+  it('should use local source when none specified', async () => {
     mockListBlogPosts.mockResolvedValue([]);
 
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('local');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining(
-        'BLUE: 📚 Fetching blog posts from remote source...'
+        'BLUE: 📚 Fetching blog posts from local source...'
       )
     );
   });
