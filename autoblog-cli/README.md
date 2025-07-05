@@ -59,22 +59,26 @@ npm run start -- --help
 ## Development Setup
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/evcraddock/autoblog.git
    cd autoblog/autoblog-cli
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Run in development mode**
+
    ```bash
    npm run dev -- upload test-post.md
    ```
 
 4. **Run tests**
+
    ```bash
    # Run all tests
    npm test
@@ -132,6 +136,7 @@ npm run test:ui
 ### Git Hooks
 
 Pre-commit hooks are configured to automatically:
+
 - Run tests on changed files
 - Validate TypeScript compilation
 - Format code with Prettier
@@ -164,10 +169,12 @@ Your blog post content in markdown format...
 ```
 
 ### Required Fields
+
 - `title`: The post title
 - `author`: Author name
 
 ### Optional Fields
+
 - `published`: Publication date (defaults to current date)
 - `status`: Either "draft" or "published" (defaults to "draft")
 - `description`: Brief post description
