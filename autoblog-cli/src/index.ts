@@ -3,6 +3,7 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { uploadCommand } from './commands/upload.js';
+import { listCommand } from './commands/list.js';
 
 const program = new Command();
 
@@ -17,6 +18,23 @@ program
   .action(async (file: string) => {
     try {
       await uploadCommand(file);
+    } catch (error) {
+      console.error(
+        chalk.red(
+          'Error:',
+          error instanceof Error ? error.message : 'Unknown error'
+        )
+      );
+      process.exit(1);
+    }
+  });
+
+program
+  .command('list')
+  .description('List all blog posts')
+  .action(async () => {
+    try {
+      await listCommand();
     } catch (error) {
       console.error(
         chalk.red(

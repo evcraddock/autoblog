@@ -3,7 +3,8 @@ import path from 'path';
 import chalk from 'chalk';
 import { initRepo } from '../lib/automerge.js';
 import { parseMarkdownFile, generateSlug } from '../lib/parser.js';
-import type { BlogPost, BlogIndex } from '../types/index.js';
+import { getOrCreateIndex, updateIndex } from '../lib/index.js';
+import type { BlogPost } from '../types/index.js';
 import { next as A } from '@automerge/automerge';
 
 export async function uploadCommand(filePath: string): Promise<void> {
@@ -81,16 +82,9 @@ export async function uploadCommand(filePath: string): Promise<void> {
 
     console.log(chalk.blue('🔄 Updating blog index...'));
 
-    // Create or update the blog index
-    // For now, we'll create a simple index document
-    const indexHandle = repo.create<BlogIndex>();
-    indexHandle.change((doc) => {
-      if (!doc.posts) {
-        doc.posts = {};
-      }
-      doc.posts[slug] = documentId;
-      doc.lastUpdated = new Date();
-    });
+    // Get or create the blog index and add this post
+    const indexHandle = await getOrCreateIndex(repo);
+    await updateIndex(indexHandle, slug, documentId);
 
     console.log(chalk.green(`✅ Successfully uploaded blog post!`));
     console.log(chalk.blue(`   📄 Title: ${blogPost.title}`));
