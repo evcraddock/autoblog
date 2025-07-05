@@ -36,6 +36,11 @@ vi.mock('../../src/commands/upload.js', () => ({
   uploadCommand: vi.fn(),
 }));
 
+// Mock the list command module
+vi.mock('../../src/commands/list.js', () => ({
+  listCommand: vi.fn(),
+}));
+
 describe('CLI Entry Point', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -71,19 +76,27 @@ describe('CLI Entry Point', () => {
 
   it('should handle upload command action correctly', async () => {
     const { uploadCommand } = await import('../../src/commands/upload.js');
-    let capturedAction: (file: string) => Promise<void>;
+    let capturedActions: { [key: string]: Function } = {};
 
-    mockCommand.action.mockImplementation(
-      (action: (file: string) => Promise<void>) => {
-        capturedAction = action;
-        return mockCommand;
-      }
-    );
+    mockCommand.command.mockImplementation((cmd: string) => {
+      return mockCommand;
+    });
+
+    mockCommand.action.mockImplementation((action: Function) => {
+      // Store actions by command name
+      const lastCommand =
+        mockCommand.command.mock.calls[
+          mockCommand.command.mock.calls.length - 1
+        ][0];
+      const commandName = lastCommand.split(' ')[0];
+      capturedActions[commandName] = action;
+      return mockCommand;
+    });
 
     await import('../../src/index.js');
 
     const testFile = 'test-post.md';
-    await capturedAction!(testFile);
+    await capturedActions['upload'](testFile);
 
     expect(uploadCommand).toHaveBeenCalledWith(testFile);
   });

@@ -46,6 +46,16 @@ autoblog upload post.md
 npm run start upload post.md
 ```
 
+### List All Blog Posts
+
+```bash
+# List all posts in table format
+autoblog list
+
+# Or using npm scripts
+npm run start list
+```
+
 ### Show Help
 
 ```bash
@@ -97,10 +107,12 @@ autoblog-cli/
 ├── src/
 │   ├── index.ts           # CLI entry point
 │   ├── commands/          # CLI command implementations
-│   │   └── upload.ts      # Upload command
+│   │   ├── upload.ts      # Upload command
+│   │   └── list.ts        # List command
 │   ├── lib/               # Core library modules
 │   │   ├── automerge.ts   # Automerge repository setup
-│   │   └── parser.ts      # Markdown parsing utilities
+│   │   ├── parser.ts      # Markdown parsing utilities
+│   │   └── index.ts       # Index management functions
 │   └── types/             # TypeScript type definitions
 │       └── index.ts       # Shared interfaces
 ├── tests/

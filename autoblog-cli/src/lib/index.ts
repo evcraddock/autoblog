@@ -1,22 +1,53 @@
-import { Repo, DocHandle } from '@automerge/automerge-repo';
+import fs from 'fs/promises';
+import path from 'path';
+import { Repo, DocHandle, DocumentId } from '@automerge/automerge-repo';
 import type { BlogIndex } from '../types/index.js';
 
-// We'll store the index document ID in a well-known location
-// In a real app, this could be stored in config or discovered via other means
-const INDEX_HANDLE_KEY = 'autoblog-index-handle';
-let indexDocumentId: string | null = null;
+// File to store the index document ID
+const INDEX_ID_FILE = './autoblog-data/index-id.txt';
 
 export async function getOrCreateIndex(
   repo: Repo
 ): Promise<DocHandle<BlogIndex>> {
-  // For now, always create a new index document
-  // In a real implementation, we'd need to persist the index document ID
-  // and retrieve it on subsequent runs
+  // Try to load existing index document ID
+  let indexDocumentId: string | null = null;
+
+  try {
+    indexDocumentId = await fs.readFile(INDEX_ID_FILE, 'utf-8');
+    indexDocumentId = indexDocumentId.trim();
+  } catch (error) {
+    // File doesn't exist, we'll create a new index
+  }
+
+  // If we have an existing index ID, try to find it
+  if (indexDocumentId) {
+    try {
+      const existingHandle = await repo.find<BlogIndex>(
+        indexDocumentId as DocumentId
+      );
+      if (existingHandle) {
+        await existingHandle.whenReady();
+        return existingHandle;
+      }
+    } catch (error) {
+      // Index document not found or corrupted, create a new one
+    }
+  }
+
+  // Create a new index document
   const handle = repo.create<BlogIndex>();
   handle.change((doc) => {
     doc.posts = {};
     doc.lastUpdated = new Date();
   });
+
+  // Save the document ID for future use
+  try {
+    await fs.mkdir(path.dirname(INDEX_ID_FILE), { recursive: true });
+    await fs.writeFile(INDEX_ID_FILE, handle.documentId);
+  } catch (error) {
+    console.warn('Warning: Could not save index document ID to file');
+  }
 
   return handle;
 }
