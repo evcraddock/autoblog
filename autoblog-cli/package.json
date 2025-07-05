@@ -20,14 +20,24 @@
     "lint": "prettier --check . && tsc --noEmit",
     "lint:fix": "prettier --write .",
     "format": "prettier --write .",
-    "prepare": "husky"
+    "prepare": "husky && npm run build"
   },
   "engines": {
     "node": ">=20.0.0"
   },
-  "keywords": [],
+  "keywords": [
+    "automerge",
+    "blog",
+    "cli",
+    "markdown",
+    "local-first"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/evcraddock/autoblog.git"
+  },
   "lint-staged": {
     "*.ts": [
       "tsc --noEmit"
