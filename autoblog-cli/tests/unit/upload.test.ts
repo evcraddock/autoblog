@@ -120,6 +120,7 @@ describe('Upload Command', () => {
       };
       const mockRepo = {
         create: vi.fn().mockReturnValue(mockDocHandle),
+        shutdown: vi.fn().mockResolvedValue(undefined),
       };
       mockInitRepo.mockResolvedValue(mockRepo as any);
     });
@@ -180,7 +181,10 @@ describe('Upload Command', () => {
       mockFs.access.mockResolvedValue(undefined);
       mockGenerateSlug.mockReturnValue('test-post');
       const mockDocHandle = { documentId: 'test-id', change: vi.fn() };
-      const mockRepo = { create: vi.fn().mockReturnValue(mockDocHandle) };
+      const mockRepo = {
+        create: vi.fn().mockReturnValue(mockDocHandle),
+        shutdown: vi.fn().mockResolvedValue(undefined),
+      };
       mockInitRepo.mockResolvedValue(mockRepo as any);
     });
 

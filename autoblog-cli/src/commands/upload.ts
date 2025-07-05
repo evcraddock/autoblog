@@ -98,6 +98,9 @@ export async function uploadCommand(filePath: string): Promise<void> {
     console.log(chalk.blue(`   🏷️  Slug: ${slug}`));
     console.log(chalk.blue(`   📅 Status: ${blogPost.status}`));
     console.log(chalk.blue(`   🔗 Document ID: ${documentId}`));
+
+    // Close the repo to cleanup connections and allow process to exit
+    await repo.shutdown();
   } catch (error) {
     throw new Error(
       `Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`
