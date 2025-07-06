@@ -6,6 +6,8 @@ A command-line interface for managing markdown files in the Automerge-powered bl
 
 Autoblog CLI allows authors to upload markdown files to a local-first blog system built on Automerge 2.0. It parses markdown files with frontmatter, creates Automerge documents, and syncs them across devices using CRDT technology.
 
+By default, all commands sync with the Automerge sync server at `wss://sync.automerge.org` for cross-device synchronization. You can use the `--source local` option to work with local storage only.
+
 ## Installation
 
 ### From Source
@@ -36,11 +38,24 @@ autoblog --help
 
 ## Usage
 
+### Sync Options
+
+All commands support a `--source` option to control where data is stored and synced:
+
+- `--source remote` (default): Syncs with the Automerge sync server at `wss://sync.automerge.org`
+- `--source local`: Works with local storage only (no network sync)
+
 ### Upload a Blog Post
 
 ```bash
-# Upload a markdown file
+# Upload a markdown file (syncs to remote by default)
 autoblog upload post.md
+
+# Upload to local storage only
+autoblog upload post.md --source local
+
+# Explicitly sync to remote
+autoblog upload post.md --source remote
 
 # Or using npm scripts
 npm run start upload post.md
@@ -49,8 +64,14 @@ npm run start upload post.md
 ### List All Blog Posts
 
 ```bash
-# List all posts in table format
+# List all posts (from remote by default)
 autoblog list
+
+# List posts from local storage only
+autoblog list --source local
+
+# Explicitly list from remote
+autoblog list --source remote
 
 # Or using npm scripts
 npm run start list
@@ -59,8 +80,14 @@ npm run start list
 ### Delete a Blog Post
 
 ```bash
-# Delete a post by its slug
+# Delete a post by its slug (from remote by default)
 autoblog delete <slug>
+
+# Delete from local storage only
+autoblog delete <slug> --source local
+
+# Explicitly delete from remote
+autoblog delete <slug> --source remote
 
 # Or using npm scripts
 npm run start delete <slug>
@@ -131,7 +158,6 @@ autoblog-cli/
 │       └── index.ts       # Shared interfaces
 ├── tests/
 │   ├── unit/              # Unit tests
-│   ├── integration/       # Integration tests
 │   └── fixtures/          # Test data files
 ├── dist/                  # Compiled JavaScript (generated)
 ├── package.json           # Project configuration
@@ -172,7 +198,6 @@ These hooks ensure code quality before any commit is made.
 ### Test Structure
 
 - **Unit Tests**: Located in `tests/unit/`, testing individual modules
-- **Integration Tests**: Located in `tests/integration/`, testing complete workflows
 - **Test Fixtures**: Sample markdown files in `tests/fixtures/`
 
 ## Markdown File Format
