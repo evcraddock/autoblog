@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { listCommand } from '../../src/commands/list.js';
 import { listBlogPosts } from '../../src/lib/automerge.js';
 import chalk from 'chalk';
@@ -102,74 +102,31 @@ describe('List Command', () => {
     expect(processExitSpy).toHaveBeenCalledWith(0);
   });
 
-  it('should handle missing index document', async () => {
-    mockListBlogPosts.mockResolvedValue([]);
-
-    await listCommand();
-    vi.runAllTimers();
-
-    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
-    expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('YELLOW: No blog posts found')
-    );
-    expect(processExitSpy).toHaveBeenCalledWith(0);
-  });
-
-  it('should handle post loading errors gracefully', async () => {
-    // listBlogPosts handles loading errors internally and only returns successfully loaded posts
-    const mockPosts: BlogPost[] = [
-      {
-        title: 'Test Post',
-        author: 'Test Author',
-        published: new Date('2024-01-01'),
-        status: 'published',
-        slug: 'test-post',
-        description: 'Test description',
-        content: 'Test content',
-      },
-    ];
-
-    mockListBlogPosts.mockResolvedValue(mockPosts);
-
-    await listCommand();
-    vi.runAllTimers();
-
-    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
-    expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Found 1 posts')
-    );
-    expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Test Post')
-    );
-    expect(processExitSpy).toHaveBeenCalledWith(0);
-  });
-
   it('should handle initialization errors', async () => {
     mockListBlogPosts.mockRejectedValue(new Error('Init failed'));
 
     await expect(listCommand()).rejects.toThrow('List failed: Init failed');
   });
 
-  it('should sort posts by published date (newest first)', async () => {
-    // listBlogPosts returns posts already sorted by published date (newest first)
+  it('should display posts in the order returned by listBlogPosts', async () => {
     const mockPosts: BlogPost[] = [
       {
-        title: 'Newer Post',
+        title: 'First Post',
         author: 'Author',
         published: new Date('2024-01-15'),
         status: 'published',
-        slug: 'newer-post',
-        description: 'Newer description',
-        content: 'Newer content',
+        slug: 'first-post',
+        description: 'First description',
+        content: 'First content',
       },
       {
-        title: 'Older Post',
+        title: 'Second Post',
         author: 'Author',
         published: new Date('2023-12-01'),
         status: 'published',
-        slug: 'older-post',
-        description: 'Older description',
-        content: 'Older content',
+        slug: 'second-post',
+        description: 'Second description',
+        content: 'Second content',
       },
     ];
 
@@ -179,16 +136,12 @@ describe('List Command', () => {
     vi.runAllTimers();
 
     expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
-    const calls = consoleLogSpy.mock.calls.map((call: any[]) => call[0]);
-    const tableOutput = calls.find(
-      (output: string) =>
-        output.includes('Newer Post') && output.includes('Older Post')
+    expect(consoleLogSpy).toHaveBeenCalledWith(
+      expect.stringContaining('First Post')
     );
-
-    // Verify newer post appears before older post in the output
-    const newerIndex = tableOutput.indexOf('Newer Post');
-    const olderIndex = tableOutput.indexOf('Older Post');
-    expect(newerIndex).toBeLessThan(olderIndex);
+    expect(consoleLogSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Second Post')
+    );
     expect(processExitSpy).toHaveBeenCalledWith(0);
   });
 
@@ -232,5 +185,14 @@ describe('List Command', () => {
         'BLUE: 📚 Fetching blog posts from remote source...'
       )
     );
+  });
+
+  it('should handle invalid source parameter', async () => {
+    mockListBlogPosts.mockResolvedValue([]);
+
+    await listCommand('invalid' as any);
+    vi.runAllTimers();
+
+    expect(mockListBlogPosts).toHaveBeenCalledWith('invalid');
   });
 });

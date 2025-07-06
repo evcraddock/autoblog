@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { deleteCommand } from '../../src/commands/delete.js';
 import { deleteBlogPost } from '../../src/lib/automerge.js';
 import chalk from 'chalk';
@@ -77,34 +77,6 @@ describe('Delete Command', () => {
     expect(processExitSpy).toHaveBeenCalledWith(0);
   });
 
-  it('should handle post document not found in repo', async () => {
-    // deleteBlogPost handles internal errors but still returns true for successful index removal
-    mockDeleteBlogPost.mockResolvedValue(true);
-
-    await deleteCommand('test-post', 'local');
-    vi.runAllTimers();
-
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post', 'local');
-    expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('GREEN: ✅ Successfully deleted post: test-post')
-    );
-    expect(processExitSpy).toHaveBeenCalledWith(0);
-  });
-
-  it('should handle post document verification failure gracefully', async () => {
-    // deleteBlogPost handles internal errors but still returns true for successful index removal
-    mockDeleteBlogPost.mockResolvedValue(true);
-
-    await deleteCommand('test-post', 'local');
-    vi.runAllTimers();
-
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post', 'local');
-    expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('GREEN: ✅ Successfully deleted post: test-post')
-    );
-    expect(processExitSpy).toHaveBeenCalledWith(0);
-  });
-
   it('should validate slug parameter', async () => {
     await expect(deleteCommand('', 'local')).rejects.toThrow(
       'Slug is required'
@@ -128,20 +100,6 @@ describe('Delete Command', () => {
     await expect(deleteCommand('test-post', 'local')).rejects.toThrow(
       'Delete failed: Index failed'
     );
-  });
-
-  it('should handle index update errors but still succeed', async () => {
-    // deleteBlogPost handles internal errors and returns true for successful deletion
-    mockDeleteBlogPost.mockResolvedValue(true);
-
-    await deleteCommand('test-post', 'local');
-    vi.runAllTimers();
-
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post', 'local');
-    expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('GREEN: ✅ Successfully deleted post: test-post')
-    );
-    expect(processExitSpy).toHaveBeenCalledWith(0);
   });
 
   it('should handle empty index gracefully', async () => {

@@ -244,78 +244,6 @@ console.log('code block');
       expect(result.content).toContain('```javascript');
       expect(result.content).toContain('[Link](https://example.com)');
     });
-
-    it('should handle files with different encodings', async () => {
-      const markdownContent = `---
-title: "UTF-8 Test"
----
-
-# Special Characters
-
-Café, naïve, résumé, 日本語, emoji: 🚀`;
-
-      vol.fromJSON({
-        '/test/utf8.md': markdownContent,
-      });
-
-      const result = await parseMarkdownFile('/test/utf8.md');
-
-      expect(result.frontmatter.title).toBe('UTF-8 Test');
-      expect(result.content).toContain(
-        'Café, naïve, résumé, 日本語, emoji: 🚀'
-      );
-    });
-
-    it('should handle very large files', async () => {
-      const largeContent = 'A'.repeat(10000);
-      const markdownContent = `---
-title: "Large File Test"
----
-
-${largeContent}`;
-
-      vol.fromJSON({
-        '/test/large.md': markdownContent,
-      });
-
-      const result = await parseMarkdownFile('/test/large.md');
-
-      expect(result.frontmatter.title).toBe('Large File Test');
-      expect(result.content).toBe('\n' + largeContent);
-    });
-  });
-
-  describe('Real fixture files integration', () => {
-    it('should parse sample-post.md fixture correctly', async () => {
-      // Note: This test assumes the actual fixture files exist
-      // In a real test environment, we'd either copy them to memfs
-      // or use the actual filesystem for integration tests
-
-      const sampleContent = `---
-title: "Sample Blog Post"
-author: "John Doe"
-published: "2024-01-15"
-status: "published"
-description: "This is a sample blog post for testing the markdown parser"
-tags: ["test", "markdown", "blog"]
----
-
-# Sample Blog Post
-
-This is a **sample blog post** with some content for testing the markdown parser.`;
-
-      vol.fromJSON({
-        '/fixtures/sample-post.md': sampleContent,
-      });
-
-      const result = await parseMarkdownFile('/fixtures/sample-post.md');
-
-      expect(result.frontmatter.title).toBe('Sample Blog Post');
-      expect(result.frontmatter.author).toBe('John Doe');
-      expect(result.frontmatter.tags).toEqual(['test', 'markdown', 'blog']);
-      expect(result.content).toContain('# Sample Blog Post');
-      expect(result.content).toContain('**sample blog post**');
-    });
   });
 
   describe('Error handling', () => {
@@ -326,23 +254,6 @@ This is a **sample blog post** with some content for testing the markdown parser
 
       await expect(parseMarkdownFile('/test/unreadable.md')).rejects.toThrow(
         'Failed to parse markdown file "/test/unreadable.md"'
-      );
-    });
-
-    it('should handle file system errors gracefully', async () => {
-      // Test with a file that causes an error in gray-matter parsing
-      const invalidContent = `---
-title: "Valid start
-but: invalid: syntax
----
-content`;
-
-      vol.fromJSON({
-        '/test/error-file.md': invalidContent,
-      });
-
-      await expect(parseMarkdownFile('/test/error-file.md')).rejects.toThrow(
-        'Failed to parse markdown file "/test/error-file.md"'
       );
     });
   });

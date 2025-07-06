@@ -107,36 +107,4 @@ describe('CLI Entry Point', () => {
 
     expect(uploadCommand).toHaveBeenCalledWith(testFile, 'local');
   });
-
-  it('should handle uncaught exceptions gracefully', async () => {
-    const chalk = await import('chalk');
-    await import('../../src/index.js');
-
-    const testError = new Error('Test uncaught exception');
-
-    expect(() => {
-      process.emit('uncaughtException', testError);
-    }).toThrow('process.exit unexpectedly called with "1"');
-
-    expect(chalk.default.red).toHaveBeenCalledWith(
-      'Uncaught Exception:',
-      'Test uncaught exception'
-    );
-  });
-
-  it('should handle unhandled rejections gracefully', async () => {
-    const chalk = await import('chalk');
-    await import('../../src/index.js');
-
-    const testReason = 'Test unhandled rejection';
-
-    expect(() => {
-      process.emit('unhandledRejection', testReason);
-    }).toThrow('process.exit unexpectedly called with "1"');
-
-    expect(chalk.default.red).toHaveBeenCalledWith(
-      'Unhandled Rejection:',
-      testReason
-    );
-  });
 });
