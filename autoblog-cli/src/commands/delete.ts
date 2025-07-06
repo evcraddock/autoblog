@@ -3,7 +3,7 @@ import { deleteBlogPost, SyncSource } from '../lib/automerge.js';
 
 export async function deleteCommand(
   slug: string,
-  source: SyncSource = 'local'
+  source: SyncSource = 'remote'
 ): Promise<void> {
   // Validate slug parameter
   if (!slug || slug.trim() === '') {

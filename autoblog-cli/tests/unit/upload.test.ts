@@ -150,7 +150,7 @@ describe('Upload Command', () => {
           description: 'A test blog post',
           content: '# Test Blog Post\n\nThis is test content.',
         },
-        'local'
+        'remote'
       );
       expect(chalk.green).toHaveBeenCalledWith(
         '✅ Successfully uploaded blog post!'
@@ -185,7 +185,7 @@ describe('Upload Command', () => {
           description: '',
           content: 'Minimal content.',
         },
-        'local'
+        'remote'
       );
       expect(chalk.green).toHaveBeenCalledWith(
         '✅ Successfully uploaded blog post!'

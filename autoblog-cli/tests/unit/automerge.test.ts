@@ -98,15 +98,23 @@ describe('Automerge Module', () => {
       expect(Repo).toHaveBeenCalledTimes(1);
     });
 
-    it('should default to local source when no source is specified', async () => {
+    it('should default to remote source when no source is specified', async () => {
       await initRepo();
 
-      expect(WebSocketClientAdapter).not.toHaveBeenCalled();
+      expect(WebSocketClientAdapter).toHaveBeenCalledWith(
+        'wss://sync.automerge.org'
+      );
       expect(Repo).toHaveBeenCalledWith({
         storage: expect.objectContaining({
           path: './autoblog-data',
           type: 'NodeFSStorageAdapter',
         }),
+        network: [
+          expect.objectContaining({
+            url: 'wss://sync.automerge.org',
+            type: 'WebSocketClientAdapter',
+          }),
+        ],
       });
     });
 

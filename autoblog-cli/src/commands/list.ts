@@ -3,7 +3,9 @@ import Table from 'cli-table3';
 import { listBlogPosts, SyncSource } from '../lib/automerge.js';
 import type { BlogPost } from '../types/index.js';
 
-export async function listCommand(source: SyncSource = 'local'): Promise<void> {
+export async function listCommand(
+  source: SyncSource = 'remote'
+): Promise<void> {
   try {
     console.log(chalk.blue(`📚 Fetching blog posts from ${source} source...`));
 
