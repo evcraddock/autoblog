@@ -5,8 +5,8 @@ import {
   updateIndex,
   removeFromIndex,
   findPostBySlug,
-} from './index.js';
-import type { BlogIndex } from '../types/index.js';
+} from '../../src/lib/index.js';
+import type { BlogIndex } from '../../src/types/index.js';
 
 vi.mock('fs/promises');
 

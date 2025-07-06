@@ -102,9 +102,10 @@ describe('CLI Entry Point', () => {
     await import('../../src/index.js');
 
     const testFile = 'test-post.md';
-    await capturedActions['upload'](testFile);
+    const testOptions = { source: 'local' };
+    await capturedActions['upload'](testFile, testOptions);
 
-    expect(uploadCommand).toHaveBeenCalledWith(testFile);
+    expect(uploadCommand).toHaveBeenCalledWith(testFile, 'local');
   });
 
   it('should handle uncaught exceptions gracefully', async () => {
