@@ -154,9 +154,12 @@ autoblog sync                    # Sync with remote
 Public-facing website for reading blog posts with local-first capabilities.
 
 ### Technology Stack
+- **Framework**: React
 - **Build Tool**: Vite
 - **Language**: TypeScript
 - **Dependencies**:
+  - `react` (v18+)
+  - `react-dom` (v18+)
   - `@automerge/automerge` (v2.0+)
   - `@automerge/automerge-repo`
   - `@automerge/automerge-repo-storage-indexeddb`
@@ -168,14 +171,15 @@ Public-facing website for reading blog posts with local-first capabilities.
 ```
 autoblog-web/
 ├── src/
-│   ├── main.ts            # Entry point
+│   ├── main.tsx           # Entry point
+│   ├── App.tsx            # Main app component
 │   ├── lib/
 │   │   ├── automerge.ts   # Automerge client setup
 │   │   ├── posts.ts       # Post fetching logic
 │   │   └── renderer.ts    # Markdown to HTML
 │   ├── components/
-│   │   ├── PostList.ts    # List view component
-│   │   └── PostView.ts    # Single post component
+│   │   ├── PostList.tsx   # List view component
+│   │   └── PostView.tsx   # Single post component
 │   ├── styles/
 │   │   └── main.css       # Styling
 │   └── types/
@@ -223,7 +227,7 @@ Simple hash-based routing for MVP:
 - `#/` - Post list
 - `#/post/:slug` - Individual post
 
-### UI Components
+### UI Components (React)
 - **Post List**: Grid/list of post cards with title, description, date
 - **Post View**: Full post with rendered markdown
 - **Navigation**: Simple header with home link
