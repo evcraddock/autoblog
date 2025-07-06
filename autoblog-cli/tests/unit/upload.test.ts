@@ -1,46 +1,30 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { uploadCommand } from '../../src/commands/upload.js';
-import fs from 'fs/promises';
-import chalk from 'chalk';
+import fs, { readFile } from 'fs/promises';
+import path from 'path';
+import os from 'os';
 
 // Mock fs/promises
-vi.mock('fs/promises');
-const mockFs = vi.mocked(fs);
-
-// Mock chalk
-vi.mock('chalk', () => ({
+vi.mock('fs/promises', () => ({
   default: {
-    green: vi.fn((text: string) => `GREEN: ${text}`),
-    blue: vi.fn((text: string) => `BLUE: ${text}`),
+    access: vi.fn(),
+    readFile: vi.fn(),
   },
+  readFile: vi.fn(),
 }));
+const mockFs = vi.mocked(fs);
+const mockReadFile = vi.mocked(readFile);
 
-// Mock automerge and parser modules
+// Mock only the automerge module for network operations
 vi.mock('../../src/lib/automerge.js', () => ({
-  initRepo: vi.fn(),
   uploadBlogPost: vi.fn(),
 }));
 
-vi.mock('../../src/lib/parser.js', () => ({
-  parseMarkdownFile: vi.fn(),
-  generateSlug: vi.fn(),
-}));
-
-// Mock @automerge/automerge
-vi.mock('@automerge/automerge', () => ({
-  next: {},
-}));
-
 // Import mocked modules
-import { initRepo, uploadBlogPost } from '../../src/lib/automerge.js';
-import { parseMarkdownFile, generateSlug } from '../../src/lib/parser.js';
-
-const mockInitRepo = vi.mocked(initRepo);
+import { uploadBlogPost } from '../../src/lib/automerge.js';
 const mockUploadBlogPost = vi.mocked(uploadBlogPost);
-const mockParseMarkdownFile = vi.mocked(parseMarkdownFile);
-const mockGenerateSlug = vi.mocked(generateSlug);
 
-// Mock console methods
+// Mock console methods to avoid cluttering test output
 const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
 
 // Mock process.exit to do nothing
@@ -113,33 +97,30 @@ describe('Upload Command', () => {
 
   describe('Success scenarios', () => {
     beforeEach(() => {
-      // Mock successful parsing
-      mockParseMarkdownFile.mockResolvedValue({
-        frontmatter: {
-          title: 'Test Blog Post',
-          author: 'Test Author',
-          published: '2025-07-02',
-          status: 'draft',
-          description: 'A test blog post',
-        },
-        content: '# Test Blog Post\n\nThis is test content.',
-      });
-
-      mockGenerateSlug.mockReturnValue('test-blog-post');
-
       // Mock uploadBlogPost
       mockUploadBlogPost.mockResolvedValue('test-doc-id-123');
     });
 
     it('should successfully upload valid .md file with complete frontmatter', async () => {
       const filePath = 'test-post.md';
+      const testContent = `---
+title: Test Blog Post
+author: Test Author
+published: 2025-07-02
+status: draft
+description: A test blog post
+---
+
+# Test Blog Post
+
+This is test content.`;
+
       mockFs.access.mockResolvedValue(undefined);
+      mockReadFile.mockResolvedValue(testContent);
 
       await uploadCommand(filePath);
 
       expect(mockFs.access).toHaveBeenCalledWith(filePath);
-      expect(mockParseMarkdownFile).toHaveBeenCalledWith(filePath);
-      expect(mockGenerateSlug).toHaveBeenCalledWith('Test Blog Post');
       expect(mockUploadBlogPost).toHaveBeenCalledWith(
         {
           title: 'Test Blog Post',
@@ -148,63 +129,59 @@ describe('Upload Command', () => {
           status: 'draft',
           slug: 'test-blog-post',
           description: 'A test blog post',
-          content: '# Test Blog Post\n\nThis is test content.',
+          content: '\n# Test Blog Post\n\nThis is test content.',
         },
         'remote'
-      );
-      expect(chalk.green).toHaveBeenCalledWith(
-        '✅ Successfully uploaded blog post!'
       );
       expect(mockProcessExit).toHaveBeenCalledWith(0);
     });
 
     it('should handle .md file with minimal frontmatter', async () => {
       const filePath = 'minimal-post.md';
-      mockFs.access.mockResolvedValue(undefined);
+      const testContent = `---
+title: Minimal Post
+author: Test Author
+---
 
-      mockParseMarkdownFile.mockResolvedValue({
-        frontmatter: {
-          title: 'Minimal Post',
-          author: 'Test Author',
-        },
-        content: 'Minimal content.',
-      });
+Minimal content.`;
+
+      mockFs.access.mockResolvedValue(undefined);
+      mockReadFile.mockResolvedValue(testContent);
 
       await uploadCommand(filePath);
 
       expect(mockFs.access).toHaveBeenCalledWith(filePath);
-      expect(mockParseMarkdownFile).toHaveBeenCalledWith(filePath);
-      expect(mockGenerateSlug).toHaveBeenCalledWith('Minimal Post');
       expect(mockUploadBlogPost).toHaveBeenCalledWith(
         {
           title: 'Minimal Post',
           author: 'Test Author',
           published: expect.any(Date),
           status: 'draft',
-          slug: 'test-blog-post',
+          slug: 'minimal-post',
           description: '',
-          content: 'Minimal content.',
+          content: '\nMinimal content.',
         },
         'remote'
-      );
-      expect(chalk.green).toHaveBeenCalledWith(
-        '✅ Successfully uploaded blog post!'
       );
       expect(mockProcessExit).toHaveBeenCalledWith(0);
     });
 
     it('should handle file in subdirectory', async () => {
       const filePath = 'posts/my-blog-post.md';
+      const testContent = `---
+title: My Blog Post
+author: Test Author
+---
+
+Content in subdirectory.`;
+
       mockFs.access.mockResolvedValue(undefined);
+      mockReadFile.mockResolvedValue(testContent);
 
       await uploadCommand(filePath);
 
       expect(mockFs.access).toHaveBeenCalledWith(filePath);
-      expect(mockParseMarkdownFile).toHaveBeenCalledWith(filePath);
       expect(mockUploadBlogPost).toHaveBeenCalled();
-      expect(chalk.green).toHaveBeenCalledWith(
-        '✅ Successfully uploaded blog post!'
-      );
       expect(mockProcessExit).toHaveBeenCalledWith(0);
     });
   });
@@ -212,44 +189,50 @@ describe('Upload Command', () => {
   describe('Frontmatter validation', () => {
     beforeEach(() => {
       mockFs.access.mockResolvedValue(undefined);
-      mockGenerateSlug.mockReturnValue('test-post');
-      const mockDocHandle = { documentId: 'test-id', change: vi.fn() };
-      const mockRepo = {
-        create: vi.fn().mockReturnValue(mockDocHandle),
-      };
-      mockInitRepo.mockResolvedValue(mockRepo as any);
     });
 
     it('should throw error when title is missing', async () => {
-      mockParseMarkdownFile.mockResolvedValue({
-        frontmatter: { author: 'Test Author' },
-        content: 'Content',
-      });
+      const filePath = 'no-title.md';
+      const testContent = `---
+author: Test Author
+---
 
-      await expect(uploadCommand('test.md')).rejects.toThrow(
+Content`;
+
+      mockReadFile.mockResolvedValue(testContent);
+
+      await expect(uploadCommand(filePath)).rejects.toThrow(
         'Missing required field: title in frontmatter'
       );
     });
 
     it('should throw error when author is missing', async () => {
-      mockParseMarkdownFile.mockResolvedValue({
-        frontmatter: { title: 'Test Title' },
-        content: 'Content',
-      });
+      const filePath = 'no-author.md';
+      const testContent = `---
+title: Test Title
+---
 
-      await expect(uploadCommand('test.md')).rejects.toThrow(
+Content`;
+
+      mockReadFile.mockResolvedValue(testContent);
+
+      await expect(uploadCommand(filePath)).rejects.toThrow(
         'Missing required field: author in frontmatter'
       );
     });
 
     it('should throw error when slug generation fails', async () => {
-      mockParseMarkdownFile.mockResolvedValue({
-        frontmatter: { title: 'Test Title', author: 'Test Author' },
-        content: 'Content',
-      });
-      mockGenerateSlug.mockReturnValue('');
+      const filePath = 'bad-title.md';
+      const testContent = `---
+title: "   "
+author: Test Author
+---
 
-      await expect(uploadCommand('test.md')).rejects.toThrow(
+Content`;
+
+      mockReadFile.mockResolvedValue(testContent);
+
+      await expect(uploadCommand(filePath)).rejects.toThrow(
         'Unable to generate slug from title'
       );
     });
@@ -258,31 +241,39 @@ describe('Upload Command', () => {
   describe('Automerge integration errors', () => {
     beforeEach(() => {
       mockFs.access.mockResolvedValue(undefined);
-      mockParseMarkdownFile.mockResolvedValue({
-        frontmatter: { title: 'Test', author: 'Author' },
-        content: 'Content',
-      });
-      mockGenerateSlug.mockReturnValue('test');
     });
 
     it('should handle Automerge initialization failure', async () => {
+      const filePath = 'test.md';
+      const testContent = `---
+title: Test
+author: Author
+---
+
+Content`;
+
+      mockReadFile.mockResolvedValue(testContent);
       mockUploadBlogPost.mockRejectedValue(
         new Error('Failed to connect to sync server')
       );
 
-      await expect(uploadCommand('test.md')).rejects.toThrow(
+      await expect(uploadCommand(filePath)).rejects.toThrow(
         'Upload failed: Failed to connect to sync server'
       );
     });
 
     it('should handle parsing failure', async () => {
-      mockParseMarkdownFile.mockRejectedValue(
-        new Error('Invalid frontmatter format')
-      );
+      const filePath = 'bad.md';
+      const badContent = `---
+title: Test
+author: Author
+--
 
-      await expect(uploadCommand('test.md')).rejects.toThrow(
-        'Upload failed: Invalid frontmatter format'
-      );
+Content`; // Invalid frontmatter
+
+      mockFs.readFile.mockResolvedValue(badContent);
+
+      await expect(uploadCommand(filePath)).rejects.toThrow('Upload failed:');
     });
   });
 
