@@ -1,7 +1,7 @@
-# Autoblog Architecture Plan
+# Autoblog Architecture
 
 ## Overview
-This document outlines the technical architecture for building a local-first blog platform using Automerge 2.0. The system consists of two main applications: a CLI tool for content management and a web application for public viewing.
+This document outlines the technical architecture for the Autoblog platform - a local-first blog system using Automerge 2.0. The current implementation includes a feature-complete CLI tool for content management. A web viewer application was originally planned but has not been implemented.
 
 ## System Architecture
 
@@ -139,13 +139,22 @@ export async function uploadPost(filePath: string) {
 # Install globally
 npm install -g autoblog-cli
 
-# Upload a post
+# Upload a post (syncs to remote by default)
 autoblog upload ./posts/my-post.md
 
-# Future features
-autoblog list                    # List all posts
-autoblog delete <slug>           # Remove a post
-autoblog sync                    # Sync with remote
+# Upload to local storage only
+autoblog upload ./posts/my-post.md --source local
+
+# List all posts
+autoblog list
+
+# List posts from local storage only
+autoblog list --source local
+
+# Remove a post by slug
+autoblog delete <slug>
+
+# All commands support --source option for local/remote operation
 ```
 
 ## Application 2: Web Viewer
@@ -283,26 +292,30 @@ console.log("Sync server running on ws://localhost:3030")
 
 ## Development Workflow
 
-### Phase 1: MVP
-1. Set up both project structures
-2. Implement Automerge integration with sync server
-3. Build upload command in CLI
-4. Create read-only web viewer
-5. Test with sample posts using public sync server
+### Phase 1: CLI Tool (COMPLETED)
+The CLI tool has been completed with the following features:
+1. ✅ Upload command - Upload markdown files with frontmatter
+2. ✅ List command - Display all posts in formatted table
+3. ✅ Delete command - Remove posts by slug
+4. ✅ Index management - Centralized post registry
+5. ✅ Sync source support - Local/remote operation modes
 
-### Phase 2: Enhancements
-1. Self-hosted sync server
-2. Implement post search
-3. Add pagination
-4. Build admin interface
-5. Support for drafts
+### Phase 2: Web Viewer (NOT IMPLEMENTED)
+The web viewer application was planned but has not been implemented. This would have included:
+- React-based web application
+- Read-only blog post viewing
+- IndexedDB storage for offline access
+- WebSocket sync with Automerge server
 
-### Phase 3: Advanced Features
-1. Collaborative editing
-2. Comment system
-3. RSS feed generation
-4. Analytics integration
-5. Theme customization
+### Future Considerations
+The following features were considered but are not part of the current implementation:
+- RSS feed generation
+- Comment system  
+- Collaborative editing
+- Analytics integration
+- Theme customization
+- Post search functionality
+- Pagination support
 
 ## Testing Strategy
 

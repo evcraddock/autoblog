@@ -4,13 +4,15 @@ This document provides the implementation context for each Phase 1 CLI feature. 
 
 ## Implementation Status
 
-**Progress: 4/5 Features Completed (80%)**
+**Progress: 4/4 Features Completed (100%)**
 
 - ✅ **Index Management Module** - Completed (PR #14)
 - ✅ **List Command** - Completed (PR #15)  
 - ✅ **Delete Command** - Completed (PR #16)
-- ✅ **Sync Command** - Completed (PR #17)
-- ⏳ **Enhanced Error Handling** - Pending
+- ❌ **Sync Command** - CANCELLED (Replaced by --source option on all commands)
+- ✅ **Sync Source Support** - Completed (PR #18) - Added --source option to all commands
+
+Note: The explicit sync command was cancelled in favor of integrating sync functionality into all commands via the --source option, which provides better user experience and flexibility.
 
 ### Completed Features
 All completed features include:
@@ -138,20 +140,18 @@ export interface BlogIndex {
 
 ---
 
-## ✅ Feature 3: Sync Command - Manual Synchronization [COMPLETED]
+## ❌ Feature 3: Sync Command - Manual Synchronization [CANCELLED]
 
 > **Implementation Notes**: 
-> - ✅ Manual sync triggering with real-time status reporting
-> - ✅ Network connectivity detection and offline handling
-> - ✅ Sync statistics reporting (documents count, data transferred)
-> - ✅ Human-readable byte formatting (bytes, KB, MB, GB)
-> - ✅ Comprehensive error handling for network failures
-> - ✅ 9 comprehensive unit tests covering all scenarios including mocking
+> - This feature was initially implemented but later cancelled
+> - Sync functionality was integrated into all commands via the --source option
+> - Users can choose between 'local' (no sync) and 'remote' (with sync) for each operation
+> - This approach provides better flexibility and user experience
 
-### Command Specification
-- **Command**: `autoblog sync`
-- **Description**: Manually trigger synchronization with remote server
-- **Output**: Sync status and statistics
+### Original Command Specification
+- **Command**: `autoblog sync` (CANCELLED)
+- **Replacement**: Use `--source remote` option on any command to enable sync
+- **Description**: Sync is now automatic when using remote source
 
 ### Technical Context
 
@@ -230,34 +230,6 @@ export async function findPostBySlug(handle: DocHandle<BlogIndex>, slug: string)
 
 ---
 
-## ⏳ Feature 5: Enhanced Error Handling and User Feedback [PENDING]
-
-### Context
-All commands need consistent error handling and user feedback.
-
-### Requirements
-1. Consistent error messages with chalk styling
-2. Verbose mode for debugging
-3. Progress indicators for long operations
-4. Network status awareness
-
-### Implementation Patterns
-```typescript
-// Error handling wrapper
-export async function withErrorHandling<T>(
-  operation: () => Promise<T>,
-  errorMessage: string
-): Promise<T | null>
-
-// Progress indicator
-export function showProgress(message: string): () => void
-
-// Network status check
-export async function checkNetworkStatus(repo: Repo): Promise<boolean>
-```
-
----
-
 ## Common Implementation Patterns
 
 ### Automerge Repository Initialization
@@ -304,12 +276,12 @@ describe('command name', () => {
 
 ---
 
-## Development Order Progress
+## Development Order Summary
 
 1. ✅ **Index Management Module** - Required by all features [COMPLETED]
 2. ✅ **List Command** - Simplest, validates index access [COMPLETED] 
 3. ✅ **Delete Command** - Builds on list, modifies index [COMPLETED]
-4. ✅ **Sync Command** - Independent, useful for testing [COMPLETED]
-5. ⏳ **Error Handling Utilities** - Enhance all commands [NEXT]
+4. ❌ **Sync Command** - [CANCELLED - Replaced by --source option]
+5. ✅ **Sync Source Support** - Added --source option to all commands [COMPLETED]
 
-This order ensures each feature builds on previous work and maintains testability throughout development. The first four features are now complete and working together seamlessly.
+All Phase 1 features have been completed. The CLI tool is now feature-complete with upload, list, and delete commands, all supporting local/remote operation modes via the --source option.
