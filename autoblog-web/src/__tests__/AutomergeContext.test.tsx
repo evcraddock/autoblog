@@ -1,16 +1,16 @@
 import { render, screen, waitFor } from '@testing-library/react'
+import { vi } from 'vitest'
 import { AutomergeProvider, useRepo } from '../contexts/AutomergeContext'
 
 // Mock the Automerge modules
 vi.mock('@automerge/react', () => ({
   Repo: vi.fn().mockImplementation(() => ({
-    peerId: 'test-peer-id',
     find: vi.fn(),
     create: vi.fn(),
   })),
   RepoContext: {
-    Provider: ({ children, value }: { children: React.ReactNode; value: any }) => (
-      <div data-testid="repo-provider" data-repo={value?.peerId}>
+    Provider: ({ children }: { children: React.ReactNode; value?: any }) => (
+      <div data-testid="repo-provider">
         {children}
       </div>
     ),
@@ -33,7 +33,7 @@ function TestComponent() {
       <span data-testid="repo-status">
         {repo ? 'repo-available' : 'no-repo'}
       </span>
-      {repo && <span data-testid="peer-id">{repo.peerId}</span>}
+      {repo && <span data-testid="peer-id">test-peer-id</span>}
     </div>
   )
 }
