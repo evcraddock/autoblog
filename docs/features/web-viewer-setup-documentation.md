@@ -19,7 +19,7 @@ The project has established a clear, scalable directory structure that separates
 ### Technology Stack
 The project uses modern web development technologies:
 
-- **Framework**: React 18 with TypeScript for type-safe component development
+- **Framework**: React 18.3.1 with TypeScript for type-safe component development
 - **Build Tool**: Vite for fast development server and optimized production builds
 - **Styling**: Tailwind CSS utility-first framework with dark mode support
 - **Testing**: Vitest for unit and integration testing with React Testing Library
@@ -27,9 +27,9 @@ The project uses modern web development technologies:
 ### Core Dependencies
 The application has integrated essential libraries for core functionality:
 
-- **CRDT Synchronization**: Automerge 2.2.8 with Automerge Repo 1.2.1 for document management
-- **Content Rendering**: React-markdown 9.0.3 with syntax highlighting via react-syntax-highlighter
-- **UI Components**: Lucide-react for icons and clsx for utility class management
+- **CRDT Synchronization**: Automerge 2.1.10 with Automerge Repo 2.0.7 for document management
+- **Content Rendering**: React-markdown 8.0.7 with syntax highlighting via rehype-highlight 6.0.0
+- **UI Components**: Lucide-react 0.263.1 for icons and routing via react-router-dom 6.30.1
 - **Type Definitions**: Complete TypeScript definitions for all dependencies
 
 ### Code Quality Tools
@@ -125,5 +125,88 @@ The following configuration files have been created and configured:
 - Troubleshooting guide for common development issues
 - Architecture overview and design decisions
 
+## Current Dependency Versions
+
+### Core Dependencies
+- **react**: 18.3.1
+- **react-dom**: 18.3.1
+- **@types/react**: 18.3.23
+- **@types/react-dom**: 18.3.7
+- **typescript**: 5.0.2
+
+### Build Tools
+- **vite**: 4.5.14
+- **@vitejs/plugin-react**: 4.0.3
+- **tailwindcss**: 3.4.17
+- **postcss**: 8.4.27
+- **autoprefixer**: 10.4.14
+
+### Testing
+- **vitest**: 0.33.0
+- **@testing-library/react**: 13.4.0
+- **@testing-library/jest-dom**: 5.17.0
+- **jsdom**: 22.1.0
+
+### Code Quality
+- **eslint**: 8.57.1
+- **@typescript-eslint/eslint-plugin**: 6.21.0
+- **@typescript-eslint/parser**: 6.21.0
+- **prettier**: 3.0.0
+- **husky**: 8.0.3
+- **lint-staged**: 13.3.0
+
+### Content Processing
+- **react-markdown**: 8.0.7
+- **react-router-dom**: 6.30.1
+- **rehype-highlight**: 6.0.0
+- **remark-gfm**: 3.0.1
+- **gray-matter**: 4.0.3
+- **dompurify**: 3.2.6
+
+### UI Libraries
+- **lucide-react**: 0.263.1
+- **@tailwindcss/typography**: 0.5.9
+
+### Automerge Stack
+- **@automerge/automerge**: 2.1.10
+- **@automerge/automerge-repo**: 2.0.7
+- **@automerge/automerge-repo-network-websocket**: 2.0.7
+- **@automerge/automerge-repo-react-hooks**: 2.0.7
+- **@automerge/automerge-repo-storage-indexeddb**: 2.0.7
+- **@automerge/react**: 2.0.7
+
+## React 19 Upgrade Path
+
+### Recommended Target Versions
+- **react**: 19.1.0 (Current: 18.3.1)
+- **react-dom**: 19.1.0 (Current: 18.3.1)
+- **@types/react**: 19.1.8 (Current: 18.3.23)
+- **@types/react-dom**: 19.1.6 (Current: 18.3.7)
+- **vite**: 7.0.2 (Current: 4.5.14)
+- **tailwindcss**: 4.1.11 (Current: 3.4.17)
+- **eslint**: 9.30.1 (Current: 8.57.1)
+- **@testing-library/react**: 16.3.0 (Current: 13.4.0)
+- **vitest**: 3.2.4 (Current: 0.33.0)
+- **react-markdown**: 10.1.0 (Current: 8.0.7)
+- **react-router-dom**: 7.6.3 (Current: 6.30.1)
+
+### Upgrade Considerations
+- **Breaking Changes**: React 19 requires new JSX transform and has some API changes
+- **Vite 4→7**: Major build tool changes, configuration updates required
+- **ESLint 8→9**: Flat configuration required, significant rule changes
+- **Tailwind CSS 3→4**: Complete framework overhaul with breaking changes
+- **Testing**: React Testing Library and Vitest major version updates
+
+### Upgrade Strategy
+1. **Phase 1**: Update to React 19 core packages
+2. **Phase 2**: Update build tools (Vite, TypeScript tooling)
+3. **Phase 3**: Update testing framework (Vitest, Testing Library)
+4. **Phase 4**: Update styling (Tailwind CSS v4) and routing (React Router v7)
+5. **Phase 5**: Update content processing libraries
+
+### Node.js Compatibility
+- **Current**: Node.js 22.14.0 ✅
+- **React 19 Requirement**: Node.js 16+ (Current version fully compatible)
+
 ## Dependencies and Constraints
-This feature had no dependencies on other features and has been completed as the foundation for all subsequent development work. The setup supports all planned features without requiring major architectural changes.
+This feature had no dependencies on other features and has been completed as the foundation for all subsequent development work. The current setup supports all planned features, though a React 19 upgrade will require careful migration of several major dependencies with breaking changes.
