@@ -59,10 +59,11 @@ function App() {
                 Markdown Renderer Demo
               </h3>
               <p className="text-primary-700 dark:text-primary-300 text-sm mb-4">
-                Testing the markdown rendering system with syntax highlighting, tables, and links.
+                Testing the markdown rendering system with syntax highlighting,
+                tables, and links.
               </p>
-              
-              <MarkdownRenderer 
+
+              <MarkdownRenderer
                 content={`# Sample Blog Post
 
 Welcome to the **Autoblog** markdown rendering system! This demonstrates various markdown features:
