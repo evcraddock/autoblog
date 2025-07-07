@@ -66,7 +66,7 @@ export async function getOrCreateIndex(
 
   try {
     indexDocumentId = localStorage.getItem(INDEX_ID_KEY)
-  } catch (error) {
+  } catch {
     // localStorage not available or other error
   }
 
@@ -80,7 +80,7 @@ export async function getOrCreateIndex(
         await existingHandle.whenReady()
         return existingHandle
       }
-    } catch (error) {
+    } catch {
       // Index document not found or corrupted, create a new one
     }
   }
@@ -95,7 +95,7 @@ export async function getOrCreateIndex(
   // Save the document ID for future use
   try {
     localStorage.setItem(INDEX_ID_KEY, handle.documentId)
-  } catch (error) {
+  } catch {
     // eslint-disable-next-line no-console
     console.warn('Warning: Could not save index document ID to localStorage')
   }

@@ -60,8 +60,9 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
               />
             </div>
           ),
-          code: ({ node: _node, inline, className, children, ...props }) => {
-            return !inline ? (
+          code: ({ node: _node, className, children, ...props }) => {
+            const isInline = !className?.includes('language-')
+            return !isInline ? (
               <code className={`${className} block p-4 rounded-lg`} {...props}>
                 {children}
               </code>
