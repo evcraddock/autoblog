@@ -1,20 +1,35 @@
 export interface BlogPost {
-  id: string
   title: string
   author: string
-  publishedAt: string
+  published: Date
   status: 'draft' | 'published'
   slug: string
-  description?: string
+  description: string
   content: string
   imageUrl?: string
 }
 
 export interface BlogIndex {
-  [slug: string]: string // slug -> document ID mapping
+  posts: Record<string, string>
+  lastUpdated: Date
 }
 
 export interface AppConfig {
   syncUrl: string
   theme: 'light' | 'dark' | 'system'
+}
+
+export interface ConnectionStatus {
+  isConnected: boolean
+  isConnecting: boolean
+  lastError?: string
+  syncProgress?: number
+}
+
+export interface AutomergeState {
+  isLoading: boolean
+  error?: string
+  posts: BlogPost[]
+  blogIndex?: BlogIndex
+  connectionStatus: ConnectionStatus
 }
