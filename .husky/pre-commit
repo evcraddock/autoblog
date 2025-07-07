@@ -1,0 +1,20 @@
+# Get list of staged files
+STAGED_FILES=$(git diff --cached --name-only)
+
+# Check if any CLI files are staged
+CLI_FILES=$(echo "$STAGED_FILES" | grep "^autoblog-cli/" || true)
+
+# Check if any Web files are staged
+WEB_FILES=$(echo "$STAGED_FILES" | grep "^autoblog-web/" || true)
+
+# Run CLI pre-commit if CLI files are staged
+if [ -n "$CLI_FILES" ]; then
+  echo "Running CLI pre-commit checks..."
+  (cd autoblog-cli && npx lint-staged)
+fi
+
+# Run Web pre-commit if Web files are staged
+if [ -n "$WEB_FILES" ]; then
+  echo "Running Web pre-commit checks..."
+  (cd autoblog-web && npx lint-staged)
+fi

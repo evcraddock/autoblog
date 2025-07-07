@@ -1,6 +1,9 @@
 # autoblog
 
-A local-first blog platform using Automerge 2.0
+[![CLI CI](https://github.com/evcraddock/autoblog/actions/workflows/cli-ci.yml/badge.svg)](https://github.com/evcraddock/autoblog/actions/workflows/cli-ci.yml)
+[![Web CI](https://github.com/evcraddock/autoblog/actions/workflows/web-ci.yml/badge.svg)](https://github.com/evcraddock/autoblog/actions/workflows/web-ci.yml)
+
+A local-first blog platform using Automerge 2.0 CRDT for real-time synchronization across devices.
 
 ## CLI Usage
 
