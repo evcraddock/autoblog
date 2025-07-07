@@ -23,7 +23,7 @@ jobs:
         cache-dependency-path: autoblog-web/package-lock.json
         
     - name: Install dependencies
-      run: npm ci
+      run: npm ci --legacy-peer-deps
       working-directory: autoblog-web
       
     - name: Run TypeScript type checking
