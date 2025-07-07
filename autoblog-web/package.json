@@ -36,7 +36,6 @@
     "remark-gfm": "4.0.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "4.1.11",
     "@tailwindcss/typography": "0.5.16",
     "@testing-library/dom": "10.4.0",
     "@testing-library/jest-dom": "6.6.3",
@@ -60,7 +59,7 @@
     "lucide-react": "0.525.0",
     "postcss": "8.5.6",
     "prettier": "^3.0.0",
-    "tailwindcss": "4.1.11",
+    "tailwindcss": "3.4.17",
     "typescript": "5.7.3",
     "vite": "7.0.2",
     "vite-plugin-wasm": "^3.2.2",
