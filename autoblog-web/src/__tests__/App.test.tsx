@@ -5,7 +5,8 @@ import App from '../App'
 describe('App', () => {
   it('renders the app title', () => {
     render(<App />)
-    expect(screen.getByText('Autoblog')).toBeInTheDocument()
+    const headings = screen.getAllByRole('heading', { level: 1 })
+    expect(headings[0]).toHaveTextContent('Autoblog')
     expect(screen.getByText('Web Viewer')).toBeInTheDocument()
   })
 
@@ -32,17 +33,9 @@ describe('App', () => {
     expect(document.documentElement.classList.contains('dark')).toBe(false)
   })
 
-  it('displays technology stack information', () => {
+  it('displays markdown renderer demo', () => {
     render(<App />)
-    expect(screen.getByText('Technology Stack')).toBeInTheDocument()
-    expect(screen.getByText('• React with TypeScript')).toBeInTheDocument()
-    expect(screen.getByText('• Vite build tool')).toBeInTheDocument()
-  })
-
-  it('displays development tools information', () => {
-    render(<App />)
-    expect(screen.getByText('Development Tools')).toBeInTheDocument()
-    expect(screen.getByText('• ESLint & Prettier')).toBeInTheDocument()
-    expect(screen.getByText('• Pre-commit hooks')).toBeInTheDocument()
+    expect(screen.getByText('Markdown Renderer Demo')).toBeInTheDocument()
+    expect(screen.getByText('Sample Blog Post')).toBeInTheDocument()
   })
 })
