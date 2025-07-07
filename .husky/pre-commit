@@ -17,4 +17,6 @@ fi
 if [ -n "$WEB_FILES" ]; then
   echo "Running Web pre-commit checks..."
   (cd autoblog-web && npx lint-staged)
+  echo "Running Web tests..."
+  (cd autoblog-web && npm test)
 fi
