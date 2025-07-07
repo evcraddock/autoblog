@@ -121,39 +121,82 @@ export function useRepo(): Repo | null {
 - **IndexedDB Integration**: Seamless offline-first storage
 - **Type Safety**: Better TypeScript support and API consistency
 
-## @automerge/automerge-repo-react-hooks Issue
+## @automerge/react Meta-Package Integration
 
-### Problem
-During implementation, we attempted to use the official `@automerge/automerge-repo-react-hooks@2.0.7` package but encountered a critical build issue:
+### Resolution
+Successfully migrated to the official `@automerge/react@2.0.7` meta-package following the proper patterns outlined in the [Automerge Repo 2.0 blog post](https://automerge.org/blog/2025/05/13/automerge-repo-2/).
 
+### Current Implementation
+Properly implemented using the `@automerge/react` meta-package:
+
+1. **Meta-Package Import**: Using `@automerge/react` for simplified imports
+2. **Proper useDocument Pattern**: Following the correct `useDocument(documentId)` pattern
+3. **Suspense Support**: Implemented both regular and Suspense-enabled hooks
+4. **Type Safety**: Full TypeScript support with proper Automerge 2.0 types
+
+### Implementation Details
+```typescript
+// Using the meta-package approach
+import { 
+  Repo, 
+  RepoContext, 
+  useRepo, 
+  useDocument, 
+  WebSocketClientAdapter, 
+  IndexedDBStorageAdapter 
+} from '@automerge/react'
+
+// Repository initialization
+const repo = new Repo({
+  storage: new IndexedDBStorageAdapter('autoblog-web'),
+  network: [new WebSocketClientAdapter('wss://sync.automerge.org')]
+})
+
+// Proper useDocument pattern
+const [document, changeDocument] = useDocument<BlogPost>(documentId)
+
+// With Suspense support
+const [document] = useDocument<BlogPost>(documentId, { suspense: true })
 ```
-Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'vite-plugin-dts' 
-imported from .../automerge-repo-react-hooks/vite.config.ts
+
+### Hook Patterns Implemented
+
+#### Regular Hooks (with loading states)
+```typescript
+export function useBlogIndex() {
+  const [indexId, setIndexId] = useState<DocumentId | undefined>()
+  const [blogIndex] = useDocument<BlogIndex>(indexId)
+  const [isLoading, setIsLoading] = useState(true)
+  // ... loading logic
+}
 ```
 
-### Root Cause
-The official React hooks package has a packaging problem where:
-- The package includes a `vite.config.ts` file that imports `vite-plugin-dts`
-- This dependency is not included in the package's dependencies
-- Build tools attempt to resolve this import and fail
-- The issue affects the entire build process, not just the hooks functionality
+#### Suspense Hooks (for smooth UX)
+```typescript
+export function useBlogIndexSuspense(indexId: DocumentId) {
+  const [blogIndex] = useDocument<BlogIndex>(indexId, { suspense: true })
+  return { blogIndex }
+}
+```
 
-### Solution Implemented
-Instead of using the problematic official hooks, we implemented a lightweight custom solution:
+### Key Benefits of Meta-Package Approach
+- **Simplified Imports**: One package for all Automerge React needs
+- **Proper Patterns**: Following official blog post recommendations
+- **Reactive Updates**: Automatic re-renders when documents change
+- **Suspense Support**: Built-in React Suspense integration
+- **Performance**: Optimized document subscription management
+- **Future-Proof**: Aligned with official Automerge roadmap
 
-1. **Custom RepoContext**: Created our own React context for repository sharing
-2. **Simple useRepo Hook**: Basic hook to access repository from context
-3. **Direct API Usage**: React hooks work directly with Automerge repository API
-4. **Maintained Type Safety**: Full TypeScript support without additional complexity
+### Architecture Improvements
+- **Cleaner Code**: Removed custom context and hook implementations
+- **Better DX**: Simplified developer experience with meta-package
+- **Type Safety**: Enhanced TypeScript support with Automerge 2.0
+- **Reduced Bundle Size**: Optimized package dependencies
 
-### Comparison
-
-| Approach | Pros | Cons |
-|----------|------|------|
-| Official Hooks | - Official support<br>- Potentially more features | - Build issues<br>- Additional dependency<br>- More complex API |
-| Custom Implementation | - No build issues<br>- Simpler API<br>- Direct control<br>- Smaller bundle | - No official support<br>- Manual implementation |
-
-### Future Considerations
-- Monitor `@automerge/automerge-repo-react-hooks` for fixes to packaging issues
-- Consider migrating to official hooks once build problems are resolved
-- Current custom implementation provides all needed functionality reliably
+### Testing Results
+- ✅ Meta-package installation successful
+- ✅ Build process completes successfully  
+- ✅ All existing tests pass
+- ✅ TypeScript compilation with no errors
+- ✅ Suspense hooks work correctly
+- ✅ No runtime errors or performance degradation

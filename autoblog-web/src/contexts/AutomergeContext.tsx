@@ -1,10 +1,7 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { Repo } from '@automerge/automerge-repo'
-import { initRepo, cleanup, type SyncSource } from '../services/automerge'
+import React, { useEffect, useState, ReactNode } from 'react'
+import { Repo, RepoContext, WebSocketClientAdapter, IndexedDBStorageAdapter } from '@automerge/react'
+import { cleanup } from '../services/automerge'
 import type { AppConfig } from '../types'
-
-// Create our own repo context since we're not using the official hooks package
-const RepoContext = createContext<Repo | null>(null)
 
 interface AutomergeProviderProps {
   children: ReactNode
@@ -21,10 +18,18 @@ export function AutomergeProvider({ children, config: userConfig }: AutomergePro
   const [config] = useState<AppConfig>({ ...DEFAULT_CONFIG, ...userConfig })
 
   useEffect(() => {
-    const initializeRepo = async () => {
+    const initializeRepo = () => {
       try {
-        const source: SyncSource = config.syncUrl ? 'remote' : 'local'
-        const newRepo = await initRepo(source, config.syncUrl)
+        // Use the simplified meta-package approach
+        const repoConfig: { storage: IndexedDBStorageAdapter; network?: WebSocketClientAdapter[] } = {
+          storage: new IndexedDBStorageAdapter('autoblog-web')
+        }
+
+        if (config.syncUrl) {
+          repoConfig.network = [new WebSocketClientAdapter(config.syncUrl)]
+        }
+
+        const newRepo = new Repo(repoConfig)
         setRepo(newRepo)
       } catch (err) {
         // eslint-disable-next-line no-console
@@ -47,10 +52,8 @@ export function AutomergeProvider({ children, config: userConfig }: AutomergePro
   )
 }
 
-// Custom useRepo hook
-export function useRepo(): Repo | null {
-  return useContext(RepoContext)
-}
+// Re-export the official useRepo hook from meta-package
+export { useRepo } from '@automerge/react'
 
 // Higher-order component for components that need Automerge context
 // eslint-disable-next-line react-refresh/only-export-components
