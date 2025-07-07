@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Sun, Moon } from 'lucide-react'
+import MarkdownRenderer from './components/MarkdownRenderer'
 
 function App() {
   const [isDark, setIsDark] = useState(false)
@@ -52,41 +53,50 @@ function App() {
             blog posts synchronized across devices.
           </p>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
               <h3 className="font-semibold text-primary-900 dark:text-primary-100 mb-2">
-                Project Setup Complete
+                Markdown Renderer Demo
               </h3>
-              <p className="text-primary-700 dark:text-primary-300 text-sm">
-                The foundational infrastructure is now in place with React,
-                TypeScript, Tailwind CSS, and all development tools configured.
+              <p className="text-primary-700 dark:text-primary-300 text-sm mb-4">
+                Testing the markdown rendering system with syntax highlighting, tables, and links.
               </p>
-            </div>
+              
+              <MarkdownRenderer 
+                content={`# Sample Blog Post
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-                  Technology Stack
-                </h4>
-                <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                  <li>• React with TypeScript</li>
-                  <li>• Vite build tool</li>
-                  <li>• Tailwind CSS</li>
-                  <li>• Vitest testing</li>
-                </ul>
-              </div>
+Welcome to the **Autoblog** markdown rendering system! This demonstrates various markdown features:
 
-              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-                  Development Tools
-                </h4>
-                <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                  <li>• ESLint & Prettier</li>
-                  <li>• Pre-commit hooks</li>
-                  <li>• Type checking</li>
-                  <li>• Coverage reporting</li>
-                </ul>
-              </div>
+## Code Blocks
+
+\`\`\`javascript
+function greet(name) {
+  console.log(\`Hello, \${name}!\`);
+  return true;
+}
+\`\`\`
+
+## Lists and Links
+
+- [Internal link](#section)
+- [External link](https://example.com)
+- **Bold text** and *italic text*
+- Inline \`code\` formatting
+
+## Table Example
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Syntax highlighting | ✅ | Works with multiple languages |
+| Link security | ✅ | External links open safely |
+| Image lazy loading | ✅ | Optimized performance |
+
+> This is a blockquote demonstrating styled content rendering.
+
+The system handles XSS prevention and provides a clean, accessible reading experience.`}
+                isDark={isDark}
+                className="bg-white dark:bg-gray-900 p-6 rounded-lg border border-gray-200 dark:border-gray-700"
+              />
             </div>
           </div>
         </div>
