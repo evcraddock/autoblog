@@ -43,6 +43,7 @@ export default defineConfig({
         '**/*.d.ts',
         '**/*.test.*',
         '**/*.spec.*',
+        '**/*.tsx',
         'vite.config.ts',
         'tailwind.config.js',
         'postcss.config.js',

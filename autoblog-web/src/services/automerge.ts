@@ -114,7 +114,7 @@ export async function findPostBySlug(
   slug: string
 ): Promise<string | null> {
   const doc = await handle.doc()
-  return doc?.posts[slug] || null
+  return doc?.posts?.[slug] || null
 }
 
 // These functions are now handled by the official React hooks
