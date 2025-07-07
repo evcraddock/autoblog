@@ -26,7 +26,7 @@ export function AutomergeProvider({
   const [config] = useState<AppConfig>({ ...DEFAULT_CONFIG, ...userConfig })
 
   useEffect(() => {
-    const initializeRepo = () => {
+    const initializeRepo = async () => {
       try {
         // Use the simplified meta-package approach
         const repoConfig: {
@@ -41,6 +41,10 @@ export function AutomergeProvider({
         }
 
         const newRepo = new Repo(repoConfig)
+
+        // Wait for the repo to be ready
+        await new Promise(resolve => setTimeout(resolve, 100))
+
         setRepo(newRepo)
       } catch (err) {
         // eslint-disable-next-line no-console
@@ -55,6 +59,18 @@ export function AutomergeProvider({
       cleanup()
     }
   }, [config.syncUrl])
+
+  // Don't render children until repo is initialized
+  if (!repo) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Initializing...</p>
+        </div>
+      </div>
+    )
+  }
 
   return <RepoContext.Provider value={repo}>{children}</RepoContext.Provider>
 }
