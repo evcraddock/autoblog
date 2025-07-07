@@ -15,6 +15,7 @@ After finishing the code implementation:
 2. Run lint checks and fix any issues
 3. Run all tests and ensure they pass
 4. Only commit code after all checks pass
+- ALWAYS run tests and lint checks before comitting
 
 ### Pull Request Process
 
