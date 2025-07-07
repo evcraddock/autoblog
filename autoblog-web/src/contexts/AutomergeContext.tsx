@@ -3,16 +3,8 @@ import { Repo } from '@automerge/automerge-repo'
 import { initRepo, cleanup, type SyncSource } from '../services/automerge'
 import type { AppConfig } from '../types'
 
-interface AutomergeContextType {
-  repo: Repo | null
-  isInitialized: boolean
-  isConnecting: boolean
-  error: string | null
-  config: AppConfig
-  reconnect: () => Promise<void>
-}
-
-const AutomergeContext = createContext<AutomergeContextType | undefined>(undefined)
+// Create our own repo context since we're not using the official hooks package
+const RepoContext = createContext<Repo | null>(null)
 
 interface AutomergeProviderProps {
   children: ReactNode
@@ -26,94 +18,38 @@ const DEFAULT_CONFIG: AppConfig = {
 
 export function AutomergeProvider({ children, config: userConfig }: AutomergeProviderProps) {
   const [repo, setRepo] = useState<Repo | null>(null)
-  const [isInitialized, setIsInitialized] = useState(false)
-  const [isConnecting, setIsConnecting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [config] = useState<AppConfig>({ ...DEFAULT_CONFIG, ...userConfig })
 
-  const initializeRepo = async (isReconnect = false) => {
-    try {
-      setIsConnecting(true)
-      setError(null)
-      
-      if (isReconnect && repo) {
-        await cleanup()
-        setRepo(null)
-      }
-      
-      const source: SyncSource = config.syncUrl ? 'remote' : 'local'
-      const newRepo = await initRepo(source, config.syncUrl)
-      
-      setRepo(newRepo)
-      setIsInitialized(true)
-      setIsConnecting(false)
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to initialize Automerge repository'
-      setError(errorMessage)
-      setIsConnecting(false)
-      // eslint-disable-next-line no-console
-      console.error('Automerge initialization error:', err)
-    }
-  }
-
-  const reconnect = async () => {
-    await initializeRepo(true)
-  }
-
   useEffect(() => {
+    const initializeRepo = async () => {
+      try {
+        const source: SyncSource = config.syncUrl ? 'remote' : 'local'
+        const newRepo = await initRepo(source, config.syncUrl)
+        setRepo(newRepo)
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Automerge initialization error:', err)
+      }
+    }
+
     initializeRepo()
     
     // Cleanup on unmount
     return () => {
       cleanup()
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // Handle network connection changes
-  useEffect(() => {
-    const handleOnline = () => {
-      if (!isInitialized && !isConnecting) {
-        initializeRepo(true)
-      }
-    }
-
-    const handleOffline = () => {
-      setError('Network connection lost')
-    }
-
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
-
-    return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isInitialized, isConnecting])
-
-  const value: AutomergeContextType = {
-    repo,
-    isInitialized,
-    isConnecting,
-    error,
-    config,
-    reconnect
-  }
+  }, [config.syncUrl])
 
   return (
-    <AutomergeContext.Provider value={value}>
+    <RepoContext.Provider value={repo}>
       {children}
-    </AutomergeContext.Provider>
+    </RepoContext.Provider>
   )
 }
 
-export function useAutomergeContext() {
-  const context = useContext(AutomergeContext)
-  if (context === undefined) {
-    throw new Error('useAutomergeContext must be used within an AutomergeProvider')
-  }
-  return context
+// Custom useRepo hook
+export function useRepo(): Repo | null {
+  return useContext(RepoContext)
 }
 
 // Higher-order component for components that need Automerge context

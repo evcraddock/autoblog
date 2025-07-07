@@ -20,9 +20,10 @@
   },
   "dependencies": {
     "@automerge/automerge": "^2.1.10",
-    "@automerge/automerge-repo": "^1.1.0",
-    "@automerge/automerge-repo-network-websocket": "^1.1.0",
-    "@automerge/automerge-repo-storage-indexeddb": "^1.1.0",
+    "@automerge/automerge-repo": "^2.0.7",
+    "@automerge/automerge-repo-network-websocket": "^2.0.7",
+    "@automerge/automerge-repo-react-hooks": "^2.0.7",
+    "@automerge/automerge-repo-storage-indexeddb": "^2.0.7",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.263.1",
     "react": "^18.2.0",
@@ -33,6 +34,7 @@
     "remark-gfm": "^3.0.1"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.9",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
@@ -53,11 +55,10 @@
     "lint-staged": "^13.2.3",
     "postcss": "^8.4.27",
     "prettier": "^3.0.0",
-    "@tailwindcss/typography": "^0.5.9",
     "tailwindcss": "^3.3.3",
-    "vite-plugin-wasm": "^3.2.2",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
+    "vite-plugin-wasm": "^3.2.2",
     "vitest": "^0.33.0"
   },
   "lint-staged": {

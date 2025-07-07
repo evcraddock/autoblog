@@ -1,123 +1,145 @@
 import { useState, useEffect, useCallback } from 'react'
-import {
-  getAllBlogPosts,
-  getBlogPostBySlug,
-  getBlogIndex,
-  cleanup,
-  type SyncSource
-} from '../services/automerge'
-import type { BlogPost, AutomergeState } from '../types'
+import { useRepo } from '../contexts/AutomergeContext'
+import { getOrCreateIndex, findPostBySlug } from '../services/automerge'
+import type { BlogPost, BlogIndex } from '../types'
 
 /**
- * Custom hook for managing Automerge state and blog posts
- * @param source - The sync source to use ('local' or 'remote'), defaults to 'remote'
- * @param syncUrl - WebSocket URL for sync server
- * @returns AutomergeState and methods for interacting with blog data
+ * Hook to get all blog posts using the repository directly
+ * This is simpler than trying to use the individual document hooks
+ * until we understand the v2.0 API better
  */
-export function useAutomerge(
-  source: SyncSource = 'remote',
-  syncUrl?: string
-) {
-  const [state, setState] = useState<AutomergeState>({
-    isLoading: true,
-    posts: []
-  })
+export function useBlogPosts(options: {
+  status?: 'draft' | 'published' | 'all'
+  limit?: number
+  author?: string
+} = {}) {
+  const { status = 'published', limit, author } = options
+  const repo = useRepo()
+  const [posts, setPosts] = useState<BlogPost[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [blogIndex, setBlogIndex] = useState<BlogIndex | null>(null)
 
-  const [refreshCounter, setRefreshCounter] = useState(0)
-
-  // Load all blog posts
   const loadPosts = useCallback(async () => {
+    if (!repo) return
+
     try {
-      setState(prev => ({ 
-        ...prev, 
-        isLoading: true 
-      }))
+      setIsLoading(true)
       
-      const posts = await getAllBlogPosts(source, syncUrl)
-      const blogIndex = await getBlogIndex(source, syncUrl)
-      
-      setState(prev => ({
-        ...prev,
-        posts,
-        ...(blogIndex && { blogIndex }),
-        isLoading: false
-      }))
-      
-      // Clear error on successful load
-      setState(prev => {
-        if (prev.error) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { error, ...rest } = prev
-          return rest as AutomergeState
+      // Get the blog index
+      const indexHandle = await getOrCreateIndex(repo)
+      const index = await indexHandle.doc()
+      setBlogIndex(index)
+
+      if (!index?.posts || Object.keys(index.posts).length === 0) {
+        setPosts([])
+        setIsLoading(false)
+        return
+      }
+
+      // Load all posts
+      const loadedPosts: BlogPost[] = []
+      for (const [slug, docId] of Object.entries(index.posts)) {
+        try {
+          const postHandle = await repo.find<BlogPost>(docId as any)
+          if (!postHandle) continue
+
+          await postHandle.whenReady()
+          const post = await postHandle.doc()
+          if (post) {
+            loadedPosts.push(post)
+          }
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error(`Failed to load post with slug: ${slug}`)
         }
-        return prev
-      })
+      }
+
+      // Filter and sort posts
+      const filteredPosts = loadedPosts
+        .filter(post => {
+          if (status !== 'all' && post.status !== status) return false
+          if (author && post.author !== author) return false
+          return true
+        })
+        .sort((a, b) => {
+          const dateA = new Date(a.published).getTime()
+          const dateB = new Date(b.published).getTime()
+          return dateB - dateA
+        })
+
+      setPosts(limit ? filteredPosts.slice(0, limit) : filteredPosts)
+      setIsLoading(false)
     } catch (error) {
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to load posts'
-      }))
+      // eslint-disable-next-line no-console
+      console.error('Failed to load posts:', error)
+      setIsLoading(false)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [source, syncUrl, refreshCounter]) // refreshCounter is intentionally included to trigger re-fetch
+  }, [repo, status, limit, author])
 
-  // Refresh data
-  const refresh = useCallback(() => {
-    setRefreshCounter(prev => prev + 1)
-  }, [])
-
-  // Initialize and load data
   useEffect(() => {
     loadPosts()
   }, [loadPosts])
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      cleanup()
-    }
-  }, [])
-
   return {
-    ...state,
-    refresh
+    posts,
+    isLoading,
+    blogIndex,
+    refresh: loadPosts
   }
 }
 
 /**
- * Custom hook for getting a single blog post by slug
- * @param slug - The slug of the blog post to retrieve
- * @param source - The sync source to use ('local' or 'remote'), defaults to 'remote'
- * @param syncUrl - WebSocket URL for sync server
- * @returns Blog post data and loading state
+ * Hook to get a single blog post by slug
  */
-export function useBlogPost(
-  slug: string,
-  source: SyncSource = 'remote',
-  syncUrl?: string
-) {
+export function useBlogPost(slug: string) {
+  const repo = useRepo()
   const [post, setPost] = useState<BlogPost | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | undefined>()
+  const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
     let mounted = true
 
     const loadPost = async () => {
+      if (!repo || !slug) return
+
       try {
         setIsLoading(true)
-        setError(undefined)
-        
-        const blogPost = await getBlogPostBySlug(slug, source, syncUrl)
-        
+        setNotFound(false)
+
+        // Get the blog index
+        const indexHandle = await getOrCreateIndex(repo)
+        const postDocumentId = await findPostBySlug(indexHandle, slug)
+
+        if (!postDocumentId) {
+          if (mounted) {
+            setNotFound(true)
+            setIsLoading(false)
+          }
+          return
+        }
+
+        // Get the post document
+        const postHandle = await repo.find<BlogPost>(postDocumentId as any)
+        if (!postHandle) {
+          if (mounted) {
+            setNotFound(true)
+            setIsLoading(false)
+          }
+          return
+        }
+
+        await postHandle.whenReady()
+        const postData = await postHandle.doc()
+
         if (mounted) {
-          setPost(blogPost)
+          setPost(postData || null)
           setIsLoading(false)
         }
-      } catch (err) {
+      } catch (error) {
         if (mounted) {
-          setError(err instanceof Error ? err.message : 'Failed to load post')
+          // eslint-disable-next-line no-console
+          console.error('Failed to load post:', error)
           setIsLoading(false)
         }
       }
@@ -128,53 +150,56 @@ export function useBlogPost(
     return () => {
       mounted = false
     }
-  }, [slug, source, syncUrl])
+  }, [repo, slug])
 
-  return { post, isLoading, error }
+  return {
+    post,
+    isLoading,
+    notFound
+  }
 }
 
 /**
- * Custom hook for getting multiple blog posts with filtering and sorting
- * @param options - Configuration options for post retrieval
- * @returns Filtered and sorted blog posts
+ * Hook to get the blog index
  */
-export function useBlogPosts(options: {
-  source?: SyncSource
-  syncUrl?: string
-  status?: 'draft' | 'published' | 'all'
-  limit?: number
-  author?: string
-} = {}) {
-  const {
-    source = 'remote',
-    syncUrl,
-    status = 'published',
-    limit,
-    author
-  } = options
+export function useBlogIndex() {
+  const repo = useRepo()
+  const [blogIndex, setBlogIndex] = useState<BlogIndex | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const { posts, isLoading, error, refresh } = useAutomerge(source, syncUrl)
+  useEffect(() => {
+    let mounted = true
 
-  const filteredPosts = posts
-    .filter(post => {
-      // Filter by status
-      if (status !== 'all' && post.status !== status) {
-        return false
+    const loadIndex = async () => {
+      if (!repo) return
+
+      try {
+        setIsLoading(true)
+        const indexHandle = await getOrCreateIndex(repo)
+        const index = await indexHandle.doc()
+
+        if (mounted) {
+          setBlogIndex(index || null)
+          setIsLoading(false)
+        }
+      } catch (error) {
+        if (mounted) {
+          // eslint-disable-next-line no-console
+          console.error('Failed to load blog index:', error)
+          setIsLoading(false)
+        }
       }
-      
-      // Filter by author
-      if (author && post.author !== author) {
-        return false
-      }
-      
-      return true
-    })
-    .slice(0, limit)
+    }
+
+    loadIndex()
+
+    return () => {
+      mounted = false
+    }
+  }, [repo])
 
   return {
-    posts: filteredPosts,
-    isLoading,
-    error,
-    refresh
+    blogIndex,
+    isLoading
   }
 }
