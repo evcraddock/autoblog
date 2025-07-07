@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook, waitFor } from '@testing-library/react'
+import { renderHook, waitFor, act } from '@testing-library/react'
 import { Repo, DocHandle } from '@automerge/automerge-repo'
 import { useRepo, useDocument } from '@automerge/react'
 import { getOrCreateIndex } from '../../services/automerge'
@@ -68,8 +68,10 @@ describe('useAutomerge hooks', () => {
 
       const { result } = renderHook(() => useBlogIndex())
 
-      expect(result.current.isLoading).toBe(true)
-      expect(result.current.blogIndex).toBeUndefined()
+      act(() => {
+        expect(result.current.isLoading).toBe(true)
+        expect(result.current.blogIndex).toBeUndefined()
+      })
     })
   })
 
