@@ -49,9 +49,9 @@ Create a lightweight routing system that enables navigation between the post lis
 - Mobile browser compatibility
 
 ## URL Structure
-- Root/Home: `/#/`
-- Individual post: `/#/post/[slug]`
-- 404 fallback: `/#/404`
+- Root/Home: `/`
+- Individual post: `/[slug]`
+- 404 fallback: `/404`
 
 ## Quality Requirements
 
@@ -67,12 +67,6 @@ Create a lightweight routing system that enables navigation between the post lis
 - Keyboard navigation support
 - Skip links for main content
 
-### SEO
-- Meta tag updates for each route
-- Open Graph tags for post sharing
-- Canonical URL management
-- Sitemap generation support
-
 ### Error Handling
 - Invalid route handling
 - Network failure during navigation
@@ -80,5 +74,5 @@ Create a lightweight routing system that enables navigation between the post lis
 - Graceful degradation
 
 ## Dependencies
-- react-router-dom@^6.0.0 (latest version)
+- react-router-dom@^7.0.0 (compatible with React 19)
 - React hooks (useState, useEffect, useContext)

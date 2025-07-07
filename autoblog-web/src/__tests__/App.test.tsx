@@ -10,11 +10,9 @@ describe('App', () => {
     expect(screen.getByText('Web Viewer')).toBeInTheDocument()
   })
 
-  it('renders welcome message', () => {
+  it('renders home page by default', () => {
     render(<App />)
-    expect(
-      screen.getByText('Welcome to Autoblog Web Viewer')
-    ).toBeInTheDocument()
+    expect(screen.getByText('Blog Posts')).toBeInTheDocument()
   })
 
   it('toggles theme when button is clicked', () => {
@@ -33,9 +31,11 @@ describe('App', () => {
     expect(document.documentElement.classList.contains('dark')).toBe(false)
   })
 
-  it('displays markdown renderer demo', () => {
+  it('displays sample blog post link on home page', () => {
     render(<App />)
-    expect(screen.getByText('Markdown Renderer Demo')).toBeInTheDocument()
     expect(screen.getByText('Sample Blog Post')).toBeInTheDocument()
+    expect(
+      screen.getByText(/This is a placeholder for blog post listing/)
+    ).toBeInTheDocument()
   })
 })
