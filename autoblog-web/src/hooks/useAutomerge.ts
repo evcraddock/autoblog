@@ -3,11 +3,10 @@ import {
   getAllBlogPosts,
   getBlogPostBySlug,
   getBlogIndex,
-  getConnectionStatus,
   cleanup,
   type SyncSource
 } from '../services/automerge'
-import type { BlogPost, ConnectionStatus, AutomergeState } from '../types'
+import type { BlogPost, AutomergeState } from '../types'
 
 /**
  * Custom hook for managing Automerge state and blog posts
@@ -21,39 +20,10 @@ export function useAutomerge(
 ) {
   const [state, setState] = useState<AutomergeState>({
     isLoading: true,
-    posts: [],
-    connectionStatus: {
-      isConnected: false,
-      isConnecting: false
-    }
+    posts: []
   })
 
   const [refreshCounter, setRefreshCounter] = useState(0)
-
-  // Update connection status
-  const updateConnectionStatus = useCallback(async () => {
-    try {
-      const isConnected = await getConnectionStatus()
-      setState(prev => ({
-        ...prev,
-        connectionStatus: {
-          ...prev.connectionStatus,
-          isConnected,
-          isConnecting: false
-        }
-      }))
-    } catch (error) {
-      setState(prev => ({
-        ...prev,
-        connectionStatus: {
-          ...prev.connectionStatus,
-          isConnected: false,
-          isConnecting: false,
-          lastError: error instanceof Error ? error.message : 'Connection check failed'
-        }
-      }))
-    }
-  }, [])
 
   // Load all blog posts
   const loadPosts = useCallback(async () => {
@@ -100,8 +70,7 @@ export function useAutomerge(
   // Initialize and load data
   useEffect(() => {
     loadPosts()
-    updateConnectionStatus()
-  }, [loadPosts, updateConnectionStatus])
+  }, [loadPosts])
 
   // Cleanup on unmount
   useEffect(() => {
@@ -112,8 +81,7 @@ export function useAutomerge(
 
   return {
     ...state,
-    refresh,
-    updateConnectionStatus
+    refresh
   }
 }
 
@@ -208,51 +176,5 @@ export function useBlogPosts(options: {
     isLoading,
     error,
     refresh
-  }
-}
-
-/**
- * Custom hook for connection status monitoring
- * @param source - The sync source to use ('local' or 'remote'), defaults to 'remote'
- * @param syncUrl - WebSocket URL for sync server
- * @returns Connection status and management functions
- */
-export function useConnectionStatus() {
-  const [status, setStatus] = useState<ConnectionStatus>({
-    isConnected: false,
-    isConnecting: false
-  })
-
-  const checkConnection = useCallback(async () => {
-    try {
-      setStatus(prev => ({ ...prev, isConnecting: true }))
-      
-      const isConnected = await getConnectionStatus()
-      
-      setStatus({
-        isConnected,
-        isConnecting: false
-      })
-    } catch (error) {
-      setStatus({
-        isConnected: false,
-        isConnecting: false,
-        lastError: error instanceof Error ? error.message : 'Connection check failed'
-      })
-    }
-  }, [])
-
-  useEffect(() => {
-    checkConnection()
-    
-    // Check connection status periodically
-    const interval = setInterval(checkConnection, 10000) // Check every 10 seconds
-    
-    return () => clearInterval(interval)
-  }, [checkConnection])
-
-  return {
-    ...status,
-    checkConnection
   }
 }

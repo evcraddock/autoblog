@@ -19,17 +19,9 @@ export interface AppConfig {
   theme: 'light' | 'dark' | 'system'
 }
 
-export interface ConnectionStatus {
-  isConnected: boolean
-  isConnecting: boolean
-  lastError?: string
-  syncProgress?: number
-}
-
 export interface AutomergeState {
   isLoading: boolean
   error?: string
   posts: BlogPost[]
   blogIndex?: BlogIndex
-  connectionStatus: ConnectionStatus
 }

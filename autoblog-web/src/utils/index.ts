@@ -27,4 +27,3 @@ export const truncateText = (text: string, maxLength: number): string => {
 }
 
 export * from './errorHandling'
-export * from './connectionManager'

@@ -269,23 +269,6 @@ export async function getBlogIndex(
   }
 }
 
-/**
- * Get connection status for the repository
- * @returns Promise<boolean> - True if connected, false otherwise
- */
-export async function getConnectionStatus(): Promise<boolean> {
-  try {
-    if (!repoInstance) {
-      return false
-    }
-
-    // For now, we'll consider connected if we have a repo instance
-    // In a real implementation, you might want to check actual connection state
-    return true
-  } catch (error) {
-    return false
-  }
-}
 
 /**
  * Cleanup and close the repository
