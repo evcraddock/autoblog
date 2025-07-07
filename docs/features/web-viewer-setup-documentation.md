@@ -17,19 +17,19 @@ The project has established a clear, scalable directory structure that separates
 - **Asset Management**: Public directory for static assets and organized styling resources
 
 ### Technology Stack
-The project uses modern web development technologies:
+The project uses modern web development technologies with latest major version upgrades:
 
-- **Framework**: React 18.3.1 with TypeScript for type-safe component development
-- **Build Tool**: Vite for fast development server and optimized production builds
-- **Styling**: Tailwind CSS utility-first framework with dark mode support
-- **Testing**: Vitest for unit and integration testing with React Testing Library
+- **Framework**: React 19.1.0 with TypeScript 5.7.3 for type-safe component development
+- **Build Tool**: Vite 7.0.2 for fast development server and optimized production builds
+- **Styling**: Tailwind CSS 3.4.17 utility-first framework with dark mode support
+- **Testing**: Vitest 3.2.4 for unit and integration testing with React Testing Library 16.3.0
 
 ### Core Dependencies
 The application has integrated essential libraries for core functionality:
 
 - **CRDT Synchronization**: Automerge 2.1.10 with Automerge Repo 2.0.7 for document management
-- **Content Rendering**: React-markdown 8.0.7 with syntax highlighting via rehype-highlight 6.0.0
-- **UI Components**: Lucide-react 0.263.1 for icons and routing via react-router-dom 6.30.1
+- **Content Rendering**: React-markdown 10.1.0 with syntax highlighting via rehype-highlight 7.0.2
+- **UI Components**: Lucide-react 0.525.0 for icons and routing via react-router-dom 7.6.3
 - **Type Definitions**: Complete TypeScript definitions for all dependencies
 
 ### Code Quality Tools
@@ -125,49 +125,50 @@ The following configuration files have been created and configured:
 - Troubleshooting guide for common development issues
 - Architecture overview and design decisions
 
-## Current Dependency Versions
+## Current Dependency Versions (Updated 2025-01-07)
 
-### Core Dependencies
-- **react**: 18.3.1
-- **react-dom**: 18.3.1
-- **@types/react**: 18.3.23
-- **@types/react-dom**: 18.3.7
-- **typescript**: 5.0.2
+### Core Dependencies ✅ UPGRADED
+- **react**: 19.1.0 (was 18.3.1)
+- **react-dom**: 19.1.0 (was 18.3.1)
+- **@types/react**: 19.1.8 (was 18.3.23)
+- **@types/react-dom**: 19.1.6 (was 18.3.7)
+- **typescript**: 5.7.3 (was 5.0.2)
 
-### Build Tools
-- **vite**: 4.5.14
-- **@vitejs/plugin-react**: 4.0.3
-- **tailwindcss**: 3.4.17
-- **postcss**: 8.4.27
-- **autoprefixer**: 10.4.14
+### Build Tools ✅ UPGRADED
+- **vite**: 7.0.2 (was 4.5.14)
+- **@vitejs/plugin-react**: 4.6.0 (was 4.0.3)
+- **tailwindcss**: 3.4.17 (stable, v4 upgrade pending)
+- **postcss**: 8.5.6 (was 8.4.27)
+- **autoprefixer**: 10.4.20 (was 10.4.14)
 
-### Testing
-- **vitest**: 0.33.0
-- **@testing-library/react**: 13.4.0
-- **@testing-library/jest-dom**: 5.17.0
-- **jsdom**: 22.1.0
+### Testing ✅ UPGRADED
+- **vitest**: 3.2.4 (was 0.33.0)
+- **@testing-library/react**: 16.3.0 (was 13.4.0)
+- **@testing-library/jest-dom**: 6.6.3 (was 5.17.0)
+- **@testing-library/dom**: 10.4.0 (newly added)
+- **jsdom**: 26.1.0 (was 22.1.0)
 
-### Code Quality
-- **eslint**: 8.57.1
-- **@typescript-eslint/eslint-plugin**: 6.21.0
-- **@typescript-eslint/parser**: 6.21.0
-- **prettier**: 3.0.0
-- **husky**: 8.0.3
-- **lint-staged**: 13.3.0
+### Code Quality ✅ UPGRADED
+- **eslint**: 9.30.1 (was 8.57.1) ⚠️ Config migration needed
+- **@typescript-eslint/eslint-plugin**: 8.35.1 (was 6.21.0)
+- **@typescript-eslint/parser**: 8.35.1 (was 6.21.0)
+- **prettier**: 3.0.0 (stable)
+- **husky**: 9.1.7 (was 8.0.3)
+- **lint-staged**: 16.1.2 (was 13.3.0)
 
-### Content Processing
-- **react-markdown**: 8.0.7
-- **react-router-dom**: 6.30.1
-- **rehype-highlight**: 6.0.0
-- **remark-gfm**: 3.0.1
-- **gray-matter**: 4.0.3
-- **dompurify**: 3.2.6
+### Content Processing ✅ UPGRADED
+- **react-markdown**: 10.1.0 (was 8.0.7)
+- **react-router-dom**: 7.6.3 (was 6.30.1)
+- **rehype-highlight**: 7.0.2 (was 6.0.0)
+- **remark-gfm**: 4.0.1 (was 3.0.1)
+- **gray-matter**: 4.0.3 (stable)
+- **dompurify**: 3.2.6 (stable)
 
-### UI Libraries
-- **lucide-react**: 0.263.1
-- **@tailwindcss/typography**: 0.5.9
+### UI Libraries ✅ UPGRADED
+- **lucide-react**: 0.525.0 (was 0.263.1)
+- **@tailwindcss/typography**: 0.5.16 (was 0.5.9)
 
-### Automerge Stack
+### Automerge Stack ✅ STABLE
 - **@automerge/automerge**: 2.1.10
 - **@automerge/automerge-repo**: 2.0.7
 - **@automerge/automerge-repo-network-websocket**: 2.0.7
@@ -175,38 +176,56 @@ The following configuration files have been created and configured:
 - **@automerge/automerge-repo-storage-indexeddb**: 2.0.7
 - **@automerge/react**: 2.0.7
 
-## React 19 Upgrade Path
+## Major Upgrade Completed ✅
 
-### Recommended Target Versions
-- **react**: 19.1.0 (Current: 18.3.1)
-- **react-dom**: 19.1.0 (Current: 18.3.1)
-- **@types/react**: 19.1.8 (Current: 18.3.23)
-- **@types/react-dom**: 19.1.6 (Current: 18.3.7)
-- **vite**: 7.0.2 (Current: 4.5.14)
-- **tailwindcss**: 4.1.11 (Current: 3.4.17)
-- **eslint**: 9.30.1 (Current: 8.57.1)
-- **@testing-library/react**: 16.3.0 (Current: 13.4.0)
-- **vitest**: 3.2.4 (Current: 0.33.0)
-- **react-markdown**: 10.1.0 (Current: 8.0.7)
-- **react-router-dom**: 7.6.3 (Current: 6.30.1)
+### Successfully Upgraded Components
+- ✅ **React 18 → 19**: Core framework with all type definitions
+- ✅ **Vite 4 → 7**: Build tool with React plugin compatibility
+- ✅ **Vitest 0.33 → 3.2**: Testing framework with jest-dom integration
+- ✅ **React Testing Library 13 → 16**: Component testing utilities
+- ✅ **TypeScript tooling**: ESLint plugins and parser to v8.35
+- ✅ **Content processing**: React-markdown, rehype, remark to latest
+- ✅ **UI libraries**: Lucide-react, router, and other dependencies
 
-### Upgrade Considerations
-- **Breaking Changes**: React 19 requires new JSX transform and has some API changes
-- **Vite 4→7**: Major build tool changes, configuration updates required
-- **ESLint 8→9**: Flat configuration required, significant rule changes
-- **Tailwind CSS 3→4**: Complete framework overhaul with breaking changes
-- **Testing**: React Testing Library and Vitest major version updates
+### Breaking Changes Resolved
+- ✅ Updated jest-dom matchers import for Vitest 3.x compatibility
+- ✅ Fixed react-markdown `inline` prop removal in v10
+- ✅ Updated TypeScript config with vitest/globals types
+- ✅ Installed missing @testing-library/dom dependency
+- ✅ Fixed react-markdown component prop type changes
 
-### Upgrade Strategy
-1. **Phase 1**: Update to React 19 core packages
-2. **Phase 2**: Update build tools (Vite, TypeScript tooling)
-3. **Phase 3**: Update testing framework (Vitest, Testing Library)
-4. **Phase 4**: Update styling (Tailwind CSS v4) and routing (React Router v7)
-5. **Phase 5**: Update content processing libraries
+### Current Status
+- ✅ **Build**: Successful with all latest dependencies
+- ✅ **Tests**: All 24 tests passing
+- ✅ **Dev Server**: Running on Vite 7.0.2
+- ✅ **React 19**: Fully functional with Automerge (using --legacy-peer-deps)
 
-### Node.js Compatibility
-- **Current**: Node.js 22.14.0 ✅
-- **React 19 Requirement**: Node.js 16+ (Current version fully compatible)
+## Tailwind CSS v4 Upgrade Issue ⚠️
+
+### Current State
+- **Status**: Temporarily using Tailwind CSS v3.4.17 (stable)
+- **Target**: Tailwind CSS v4.1.11 (blocked by upgrade tool bug)
+- **Issue**: Official upgrade tool encounters `flatMap` TypeError
+
+### Attempted Solutions
+1. **Manual Migration**: Attempted CSS-first configuration approach
+2. **Official Tool**: `npx @tailwindcss/upgrade@next` fails with JavaScript error
+3. **Downgrade Strategy**: Reverted to v3.4.17 for stability
+
+### Upgrade Documentation
+- **Official Guide**: https://tailwindcss.com/docs/upgrade-guide
+- **Key Changes in v4**: CSS-first config, `@import "tailwindcss"`, automatic content detection
+- **Breaking Changes**: Complete configuration overhaul, browser support requirements
+
+### Recommended Next Steps
+1. **Wait for tool fix**: Monitor official Tailwind CSS upgrade tool updates
+2. **Manual migration**: Implement v4 CSS configuration manually when tool is fixed
+3. **Alternative**: Stay on v3.4.17 until v4.1+ has stable migration path
+
+### Node.js Compatibility ✅
+- **Current**: Node.js 22.14.0
+- **React 19 Requirement**: Node.js 16+ (fully compatible)
+- **Tailwind v4 Requirement**: Modern browser support (Safari 16.4+, Chrome 111+, Firefox 128+)
 
 ## Dependencies and Constraints
 This feature had no dependencies on other features and has been completed as the foundation for all subsequent development work. The current setup supports all planned features, though a React 19 upgrade will require careful migration of several major dependencies with breaking changes.
