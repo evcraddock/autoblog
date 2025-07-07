@@ -53,6 +53,7 @@ export function AutomergeProvider({ children, config: userConfig }: AutomergePro
 }
 
 // Re-export the official useRepo hook from meta-package
+// eslint-disable-next-line react-refresh/only-export-components
 export { useRepo } from '@automerge/react'
 
 // Higher-order component for components that need Automerge context

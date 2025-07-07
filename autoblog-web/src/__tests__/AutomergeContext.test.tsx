@@ -9,6 +9,7 @@ vi.mock('@automerge/react', () => ({
     create: vi.fn(),
   })),
   RepoContext: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Provider: ({ children }: { children: React.ReactNode; value?: any }) => (
       <div data-testid="repo-provider">
         {children}
@@ -106,6 +107,7 @@ describe('AutomergeProvider', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     
     // Mock Repo constructor to throw
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(Repo as any).mockImplementationOnce(() => {
       throw new Error('Initialization failed')
     })

@@ -49,6 +49,7 @@ export function useBlogIndex() {
         setIndexId(handle.documentId)
         setIsLoading(false)
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Failed to load index:', error)
         setIsLoading(false)
       }
@@ -129,6 +130,7 @@ export function useBlogPosts(options: {
               loadedPosts.push(postDoc)
             }
           } catch (error) {
+            // eslint-disable-next-line no-console
             console.error(`Failed to load post with ID: ${docId}`, error)
           }
         }
@@ -149,6 +151,7 @@ export function useBlogPosts(options: {
         setPosts(limit ? filteredPosts.slice(0, limit) : filteredPosts)
         setIsLoading(false)
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Failed to load posts:', error)
         setIsLoading(false)
       }
@@ -179,6 +182,7 @@ export function useBlogPosts(options: {
               loadedPosts.push(postDoc)
             }
           } catch (error) {
+            // eslint-disable-next-line no-console
             console.error(`Failed to load post with ID: ${docId}`, error)
           }
         }
@@ -199,6 +203,7 @@ export function useBlogPosts(options: {
         setPosts(limit ? filteredPosts.slice(0, limit) : filteredPosts)
         setIsLoading(false)
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Failed to load posts:', error)
         setIsLoading(false)
       }
