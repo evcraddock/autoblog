@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Sun, Moon } from 'lucide-react'
 import MarkdownRenderer from './components/MarkdownRenderer'
 
+// Main application component
 function App() {
   const [isDark, setIsDark] = useState(false)
 

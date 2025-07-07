@@ -66,11 +66,11 @@
     "vitest": "3.2.4"
   },
   "lint-staged": {
-    "autoblog-web/**/*.{ts,tsx}": [
+    "**/*.{ts,tsx}": [
       "eslint --fix",
       "prettier --write"
     ],
-    "autoblog-web/**/*.{js,jsx,json,css,md}": [
+    "**/*.{js,jsx,json,css,md}": [
       "prettier --write"
     ]
   }
