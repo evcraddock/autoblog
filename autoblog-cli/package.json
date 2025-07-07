@@ -20,7 +20,8 @@
     "lint": "prettier --check . && tsc --noEmit",
     "lint:fix": "prettier --write .",
     "format": "prettier --write .",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "postinstall": "cd .. && [ -d .git ] && husky || true"
   },
   "engines": {
     "node": ">=20.0.0"

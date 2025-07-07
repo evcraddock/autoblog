@@ -20,14 +20,9 @@ jobs:
       with:
         node-version: '20'
         cache: 'npm'
-        cache-dependency-path: |
-          package-lock.json
-          autoblog-cli/package-lock.json
+        cache-dependency-path: autoblog-cli/package-lock.json
         
-    - name: Install root dependencies
-      run: npm ci
-      
-    - name: Install CLI dependencies
+    - name: Install dependencies
       run: npm ci
       working-directory: autoblog-cli
       
