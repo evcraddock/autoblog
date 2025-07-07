@@ -21,7 +21,7 @@ The project uses modern web development technologies with latest major version u
 
 - **Framework**: React 19.1.0 with TypeScript 5.7.3 for type-safe component development
 - **Build Tool**: Vite 7.0.2 for fast development server and optimized production builds
-- **Styling**: Tailwind CSS 3.4.17 utility-first framework with dark mode support
+- **Styling**: Tailwind CSS 4.1.11 utility-first framework with CSS-first configuration and dark mode support
 - **Testing**: Vitest 3.2.4 for unit and integration testing with React Testing Library 16.3.0
 
 ### Core Dependencies
@@ -61,7 +61,7 @@ The application supports optimized builds for production deployment:
 
 - **Bundle Optimization**: Vite's automatic code splitting and tree shaking
 - **Asset Processing**: Efficient handling of images and static assets via Vite
-- **CSS Processing**: PostCSS with Tailwind CSS for optimized styling
+- **CSS Processing**: Native Tailwind CSS v4 with Vite plugin for optimized styling
 - **Type Checking**: Build-time TypeScript validation through Vite plugin
 
 ## Completed Acceptance Criteria
@@ -108,7 +108,7 @@ The following configuration files have been created and configured:
 - `.prettierrc`: Code formatting configuration with consistent style rules
 - `vite.config.ts`: Testing framework configuration with Vitest
 - `.husky/` and `.lintstagedrc.json`: Pre-commit hook configuration
-- `tailwind.config.js`: Styling framework configuration with custom theme settings
+- `src/styles/globals.css`: Tailwind CSS v4 configuration with @theme block for custom styling
 
 ## Quality Assurance
 - Comprehensive test coverage for all utility functions
@@ -137,9 +137,8 @@ The following configuration files have been created and configured:
 ### Build Tools ✅ UPGRADED
 - **vite**: 7.0.2 (was 4.5.14)
 - **@vitejs/plugin-react**: 4.6.0 (was 4.0.3)
-- **tailwindcss**: 3.4.17 (stable, v4 upgrade pending)
-- **postcss**: 8.5.6 (was 8.4.27)
-- **autoprefixer**: 10.4.20 (was 10.4.14)
+- **tailwindcss**: 4.1.11 (was 3.4.17) - Complete CSS-first migration
+- **@tailwindcss/vite**: 4.1.11 (new dedicated Vite plugin)
 
 ### Testing ✅ UPGRADED
 - **vitest**: 3.2.4 (was 0.33.0)
@@ -149,12 +148,12 @@ The following configuration files have been created and configured:
 - **jsdom**: 26.1.0 (was 22.1.0)
 
 ### Code Quality ✅ UPGRADED
-- **eslint**: 9.30.1 (was 8.57.1) ⚠️ Config migration needed
+- **eslint**: 9.30.1 (was 8.57.1) - Migrated to flat config format
 - **@typescript-eslint/eslint-plugin**: 8.35.1 (was 6.21.0)
 - **@typescript-eslint/parser**: 8.35.1 (was 6.21.0)
 - **prettier**: 3.0.0 (stable)
 - **husky**: 9.1.7 (was 8.0.3)
-- **lint-staged**: 16.1.2 (was 13.3.0)
+- **lint-staged**: 16.1.2 (was 13.3.0) - Fixed with proper pre-commit hooks
 
 ### Content Processing ✅ UPGRADED
 - **react-markdown**: 10.1.0 (was 8.0.7)
@@ -186,6 +185,7 @@ The following configuration files have been created and configured:
 - ✅ **TypeScript tooling**: ESLint plugins and parser to v8.35
 - ✅ **Content processing**: React-markdown, rehype, remark to latest
 - ✅ **UI libraries**: Lucide-react, router, and other dependencies
+- ✅ **Tailwind CSS 3.4 → 4.1**: Complete CSS-first migration with dark mode support
 
 ### Breaking Changes Resolved
 - ✅ Updated jest-dom matchers import for Vitest 3.x compatibility
@@ -193,39 +193,75 @@ The following configuration files have been created and configured:
 - ✅ Updated TypeScript config with vitest/globals types
 - ✅ Installed missing @testing-library/dom dependency
 - ✅ Fixed react-markdown component prop type changes
+- ✅ Migrated Tailwind CSS to v4 CSS-first configuration
+- ✅ Updated ESLint to flat config format (v9+)
+- ✅ Fixed pre-commit hooks to run linting and tests properly
 
 ### Current Status
 - ✅ **Build**: Successful with all latest dependencies
 - ✅ **Tests**: All 24 tests passing
 - ✅ **Dev Server**: Running on Vite 7.0.2
 - ✅ **React 19**: Fully functional with Automerge (using --legacy-peer-deps)
+- ✅ **Tailwind CSS v4**: Complete migration with CSS-first configuration
+- ✅ **Pre-commit Hooks**: Properly configured to run linting and tests
 
-## Tailwind CSS v4 Upgrade Issue ⚠️
+## Known Dependencies and Workarounds
 
-### Current State
-- **Status**: Temporarily using Tailwind CSS v3.4.17 (stable)
-- **Target**: Tailwind CSS v4.1.11 (blocked by upgrade tool bug)
-- **Issue**: Official upgrade tool encounters `flatMap` TypeError
+### Automerge React Hooks Compatibility ⚠️
+The Automerge ecosystem currently has a dependency constraint that requires specific handling:
 
-### Attempted Solutions
-1. **Manual Migration**: Attempted CSS-first configuration approach
-2. **Official Tool**: `npx @tailwindcss/upgrade@next` fails with JavaScript error
-3. **Downgrade Strategy**: Reverted to v3.4.17 for stability
+#### Issue
+- **@automerge/automerge-repo-react-hooks**: v2.0.7 depends on React ^18.0.0
+- **@automerge/react**: v2.0.7 also requires React ^18.0.0  
+- **Project**: Running React 19.1.0 for latest features and performance
 
-### Upgrade Documentation
-- **Official Guide**: https://tailwindcss.com/docs/upgrade-guide
-- **Key Changes in v4**: CSS-first config, `@import "tailwindcss"`, automatic content detection
-- **Breaking Changes**: Complete configuration overhaul, browser support requirements
+#### Current Workaround
+```bash
+npm install --legacy-peer-deps
+```
 
-### Recommended Next Steps
-1. **Wait for tool fix**: Monitor official Tailwind CSS upgrade tool updates
-2. **Manual migration**: Implement v4 CSS configuration manually when tool is fixed
-3. **Alternative**: Stay on v3.4.17 until v4.1+ has stable migration path
+#### Why This Works
+- `--legacy-peer-deps` allows npm to install packages despite peer dependency conflicts
+- React 19 maintains backward compatibility with React 18 hooks and patterns
+- Automerge functionality works correctly despite the version mismatch
+- All tests pass and no runtime issues have been observed
 
-### Node.js Compatibility ✅
-- **Current**: Node.js 22.14.0
-- **React 19 Requirement**: Node.js 16+ (fully compatible)
-- **Tailwind v4 Requirement**: Modern browser support (Safari 16.4+, Chrome 111+, Firefox 128+)
+#### CI/CD Integration
+GitHub Actions workflows updated to use `--legacy-peer-deps`:
+```yaml
+- name: Install dependencies
+  run: npm ci --legacy-peer-deps
+  working-directory: autoblog-web
+```
 
-## Dependencies and Constraints
-This feature had no dependencies on other features and has been completed as the foundation for all subsequent development work. The current setup supports all planned features, though a React 19 upgrade will require careful migration of several major dependencies with breaking changes.
+#### Future Resolution
+- Monitor Automerge ecosystem for React 19 compatibility updates
+- Consider contributing React 19 support to the Automerge community
+- Evaluate alternative CRDT libraries if compatibility issues arise
+
+### Browser Support Requirements
+- **React 19**: Modern browsers with ES2020+ support
+- **Tailwind CSS v4**: Safari 16.4+, Chrome 111+, Firefox 128+
+- **Vite 7**: ES2020+ and native ES modules support
+
+## Project Status Summary
+The Autoblog Web Viewer infrastructure is fully established and operational with modern tooling and latest dependencies. All major upgrades have been completed successfully, including React 19, Vite 7, Tailwind CSS v4, and comprehensive testing frameworks.
+
+### Architecture Foundation
+The project provides a robust foundation for all subsequent feature development with:
+- ✅ **Modern React 19** with full TypeScript support
+- ✅ **High-performance build system** with Vite 7 and optimized bundling
+- ✅ **Latest styling framework** with Tailwind CSS v4 CSS-first configuration
+- ✅ **Comprehensive testing** with Vitest 3.2 and React Testing Library 16
+- ✅ **Automated quality assurance** with ESLint 9, Prettier, and pre-commit hooks
+- ✅ **CRDT integration** with Automerge ecosystem for real-time collaboration
+
+### Development Experience
+The setup ensures optimal developer productivity through:
+- Fast development server with hot reload
+- Instant type checking and error detection
+- Automated code formatting and linting
+- Comprehensive test coverage reporting
+- Streamlined CI/CD pipeline integration
+
+This foundation supports all planned features while maintaining code quality, performance, and maintainability standards.
