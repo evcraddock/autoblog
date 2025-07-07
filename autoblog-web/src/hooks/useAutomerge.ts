@@ -13,7 +13,7 @@ export function useBlogIndexSuspense(indexId: DocumentId) {
   const [blogIndex] = useDocument<BlogIndex>(indexId, { suspense: true })
 
   return {
-    blogIndex
+    blogIndex,
   }
 }
 
@@ -26,7 +26,7 @@ export function useBlogPostSuspense(postId: DocumentId) {
   const [post] = useDocument<BlogPost>(postId, { suspense: true })
 
   return {
-    post
+    post,
   }
 }
 
@@ -36,7 +36,7 @@ export function useBlogPostSuspense(postId: DocumentId) {
 export function useBlogIndex() {
   const repo = useRepo()
   const [indexId, setIndexId] = useState<DocumentId | undefined>()
-  
+
   const [blogIndex] = useDocument<BlogIndex>(indexId)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -60,7 +60,7 @@ export function useBlogIndex() {
 
   return {
     blogIndex,
-    isLoading: isLoading || !blogIndex
+    isLoading: isLoading || !blogIndex,
   }
 }
 
@@ -71,7 +71,7 @@ export function useBlogPost(slug: string) {
   const repo = useRepo()
   const { blogIndex } = useBlogIndex()
   const [postId, setPostId] = useState<DocumentId | undefined>()
-  
+
   const [post] = useDocument<BlogPost>(postId)
   const [notFound, setNotFound] = useState(false)
 
@@ -91,18 +91,20 @@ export function useBlogPost(slug: string) {
   return {
     post,
     isLoading: !post && !notFound,
-    notFound
+    notFound,
   }
 }
 
 /**
  * Hook to get all blog posts (non-suspense)
  */
-export function useBlogPosts(options: {
-  status?: 'draft' | 'published' | 'all'
-  limit?: number
-  author?: string
-} = {}) {
+export function useBlogPosts(
+  options: {
+    status?: 'draft' | 'published' | 'all'
+    limit?: number
+    author?: string
+  } = {}
+) {
   const { status = 'published', limit, author } = options
   const repo = useRepo()
   const { blogIndex, isLoading: indexLoading } = useBlogIndex()
@@ -113,12 +115,12 @@ export function useBlogPosts(options: {
     if (indexLoading || !blogIndex || !repo) return
 
     setIsLoading(true)
-    
+
     const loadPosts = async () => {
       try {
         const loadedPosts: BlogPost[] = []
         const postIds = Object.values(blogIndex?.posts || {})
-        
+
         for (const docId of postIds) {
           try {
             const handle = await repo.find<BlogPost>(docId as DocumentId)
@@ -162,15 +164,15 @@ export function useBlogPosts(options: {
 
   const refresh = useCallback(async () => {
     if (!repo || !blogIndex) return
-    
+
     // Force reload posts
     setIsLoading(true)
-    
+
     const loadPosts = async () => {
       try {
         const loadedPosts: BlogPost[] = []
         const postIds = Object.values(blogIndex?.posts || {})
-        
+
         for (const docId of postIds) {
           try {
             const handle = await repo.find<BlogPost>(docId as DocumentId)
@@ -216,6 +218,6 @@ export function useBlogPosts(options: {
     posts,
     isLoading,
     blogIndex,
-    refresh
+    refresh,
   }
 }

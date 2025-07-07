@@ -45,27 +45,34 @@ export function sanitizeErrorMessage(message: string): string {
   return message
     .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, '[email]')
     .replace(/\b(?:https?:\/\/)?[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g, '[url]')
-    .replace(/\b[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}\b/g, '[uuid]')
+    .replace(
+      /\b[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}\b/g,
+      '[uuid]'
+    )
 }
 
 export function handleError(error: unknown, context: string): AutomergeError {
   const message = getErrorMessage(error)
   const sanitizedMessage = sanitizeErrorMessage(message)
-  
+
   // eslint-disable-next-line no-console
   console.error(`Error in ${context}:`, error)
-  
+
   // Determine error type based on message content
   let type: 'network' | 'storage' | 'document' | 'unknown' = 'unknown'
-  
-  if (message.includes('network') || message.includes('websocket') || message.includes('connection')) {
+
+  if (
+    message.includes('network') ||
+    message.includes('websocket') ||
+    message.includes('connection')
+  ) {
     type = 'network'
   } else if (message.includes('storage') || message.includes('indexeddb')) {
     type = 'storage'
   } else if (message.includes('document') || message.includes('not found')) {
     type = 'document'
   }
-  
+
   return createError(
     `${context}: ${sanitizedMessage}`,
     type,
@@ -83,7 +90,7 @@ export interface RetryOptions {
 const DEFAULT_RETRY_OPTIONS: RetryOptions = {
   maxAttempts: 3,
   delay: 1000,
-  backoffFactor: 2
+  backoffFactor: 2,
 }
 
 export async function withRetry<T>(
@@ -92,7 +99,7 @@ export async function withRetry<T>(
 ): Promise<T> {
   const { maxAttempts, delay, backoffFactor, shouldRetry } = {
     ...DEFAULT_RETRY_OPTIONS,
-    ...options
+    ...options,
   }
 
   let lastError: Error
@@ -103,30 +110,31 @@ export async function withRetry<T>(
       return await fn()
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error))
-      
+
       if (attempt === maxAttempts) {
         throw lastError
       }
-      
+
       if (shouldRetry && !shouldRetry(lastError)) {
         throw lastError
       }
-      
+
       await new Promise(resolve => setTimeout(resolve, currentDelay))
       currentDelay *= backoffFactor
     }
   }
-  
+
   throw lastError!
 }
 
 export function shouldRetryNetworkError(error: Error): boolean {
-  return isNetworkError(error) || 
-         error.message.includes('timeout') ||
-         error.message.includes('connection')
+  return (
+    isNetworkError(error) ||
+    error.message.includes('timeout') ||
+    error.message.includes('connection')
+  )
 }
 
 export function shouldRetryStorageError(error: Error): boolean {
-  return isStorageError(error) && 
-         !error.message.includes('quota exceeded')
+  return isStorageError(error) && !error.message.includes('quota exceeded')
 }

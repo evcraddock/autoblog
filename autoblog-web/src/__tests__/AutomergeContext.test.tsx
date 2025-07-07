@@ -11,9 +11,7 @@ vi.mock('@automerge/react', () => ({
   RepoContext: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Provider: ({ children }: { children: React.ReactNode; value?: any }) => (
-      <div data-testid="repo-provider">
-        {children}
-      </div>
+      <div data-testid="repo-provider">{children}</div>
     ),
   },
   useRepo: vi.fn(),
@@ -57,7 +55,8 @@ describe('AutomergeProvider', () => {
   })
 
   it('should initialize repo with default configuration', async () => {
-    const { IndexedDBStorageAdapter, WebSocketClientAdapter, Repo } = await import('@automerge/react')
+    const { IndexedDBStorageAdapter, WebSocketClientAdapter, Repo } =
+      await import('@automerge/react')
 
     render(
       <AutomergeProvider>
@@ -67,7 +66,9 @@ describe('AutomergeProvider', () => {
 
     await waitFor(() => {
       expect(IndexedDBStorageAdapter).toHaveBeenCalledWith('autoblog-web')
-      expect(WebSocketClientAdapter).toHaveBeenCalledWith('wss://sync.automerge.org')
+      expect(WebSocketClientAdapter).toHaveBeenCalledWith(
+        'wss://sync.automerge.org'
+      )
       expect(Repo).toHaveBeenCalled()
     })
   })
@@ -105,7 +106,7 @@ describe('AutomergeProvider', () => {
   it('should handle repo initialization errors gracefully', async () => {
     const { Repo } = await import('@automerge/react')
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    
+
     // Mock Repo constructor to throw
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(Repo as any).mockImplementationOnce(() => {
@@ -130,7 +131,7 @@ describe('AutomergeProvider', () => {
 
   it('should call cleanup on unmount', async () => {
     const { cleanup } = await import('../services/automerge')
-    
+
     const { unmount } = render(
       <AutomergeProvider>
         <TestComponent />

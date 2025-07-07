@@ -1,5 +1,10 @@
 import React, { useEffect, useState, ReactNode } from 'react'
-import { Repo, RepoContext, WebSocketClientAdapter, IndexedDBStorageAdapter } from '@automerge/react'
+import {
+  Repo,
+  RepoContext,
+  WebSocketClientAdapter,
+  IndexedDBStorageAdapter,
+} from '@automerge/react'
 import { cleanup } from '../services/automerge'
 import type { AppConfig } from '../types'
 
@@ -10,10 +15,13 @@ interface AutomergeProviderProps {
 
 const DEFAULT_CONFIG: AppConfig = {
   syncUrl: 'wss://sync.automerge.org',
-  theme: 'system'
+  theme: 'system',
 }
 
-export function AutomergeProvider({ children, config: userConfig }: AutomergeProviderProps) {
+export function AutomergeProvider({
+  children,
+  config: userConfig,
+}: AutomergeProviderProps) {
   const [repo, setRepo] = useState<Repo | null>(null)
   const [config] = useState<AppConfig>({ ...DEFAULT_CONFIG, ...userConfig })
 
@@ -21,8 +29,11 @@ export function AutomergeProvider({ children, config: userConfig }: AutomergePro
     const initializeRepo = () => {
       try {
         // Use the simplified meta-package approach
-        const repoConfig: { storage: IndexedDBStorageAdapter; network?: WebSocketClientAdapter[] } = {
-          storage: new IndexedDBStorageAdapter('autoblog-web')
+        const repoConfig: {
+          storage: IndexedDBStorageAdapter
+          network?: WebSocketClientAdapter[]
+        } = {
+          storage: new IndexedDBStorageAdapter('autoblog-web'),
         }
 
         if (config.syncUrl) {
@@ -38,18 +49,14 @@ export function AutomergeProvider({ children, config: userConfig }: AutomergePro
     }
 
     initializeRepo()
-    
+
     // Cleanup on unmount
     return () => {
       cleanup()
     }
   }, [config.syncUrl])
 
-  return (
-    <RepoContext.Provider value={repo}>
-      {children}
-    </RepoContext.Provider>
-  )
+  return <RepoContext.Provider value={repo}>{children}</RepoContext.Provider>
 }
 
 // Re-export the official useRepo hook from meta-package

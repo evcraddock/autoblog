@@ -32,7 +32,10 @@ export async function initRepo(
     const storage = new IndexedDBStorageAdapter('autoblog-web')
 
     // Configure network adapter based on source
-    const repoConfig: { storage: IndexedDBStorageAdapter; network?: BrowserWebSocketClientAdapter[] } = { storage }
+    const repoConfig: {
+      storage: IndexedDBStorageAdapter
+      network?: BrowserWebSocketClientAdapter[]
+    } = { storage }
 
     if (source === 'remote') {
       // Create network adapter for syncing with Automerge sync server
@@ -84,7 +87,7 @@ export async function getOrCreateIndex(
 
   // Create a new index document
   const handle = repo.create<BlogIndex>()
-  handle.change((doc) => {
+  handle.change(doc => {
     doc.posts = {}
     doc.lastUpdated = new Date()
   })
@@ -116,7 +119,6 @@ export async function findPostBySlug(
 
 // These functions are now handled by the official React hooks
 // Keeping only the core repo management functions
-
 
 /**
  * Cleanup and close the repository
