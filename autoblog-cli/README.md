@@ -1,5 +1,7 @@
 # Autoblog CLI
 
+[![CLI CI](https://github.com/evcraddock/autoblog/actions/workflows/cli-ci.yml/badge.svg)](https://github.com/evcraddock/autoblog/actions/workflows/cli-ci.yml)
+
 A command-line interface for managing markdown files in the Automerge-powered blog platform.
 
 ## Description

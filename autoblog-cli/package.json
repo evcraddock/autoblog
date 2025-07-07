@@ -20,7 +20,8 @@
     "lint": "prettier --check . && tsc --noEmit",
     "lint:fix": "prettier --write .",
     "format": "prettier --write .",
-    "prepare": "husky && npm run build"
+    "prepare": "npm run build",
+    "postinstall": "cd .. && [ -d .git ] && husky || true"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -39,7 +40,7 @@
     "url": "https://github.com/evcraddock/autoblog.git"
   },
   "lint-staged": {
-    "*.ts": [
+    "autoblog-cli/**/*.ts": [
       "tsc --noEmit"
     ]
   },

@@ -1,0 +1,67 @@
+name: Web CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'autoblog-web/**'
+      - '.github/workflows/web-ci.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: autoblog-web/package-lock.json
+        
+    - name: Install dependencies
+      run: npm ci
+      working-directory: autoblog-web
+      
+    - name: Run TypeScript type checking
+      run: npm run type-check
+      working-directory: autoblog-web
+      
+    - name: Run ESLint
+      run: npm run lint
+      working-directory: autoblog-web
+      
+    - name: Check code formatting with Prettier
+      run: npm run format:check
+      working-directory: autoblog-web
+      
+    - name: Run tests
+      run: npm test -- --run
+      working-directory: autoblog-web
+      
+    - name: Run test coverage
+      run: npm run test:coverage
+      working-directory: autoblog-web
+      
+    - name: Build application
+      run: npm run build
+      working-directory: autoblog-web
+      
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: coverage-report
+        path: autoblog-web/coverage/
+        retention-days: 7
+        
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: build-output
+        path: autoblog-web/dist/
+        retention-days: 7

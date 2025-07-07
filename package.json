@@ -1,0 +1,12 @@
+{
+  "name": "autoblog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Autoblog - A local-first blog platform built on Automerge CRDT",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}

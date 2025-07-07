@@ -1,8 +1,11 @@
-name: CI
+name: CLI CI
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    paths:
+      - 'autoblog-cli/**'
+      - '.github/workflows/cli-ci.yml'
 
 jobs:
   test:
