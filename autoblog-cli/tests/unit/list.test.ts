@@ -71,14 +71,12 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('all');
     expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'BLUE: 📚 Fetching blog posts from remote source...'
-      )
+      expect.stringContaining('BLUE: 📚 Fetching blog posts from all source...')
     );
     expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Found 2 posts (🌐 Remote)')
+      expect.stringContaining('Found 2 posts (🔄 All)')
     );
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('Another Post')
@@ -95,7 +93,7 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('all');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('YELLOW: No blog posts found')
     );
@@ -135,7 +133,7 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('all');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('First Post')
     );
@@ -145,17 +143,15 @@ describe('List Command', () => {
     expect(processExitSpy).toHaveBeenCalledWith(0);
   });
 
-  it('should use remote source when none specified', async () => {
+  it('should use all source when none specified', async () => {
     mockListBlogPosts.mockResolvedValue([]);
 
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('all');
     expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'BLUE: 📚 Fetching blog posts from remote source...'
-      )
+      expect.stringContaining('BLUE: 📚 Fetching blog posts from all source...')
     );
   });
 

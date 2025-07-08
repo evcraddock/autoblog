@@ -10,28 +10,30 @@ import {
 } from './index.js';
 import type { BlogPost } from '../types/index.js';
 
-export type SyncSource = 'local' | 'remote';
+export type SyncSource = 'local' | 'remote' | 'all';
 
 /**
  * Initialize an Automerge repository with file system storage and optional WebSocket networking
- * @param source - The sync source to use ('local' or 'remote'), defaults to 'remote'
+ * @param source - The sync source to use ('local', 'remote', or 'all'), defaults to 'all'
  * @returns Promise<Repo> - Configured Automerge repository instance
  * @throws Error if storage or network adapter creation fails
  */
-export async function initRepo(source: SyncSource = 'remote'): Promise<Repo> {
+export async function initRepo(source: SyncSource = 'all'): Promise<Repo> {
   try {
-    // Create storage adapter pointing to local data directory
-    const storage = new NodeFSStorageAdapter('./autoblog-data');
+    // Start with empty config
+    const repoConfig: any = {};
 
-    // Configure network adapter based on source
-    const repoConfig: any = { storage };
+    // Add storage if source is 'all' or 'local'
+    if (source === 'all' || source === 'local') {
+      const storage = new NodeFSStorageAdapter('./autoblog-data');
+      repoConfig.storage = storage;
+    }
 
-    if (source === 'remote') {
-      // Create network adapter for syncing with Automerge sync server
+    // Add network if source is 'all' or 'remote'
+    if (source === 'all' || source === 'remote') {
       const network = new WebSocketClientAdapter('wss://sync.automerge.org');
       repoConfig.network = [network];
     }
-    // For 'local' source, no network adapter is added
 
     // Create and return repo instance
     const repo = new Repo(repoConfig);
@@ -47,13 +49,13 @@ export async function initRepo(source: SyncSource = 'remote'): Promise<Repo> {
 /**
  * Upload a blog post to the Automerge repository
  * @param blogPost - The blog post data to upload
- * @param source - The sync source to use ('local' or 'remote'), defaults to 'remote'
+ * @param source - The sync source to use ('local', 'remote', or 'all'), defaults to 'all'
  * @returns Promise<string> - The document ID of the created blog post
  * @throws Error if upload fails
  */
 export async function uploadBlogPost(
   blogPost: Partial<BlogPost>,
-  source: SyncSource = 'remote'
+  source: SyncSource = 'all'
 ): Promise<string> {
   try {
     // Initialize Automerge repo
@@ -82,12 +84,12 @@ export async function uploadBlogPost(
 
 /**
  * List all blog posts from the Automerge repository
- * @param source - The sync source to use ('local' or 'remote'), defaults to 'remote'
+ * @param source - The sync source to use ('local', 'remote', or 'all'), defaults to 'all'
  * @returns Promise<BlogPost[]> - Array of blog posts sorted by published date (newest first)
  * @throws Error if listing fails
  */
 export async function listBlogPosts(
-  source: SyncSource = 'remote'
+  source: SyncSource = 'all'
 ): Promise<BlogPost[]> {
   try {
     // Initialize Automerge repo
@@ -138,13 +140,13 @@ export async function listBlogPosts(
 /**
  * Delete a blog post from the Automerge repository
  * @param slug - The slug of the blog post to delete
- * @param source - The sync source to use ('local' or 'remote'), defaults to 'remote'
+ * @param source - The sync source to use ('local', 'remote', or 'all'), defaults to 'all'
  * @returns Promise<boolean> - True if post was found and deleted, false if not found
  * @throws Error if deletion fails
  */
 export async function deleteBlogPost(
   slug: string,
-  source: SyncSource = 'remote'
+  source: SyncSource = 'all'
 ): Promise<boolean> {
   try {
     // Initialize Automerge repo

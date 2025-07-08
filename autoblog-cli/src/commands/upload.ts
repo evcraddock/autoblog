@@ -7,7 +7,7 @@ import type { BlogPost } from '../types/index.js';
 
 export async function uploadCommand(
   filePath: string,
-  source: SyncSource = 'remote'
+  source: SyncSource = 'all'
 ): Promise<void> {
   // Validate file path is provided
   if (!filePath || filePath.trim() === '') {

@@ -236,10 +236,14 @@ describe('automerge service', () => {
     it('should return existing index when found in localStorage', async () => {
       const existingId = 'existing-doc-id'
       vi.mocked(localStorage.getItem).mockReturnValue(existingId)
-      vi.mocked(mockRepo.find).mockResolvedValue(mockDocHandle)
+      // First call for CLI index should return null, second call for localStorage ID should succeed
+      vi.mocked(mockRepo.find)
+        .mockResolvedValueOnce(null as unknown as DocHandle<BlogIndex>)
+        .mockResolvedValueOnce(mockDocHandle)
 
       const result = await getOrCreateIndex(mockRepo)
 
+      expect(mockRepo.find).toHaveBeenCalledWith('5yuf2779r3W6ntgFZgzR6S6RKiW')
       expect(localStorage.getItem).toHaveBeenCalledWith('autoblog-index-id')
       expect(mockRepo.find).toHaveBeenCalledWith(existingId)
       expect(mockDocHandle.whenReady).toHaveBeenCalled()
@@ -585,10 +589,14 @@ describe('automerge service', () => {
     it('should handle DocumentId type correctly', async () => {
       const documentId = 'test-doc-id' as DocumentId
       vi.mocked(localStorage.getItem).mockReturnValue(documentId)
-      vi.mocked(mockRepo.find).mockResolvedValue(mockDocHandle)
+      // Mock CLI index check to return null, then localStorage check to succeed
+      vi.mocked(mockRepo.find)
+        .mockResolvedValueOnce(null as unknown as DocHandle<BlogIndex>)
+        .mockResolvedValueOnce(mockDocHandle)
 
       await getOrCreateIndex(mockRepo)
 
+      expect(mockRepo.find).toHaveBeenCalledWith('5yuf2779r3W6ntgFZgzR6S6RKiW')
       expect(mockRepo.find).toHaveBeenCalledWith(documentId)
     })
   })
