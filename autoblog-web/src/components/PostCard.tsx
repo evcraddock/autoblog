@@ -33,7 +33,7 @@ export function PostCard({ post, viewMode }: PostCardProps) {
         </div>
       )}
 
-      <div className="flex-1">
+      <div className="flex-1 flex flex-col">
         <header className="mb-3">
           <h2 className="text-xl font-semibold mb-2">
             <Link
@@ -61,13 +61,13 @@ export function PostCard({ post, viewMode }: PostCardProps) {
           </div>
         </header>
 
-        <p className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">
+        <p className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-3 flex-1">
           {post.description}
         </p>
 
         <Link
           to={`/${post.slug}`}
-          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium mt-auto"
         >
           Read more →
         </Link>
