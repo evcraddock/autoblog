@@ -17,12 +17,12 @@ program
 program
   .command('upload <file>')
   .description('Upload a markdown file to the blog')
-  .option('--source [source]', 'Sync source: local or remote', 'local')
+  .option('--source [source]', 'Sync source: local, remote, or all', 'all')
   .action(async (file: string, options) => {
     try {
       const source = options.source as SyncSource;
-      if (source !== 'local' && source !== 'remote') {
-        throw new Error('Source must be either "local" or "remote"');
+      if (source !== 'local' && source !== 'remote' && source !== 'all') {
+        throw new Error('Source must be "local", "remote", or "all"');
       }
       await uploadCommand(file, source);
     } catch (error) {
@@ -39,12 +39,12 @@ program
 program
   .command('list')
   .description('List all blog posts')
-  .option('--source [source]', 'Sync source: local or remote', 'local')
+  .option('--source [source]', 'Sync source: local, remote, or all', 'all')
   .action(async (options) => {
     try {
       const source = options.source as SyncSource;
-      if (source !== 'local' && source !== 'remote') {
-        throw new Error('Source must be either "local" or "remote"');
+      if (source !== 'local' && source !== 'remote' && source !== 'all') {
+        throw new Error('Source must be "local", "remote", or "all"');
       }
       await listCommand(source);
     } catch (error) {
@@ -61,12 +61,12 @@ program
 program
   .command('delete <slug>')
   .description('Delete a blog post by its slug')
-  .option('--source [source]', 'Sync source: local or remote', 'local')
+  .option('--source [source]', 'Sync source: local, remote, or all', 'all')
   .action(async (slug: string, options) => {
     try {
       const source = options.source as SyncSource;
-      if (source !== 'local' && source !== 'remote') {
-        throw new Error('Source must be either "local" or "remote"');
+      if (source !== 'local' && source !== 'remote' && source !== 'all') {
+        throw new Error('Source must be "local", "remote", or "all"');
       }
       await deleteCommand(slug, source);
     } catch (error) {

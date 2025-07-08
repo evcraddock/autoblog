@@ -2,7 +2,7 @@ import { useBlogPosts } from '../hooks/useAutomerge'
 import { PostList } from '../components/PostList'
 
 export function HomePage() {
-  const { posts, isLoading } = useBlogPosts({ status: 'published' })
+  const { posts, isLoading } = useBlogPosts({ status: 'all' })
 
   return (
     <div className="container mx-auto px-4 py-8">

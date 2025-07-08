@@ -4,16 +4,18 @@ import { BrowserWebSocketClientAdapter } from '@automerge/automerge-repo-network
 import { handleError } from '../utils/errorHandling'
 import type { BlogIndex } from '../types'
 
-export type SyncSource = 'local' | 'remote'
+export type SyncSource = 'local' | 'remote' | 'all'
 
 const DEFAULT_SYNC_URL = 'wss://sync.automerge.org'
 const INDEX_ID_KEY = 'autoblog-index-id'
+// Use the same index ID that the CLI uses
+const CLI_INDEX_ID = '5yuf2779r3W6ntgFZgzR6S6RKiW'
 
 let repoInstance: Repo | null = null
 
 /**
  * Initialize an Automerge repository with IndexedDB storage and optional WebSocket networking
- * @param source - The sync source to use ('local' or 'remote'), defaults to 'remote'
+ * @param source - The sync source to use ('local', 'remote', or 'all'), defaults to 'remote'
  * @param syncUrl - WebSocket URL for sync server, defaults to Automerge public server
  * @returns Promise<Repo> - Configured Automerge repository instance
  * @throws Error if storage or network adapter creation fails
@@ -28,7 +30,7 @@ export async function initRepo(
       return repoInstance
     }
 
-    // Create storage adapter using IndexedDB
+    // Always use IndexedDB storage for the web app
     const storage = new IndexedDBStorageAdapter('autoblog-web')
 
     // Configure network adapter based on source
@@ -37,8 +39,8 @@ export async function initRepo(
       network?: BrowserWebSocketClientAdapter[]
     } = { storage }
 
-    if (source === 'remote') {
-      // Create network adapter for syncing with Automerge sync server
+    // Add network adapter for remote sync (default behavior)
+    if (source === 'remote' || source === 'all') {
       const network = new BrowserWebSocketClientAdapter(syncUrl)
       repoConfig.network = [network]
     }
@@ -61,7 +63,26 @@ export async function initRepo(
 export async function getOrCreateIndex(
   repo: Repo
 ): Promise<DocHandle<BlogIndex>> {
-  // Try to load existing index document ID from localStorage
+  // First try to use the CLI's index document ID
+  try {
+    const existingHandle = await repo.find<BlogIndex>(
+      CLI_INDEX_ID as DocumentId
+    )
+    if (existingHandle) {
+      await existingHandle.whenReady()
+      // Save to localStorage for future reference
+      try {
+        localStorage.setItem(INDEX_ID_KEY, CLI_INDEX_ID)
+      } catch {
+        // localStorage not available, continue anyway
+      }
+      return existingHandle
+    }
+  } catch {
+    // CLI index document not found, try localStorage fallback
+  }
+
+  // Fallback: Try to load existing index document ID from localStorage
   let indexDocumentId: string | null = null
 
   try {
@@ -71,7 +92,7 @@ export async function getOrCreateIndex(
   }
 
   // If we have an existing index ID, try to find it
-  if (indexDocumentId) {
+  if (indexDocumentId && indexDocumentId !== CLI_INDEX_ID) {
     try {
       const existingHandle = await repo.find<BlogIndex>(
         indexDocumentId as DocumentId
