@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { Outlet, useLocation, Link } from 'react-router-dom'
 import { Sun, Moon } from 'lucide-react'
 import { SkipLink } from './SkipLink'
-import { useTheme } from '../contexts/ThemeContext'
+import { useTheme } from '../hooks/useTheme'
 
 export function Layout() {
   const { isDark, toggleTheme } = useTheme()

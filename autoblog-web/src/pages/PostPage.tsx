@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import MarkdownRenderer from '../components/MarkdownRenderer'
 import { useBlogPost } from '../hooks/useAutomerge'
-import { useTheme } from '../contexts/ThemeContext'
+import { useTheme } from '../hooks/useTheme'
 
 export function PostPage() {
   const { slug } = useParams<{ slug: string }>()
