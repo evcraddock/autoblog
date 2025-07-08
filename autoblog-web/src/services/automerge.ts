@@ -3,13 +3,11 @@ import { IndexedDBStorageAdapter } from '@automerge/automerge-repo-storage-index
 import { BrowserWebSocketClientAdapter } from '@automerge/automerge-repo-network-websocket'
 import { handleError } from '../utils/errorHandling'
 import type { BlogIndex } from '../types'
+import { config } from '../config'
 
 export type SyncSource = 'local' | 'remote' | 'all'
 
-const DEFAULT_SYNC_URL = 'wss://sync.automerge.org'
 const INDEX_ID_KEY = 'autoblog-index-id'
-// Use the same index ID that the CLI uses
-const CLI_INDEX_ID = '5yuf2779r3W6ntgFZgzR6S6RKiW'
 
 let repoInstance: Repo | null = null
 
@@ -22,7 +20,7 @@ let repoInstance: Repo | null = null
  */
 export async function initRepo(
   source: SyncSource = 'remote',
-  syncUrl: string = DEFAULT_SYNC_URL
+  syncUrl: string = config.syncUrl
 ): Promise<Repo> {
   try {
     // Return existing instance if available
@@ -31,7 +29,7 @@ export async function initRepo(
     }
 
     // Always use IndexedDB storage for the web app
-    const storage = new IndexedDBStorageAdapter('autoblog-web')
+    const storage = new IndexedDBStorageAdapter(config.databaseName)
 
     // Configure network adapter based on source
     const repoConfig: {
@@ -66,13 +64,13 @@ export async function getOrCreateIndex(
   // First try to use the CLI's index document ID
   try {
     const existingHandle = await repo.find<BlogIndex>(
-      CLI_INDEX_ID as DocumentId
+      config.cliIndexId as DocumentId
     )
     if (existingHandle) {
       await existingHandle.whenReady()
       // Save to localStorage for future reference
       try {
-        localStorage.setItem(INDEX_ID_KEY, CLI_INDEX_ID)
+        localStorage.setItem(INDEX_ID_KEY, config.cliIndexId)
       } catch {
         // localStorage not available, continue anyway
       }
@@ -92,7 +90,7 @@ export async function getOrCreateIndex(
   }
 
   // If we have an existing index ID, try to find it
-  if (indexDocumentId && indexDocumentId !== CLI_INDEX_ID) {
+  if (indexDocumentId && indexDocumentId !== config.cliIndexId) {
     try {
       const existingHandle = await repo.find<BlogIndex>(
         indexDocumentId as DocumentId
