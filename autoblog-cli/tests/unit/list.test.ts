@@ -71,7 +71,7 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('all');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('all', {});
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('BLUE: 📚 Fetching blog posts from all source...')
     );
@@ -93,7 +93,7 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('all');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('all', {});
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('YELLOW: No blog posts found')
     );
@@ -133,7 +133,7 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('all');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('all', {});
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('First Post')
     );
@@ -149,7 +149,7 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('all');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('all', {});
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('BLUE: 📚 Fetching blog posts from all source...')
     );
@@ -161,7 +161,7 @@ describe('List Command', () => {
     await listCommand('local');
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('local');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('local', {});
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining(
         'BLUE: 📚 Fetching blog posts from local source...'
@@ -175,7 +175,7 @@ describe('List Command', () => {
     await listCommand('remote');
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('remote');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('remote', {});
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining(
         'BLUE: 📚 Fetching blog posts from remote source...'
@@ -189,6 +189,6 @@ describe('List Command', () => {
     await listCommand('invalid' as any);
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('invalid');
+    expect(mockListBlogPosts).toHaveBeenCalledWith('invalid', {});
   });
 });

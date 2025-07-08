@@ -44,7 +44,7 @@ describe('Delete Command', () => {
     await deleteCommand('test-post', 'local');
     vi.runAllTimers();
 
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post', 'local');
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post', 'local', {});
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('BLUE: 🗑️ Deleting post with slug: test-post')
     );
@@ -62,7 +62,8 @@ describe('Delete Command', () => {
 
     expect(mockDeleteBlogPost).toHaveBeenCalledWith(
       'non-existent-slug',
-      'local'
+      'local',
+      {}
     );
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining(
@@ -108,7 +109,7 @@ describe('Delete Command', () => {
     await deleteCommand('any-slug', 'local');
     vi.runAllTimers();
 
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('any-slug', 'local');
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('any-slug', 'local', {});
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('YELLOW: Post not found with slug: any-slug')
     );

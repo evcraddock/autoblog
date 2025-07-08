@@ -2,18 +2,34 @@ import fs from 'fs/promises';
 import path from 'path';
 import { Repo, DocHandle, DocumentId } from '@automerge/automerge-repo';
 import type { BlogIndex } from '../types/index.js';
-
-// File to store the index document ID
-const INDEX_ID_FILE = './autoblog-data/index-id.txt';
+import { getConfigManager } from './config.js';
+import type { CliConfig } from '../types/config.js';
 
 export async function getOrCreateIndex(
-  repo: Repo
+  repo: Repo,
+  overrides?: Partial<CliConfig>
 ): Promise<DocHandle<BlogIndex>> {
+  // Load configuration
+  const configManager = getConfigManager();
+  const config = await configManager.loadConfig();
+  const finalConfig = overrides
+    ? {
+        ...config,
+        storage: { ...config.storage, ...overrides.storage },
+      }
+    : config;
+
+  // Build path to index ID file
+  const indexIdFile = path.join(
+    finalConfig.storage.dataPath,
+    finalConfig.storage.indexIdFile
+  );
+
   // Try to load existing index document ID
   let indexDocumentId: string | null = null;
 
   try {
-    indexDocumentId = await fs.readFile(INDEX_ID_FILE, 'utf-8');
+    indexDocumentId = await fs.readFile(indexIdFile, 'utf-8');
     indexDocumentId = indexDocumentId.trim();
   } catch (error) {
     // File doesn't exist, we'll create a new index
@@ -43,8 +59,8 @@ export async function getOrCreateIndex(
 
   // Save the document ID for future use
   try {
-    await fs.mkdir(path.dirname(INDEX_ID_FILE), { recursive: true });
-    await fs.writeFile(INDEX_ID_FILE, handle.documentId);
+    await fs.mkdir(path.dirname(indexIdFile), { recursive: true });
+    await fs.writeFile(indexIdFile, handle.documentId);
   } catch (error) {
     console.warn('Warning: Could not save index document ID to file');
   }

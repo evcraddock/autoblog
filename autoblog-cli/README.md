@@ -8,7 +8,7 @@ A command-line interface for managing markdown files in the Automerge-powered bl
 
 Autoblog CLI allows authors to upload markdown files to a local-first blog system built on Automerge 2.0. It parses markdown files with frontmatter, creates Automerge documents, and syncs them across devices using CRDT technology.
 
-By default, all commands sync with the Automerge sync server at `wss://sync.automerge.org` for cross-device synchronization. You can use the `--source local` option to work with local storage only.
+By default, all commands sync with both local storage and the Automerge sync server at `wss://sync.automerge.org` for cross-device synchronization. The CLI supports flexible configuration through config files, environment variables, and command-line options.
 
 ## Installation
 
@@ -38,26 +38,111 @@ npm install -g .
 autoblog --help
 ```
 
+## Configuration
+
+Autoblog CLI supports flexible configuration through multiple methods with clear precedence:
+
+1. **Default values** (hardcoded fallbacks)
+2. **Global config file** (OS-appropriate location)
+3. **Project config file** (`.autoblog/config.json` in current directory)
+4. **Environment variables** (`AUTOBLOG_*` prefix)
+5. **Command-line arguments** (highest priority)
+
+### Configuration File Locations
+
+- **macOS/Linux**: `~/.config/autoblog/config.json`
+- **Windows**: `%APPDATA%/autoblog/config.json`
+- **Project-specific**: `.autoblog/config.json` (takes precedence over global)
+
+### Configuration Schema
+
+```json
+{
+  "network": {
+    "syncUrl": "wss://sync.automerge.org",
+    "timeout": 30000
+  },
+  "storage": {
+    "dataPath": "~/.local/share/autoblog",
+    "indexIdFile": "index-id.txt"
+  },
+  "sync": {
+    "defaultSource": "all"
+  }
+}
+```
+
+### Data Directory Locations
+
+- **macOS**: `~/Library/Application Support/autoblog/`
+- **Linux**: `~/.local/share/autoblog/` (or `$XDG_DATA_HOME/autoblog/`)
+- **Windows**: `%APPDATA%/autoblog/data/`
+- **Project-specific**: `.autoblog/data/` (when using project config)
+
+### Environment Variables
+
+```bash
+AUTOBLOG_SYNC_URL=wss://sync.automerge.org
+AUTOBLOG_DATA_PATH=~/.local/share/autoblog
+AUTOBLOG_SYNC_SOURCE=all
+AUTOBLOG_TIMEOUT=30000
+```
+
+### Configuration Management Commands
+
+```bash
+# View current configuration
+autoblog config list
+
+# Get specific value
+autoblog config get network.syncUrl
+
+# Set configuration value
+autoblog config set network.syncUrl wss://custom.sync.server
+autoblog config set storage.dataPath ~/my-blog-data
+
+# Reset to defaults
+autoblog config reset
+autoblog config reset network.syncUrl
+
+# Show configuration file location
+autoblog config path
+```
+
 ## Usage
 
 ### Sync Options
 
 All commands support a `--source` option to control where data is stored and synced:
 
-- `--source remote` (default): Syncs with the Automerge sync server at `wss://sync.automerge.org`
+- `--source all` (default): Syncs with both local storage and remote server
 - `--source local`: Works with local storage only (no network sync)
+- `--source remote`: Works with remote server only (no local storage)
+
+### Configuration Overrides
+
+All commands support configuration override options:
+
+- `--sync-url <url>`: Override sync URL for this command
+- `--data-path <path>`: Override data path for this command
 
 ### Upload a Blog Post
 
 ```bash
-# Upload a markdown file (syncs to remote by default)
+# Upload a markdown file (syncs to both local and remote by default)
 autoblog upload post.md
 
 # Upload to local storage only
 autoblog upload post.md --source local
 
-# Explicitly sync to remote
+# Upload to remote only
 autoblog upload post.md --source remote
+
+# Override sync URL for this command
+autoblog upload post.md --sync-url wss://custom.sync.server
+
+# Override data path for this command
+autoblog upload post.md --data-path ~/my-blog-data
 
 # Or using npm scripts
 npm run start upload post.md
@@ -66,14 +151,20 @@ npm run start upload post.md
 ### List All Blog Posts
 
 ```bash
-# List all posts (from remote by default)
+# List all posts (from both local and remote by default)
 autoblog list
 
 # List posts from local storage only
 autoblog list --source local
 
-# Explicitly list from remote
+# List posts from remote only
 autoblog list --source remote
+
+# Override sync URL for this command
+autoblog list --sync-url wss://custom.sync.server
+
+# Override data path for this command
+autoblog list --data-path ~/my-blog-data
 
 # Or using npm scripts
 npm run start list
@@ -82,14 +173,20 @@ npm run start list
 ### Delete a Blog Post
 
 ```bash
-# Delete a post by its slug (from remote by default)
+# Delete a post by its slug (from both local and remote by default)
 autoblog delete <slug>
 
 # Delete from local storage only
 autoblog delete <slug> --source local
 
-# Explicitly delete from remote
+# Delete from remote only
 autoblog delete <slug> --source remote
+
+# Override sync URL for this command
+autoblog delete <slug> --sync-url wss://custom.sync.server
+
+# Override data path for this command
+autoblog delete <slug> --data-path ~/my-blog-data
 
 # Or using npm scripts
 npm run start delete <slug>
@@ -141,31 +238,6 @@ npm run start -- --help
    # Run tests with UI
    npm run test:ui
    ```
-
-## Project Structure
-
-```
-autoblog-cli/
-├── src/
-│   ├── index.ts           # CLI entry point
-│   ├── commands/          # CLI command implementations
-│   │   ├── upload.ts      # Upload command
-│   │   ├── list.ts        # List command
-│   │   └── delete.ts      # Delete command
-│   ├── lib/               # Core library modules
-│   │   ├── automerge.ts   # Automerge repository setup
-│   │   ├── parser.ts      # Markdown parsing utilities
-│   │   └── index.ts       # Index management functions
-│   └── types/             # TypeScript type definitions
-│       └── index.ts       # Shared interfaces
-├── tests/
-│   ├── unit/              # Unit tests
-│   └── fixtures/          # Test data files
-├── dist/                  # Compiled JavaScript (generated)
-├── package.json           # Project configuration
-├── tsconfig.json          # TypeScript configuration
-└── vitest.config.ts       # Test framework configuration
-```
 
 ## Testing
 
