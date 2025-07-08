@@ -1,8 +1,4 @@
-import {
-  useCallback,
-  useReducer,
-  ReactNode,
-} from 'react'
+import { useCallback, useReducer, ReactNode } from 'react'
 import { AutomergeError } from '../utils/errorHandling'
 import { ErrorContext } from './ErrorContextDefinition'
 
@@ -167,7 +163,5 @@ export function ErrorProvider({
 
   return <ErrorContext.Provider value={value}>{children}</ErrorContext.Provider>
 }
-
-
 
 export default ErrorProvider
