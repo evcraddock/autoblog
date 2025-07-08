@@ -9,29 +9,44 @@ import {
   removeFromIndex,
 } from './index.js';
 import type { BlogPost } from '../types/index.js';
+import { getConfigManager } from './config.js';
+import type { CliConfig } from '../types/config.js';
 
 export type SyncSource = 'local' | 'remote' | 'all';
 
 /**
  * Initialize an Automerge repository with file system storage and optional WebSocket networking
  * @param source - The sync source to use ('local', 'remote', or 'all'), defaults to 'all'
+ * @param overrides - Optional configuration overrides
  * @returns Promise<Repo> - Configured Automerge repository instance
  * @throws Error if storage or network adapter creation fails
  */
-export async function initRepo(source: SyncSource = 'all'): Promise<Repo> {
+export async function initRepo(source: SyncSource = 'all', overrides?: Partial<CliConfig>): Promise<Repo> {
   try {
-    // Start with empty config
+    // Load configuration
+    const configManager = getConfigManager();
+    const config = await configManager.loadConfig();
+    
+    // Apply any overrides
+    const finalConfig = overrides ? {
+      ...config,
+      network: { ...config.network, ...overrides.network },
+      storage: { ...config.storage, ...overrides.storage },
+      sync: { ...config.sync, ...overrides.sync }
+    } : config;
+
+    // Start with empty repo config
     const repoConfig: any = {};
 
     // Add storage if source is 'all' or 'local'
     if (source === 'all' || source === 'local') {
-      const storage = new NodeFSStorageAdapter('./autoblog-data');
+      const storage = new NodeFSStorageAdapter(finalConfig.storage.dataPath);
       repoConfig.storage = storage;
     }
 
     // Add network if source is 'all' or 'remote'
     if (source === 'all' || source === 'remote') {
-      const network = new WebSocketClientAdapter('wss://sync.automerge.org');
+      const network = new WebSocketClientAdapter(finalConfig.network.syncUrl);
       repoConfig.network = [network];
     }
 
@@ -50,16 +65,18 @@ export async function initRepo(source: SyncSource = 'all'): Promise<Repo> {
  * Upload a blog post to the Automerge repository
  * @param blogPost - The blog post data to upload
  * @param source - The sync source to use ('local', 'remote', or 'all'), defaults to 'all'
+ * @param overrides - Optional configuration overrides
  * @returns Promise<string> - The document ID of the created blog post
  * @throws Error if upload fails
  */
 export async function uploadBlogPost(
   blogPost: Partial<BlogPost>,
-  source: SyncSource = 'all'
+  source: SyncSource = 'all',
+  overrides?: Partial<CliConfig>
 ): Promise<string> {
   try {
     // Initialize Automerge repo
-    const repo = await initRepo(source);
+    const repo = await initRepo(source, overrides);
 
     // Create a new document for the blog post
     const docHandle = repo.create<BlogPost>();
@@ -71,7 +88,7 @@ export async function uploadBlogPost(
     const documentId = docHandle.documentId;
 
     // Get or create the blog index and add this post
-    const indexHandle = await getOrCreateIndex(repo);
+    const indexHandle = await getOrCreateIndex(repo, overrides);
     await updateIndex(indexHandle, blogPost.slug!, documentId);
 
     return documentId;
@@ -85,18 +102,20 @@ export async function uploadBlogPost(
 /**
  * List all blog posts from the Automerge repository
  * @param source - The sync source to use ('local', 'remote', or 'all'), defaults to 'all'
+ * @param overrides - Optional configuration overrides
  * @returns Promise<BlogPost[]> - Array of blog posts sorted by published date (newest first)
  * @throws Error if listing fails
  */
 export async function listBlogPosts(
-  source: SyncSource = 'all'
+  source: SyncSource = 'all',
+  overrides?: Partial<CliConfig>
 ): Promise<BlogPost[]> {
   try {
     // Initialize Automerge repo
-    const repo = await initRepo(source);
+    const repo = await initRepo(source, overrides);
 
     // Get the blog index
-    const indexHandle = await getOrCreateIndex(repo);
+    const indexHandle = await getOrCreateIndex(repo, overrides);
     const index = await indexHandle.doc();
 
     // Check if we have any posts
@@ -141,19 +160,21 @@ export async function listBlogPosts(
  * Delete a blog post from the Automerge repository
  * @param slug - The slug of the blog post to delete
  * @param source - The sync source to use ('local', 'remote', or 'all'), defaults to 'all'
+ * @param overrides - Optional configuration overrides
  * @returns Promise<boolean> - True if post was found and deleted, false if not found
  * @throws Error if deletion fails
  */
 export async function deleteBlogPost(
   slug: string,
-  source: SyncSource = 'all'
+  source: SyncSource = 'all',
+  overrides?: Partial<CliConfig>
 ): Promise<boolean> {
   try {
     // Initialize Automerge repo
-    const repo = await initRepo(source);
+    const repo = await initRepo(source, overrides);
 
     // Get the blog index
-    const indexHandle = await getOrCreateIndex(repo);
+    const indexHandle = await getOrCreateIndex(repo, overrides);
 
     // Find the post ID by slug
     const postDocumentId = await findPostBySlug(indexHandle, slug);
