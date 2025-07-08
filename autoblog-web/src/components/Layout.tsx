@@ -1,24 +1,14 @@
-import { useState, useEffect, useRef } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
+import { Outlet, useLocation, Link } from 'react-router-dom'
 import { Sun, Moon } from 'lucide-react'
 import { SkipLink } from './SkipLink'
+import { useTheme } from '../hooks/useTheme'
 
 export function Layout() {
-  const [isDark, setIsDark] = useState(() => {
-    return document.documentElement.classList.contains('dark')
-  })
+  const { isDark, toggleTheme } = useTheme()
   const location = useLocation()
   const mainRef = useRef<HTMLElement>(null)
   const previousPathRef = useRef(location.pathname)
-
-  const toggleTheme = () => {
-    setIsDark(!isDark)
-    if (!isDark) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }
 
   // Focus management and route announcements
   useEffect(() => {
@@ -55,22 +45,25 @@ export function Layout() {
   }, [location])
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200 motion-reduce:transition-none">
       <SkipLink />
       <header className="border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
+            <Link
+              to="/"
+              className="flex items-center hover:opacity-80 transition-opacity"
+            >
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                 Autoblog
               </h1>
-              <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+              <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                 Web Viewer
               </span>
-            </div>
+            </Link>
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
               aria-label="Toggle theme"
             >
               {isDark ? (
