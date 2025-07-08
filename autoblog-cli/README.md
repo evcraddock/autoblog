@@ -239,7 +239,6 @@ npm run start -- --help
    npm run test:ui
    ```
 
-
 ## Testing
 
 The project uses Vitest for testing with comprehensive coverage:

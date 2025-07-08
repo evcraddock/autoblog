@@ -105,6 +105,6 @@ describe('CLI Entry Point', () => {
     const testOptions = { source: 'local' };
     await capturedActions['upload'](testFile, testOptions);
 
-    expect(uploadCommand).toHaveBeenCalledWith(testFile, 'local');
+    expect(uploadCommand).toHaveBeenCalledWith(testFile, 'local', testOptions);
   });
 });

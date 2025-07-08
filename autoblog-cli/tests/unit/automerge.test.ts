@@ -29,10 +29,18 @@ vi.mock('../../src/lib/index.js', () => ({
   removeFromIndex: vi.fn(),
 }));
 
+// Mock the config module
+vi.mock('../../src/lib/config.js', () => ({
+  getConfigManager: vi.fn(() => ({
+    loadConfig: vi.fn(),
+  })),
+}));
+
 // Import mocked modules
 import { Repo } from '@automerge/automerge-repo';
 import { NodeFSStorageAdapter } from '@automerge/automerge-repo-storage-nodefs';
 import { WebSocketClientAdapter } from '@automerge/automerge-repo-network-websocket';
+import { getConfigManager } from '../../src/lib/config.js';
 
 // Mock implementations
 const mockRepo = {
@@ -55,8 +63,20 @@ const mockIndexHandle = {
 };
 
 describe('Automerge Module', () => {
+  const mockConfigManager = {
+    loadConfig: vi.fn(),
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Setup config mock
+    (getConfigManager as any).mockReturnValue(mockConfigManager);
+    mockConfigManager.loadConfig.mockResolvedValue({
+      storage: { dataPath: './autoblog-data' },
+      network: { syncUrl: 'wss://sync.automerge.org' },
+      sync: { defaultSource: 'all' },
+    });
 
     // Setup basic mocks
     vi.mocked(NodeFSStorageAdapter).mockImplementation(

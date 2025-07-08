@@ -20,20 +20,24 @@ export async function deleteCommand(
     // Create config overrides from CLI options
     const configOverrides: Partial<CliConfig> = {};
     if (options?.syncUrl) {
-      configOverrides.network = { 
-        syncUrl: options.syncUrl, 
-        timeout: 30000 // Default timeout
+      configOverrides.network = {
+        syncUrl: options.syncUrl,
+        timeout: 30000, // Default timeout
       };
     }
     if (options?.dataPath) {
-      configOverrides.storage = { 
-        dataPath: options.dataPath, 
-        indexIdFile: 'index-id.txt' // Default index file
+      configOverrides.storage = {
+        dataPath: options.dataPath,
+        indexIdFile: 'index-id.txt', // Default index file
       };
     }
 
     // Delete the blog post
-    const wasDeleted = await deleteBlogPost(trimmedSlug, source, configOverrides);
+    const wasDeleted = await deleteBlogPost(
+      trimmedSlug,
+      source,
+      configOverrides
+    );
 
     if (!wasDeleted) {
       console.log(chalk.yellow(`Post not found with slug: ${trimmedSlug}`));

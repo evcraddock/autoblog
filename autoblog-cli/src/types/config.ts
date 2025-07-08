@@ -31,13 +31,13 @@ export interface ConfigLoader {
 export const DEFAULT_CONFIG: CliConfig = {
   network: {
     syncUrl: 'wss://sync.automerge.org',
-    timeout: 30000
+    timeout: 30000,
   },
   storage: {
     dataPath: '', // Will be set to OS-appropriate path
-    indexIdFile: 'index-id.txt'
+    indexIdFile: 'index-id.txt',
   },
   sync: {
-    defaultSource: 'all'
-  }
+    defaultSource: 'all',
+  },
 };

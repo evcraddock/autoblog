@@ -23,12 +23,22 @@ vi.mock('fs/promises', () => ({
 vi.mock('path', () => ({
   default: {
     dirname: vi.fn(),
+    join: vi.fn(),
   },
   dirname: vi.fn(),
+  join: vi.fn(),
+}));
+
+// Mock the config module
+vi.mock('../../src/lib/config.js', () => ({
+  getConfigManager: vi.fn(() => ({
+    loadConfig: vi.fn(),
+  })),
 }));
 
 import fs from 'fs/promises';
 import path from 'path';
+import { getConfigManager } from '../../src/lib/config.js';
 
 // Mock implementations
 const mockRepo = {
@@ -44,8 +54,28 @@ const mockDocHandle = {
 };
 
 describe('Index Module', () => {
+  const mockConfigManager = {
+    loadConfig: vi.fn(),
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Setup config mock
+    (getConfigManager as any).mockReturnValue(mockConfigManager);
+    mockConfigManager.loadConfig.mockResolvedValue({
+      storage: { dataPath: './autoblog-data', indexIdFile: 'index-id.txt' },
+      network: { syncUrl: 'wss://sync.automerge.org' },
+      sync: { defaultSource: 'all' },
+    });
+
+    // Setup path mocks
+    (path.join as any).mockImplementation((...args: string[]) =>
+      args.join('/')
+    );
+    (path.dirname as any).mockImplementation((p: string) =>
+      p.split('/').slice(0, -1).join('/')
+    );
 
     // Setup doc handle mocks
     mockDocHandle.change.mockImplementation((fn) => {

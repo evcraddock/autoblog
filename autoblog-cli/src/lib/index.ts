@@ -12,13 +12,18 @@ export async function getOrCreateIndex(
   // Load configuration
   const configManager = getConfigManager();
   const config = await configManager.loadConfig();
-  const finalConfig = overrides ? {
-    ...config,
-    storage: { ...config.storage, ...overrides.storage }
-  } : config;
+  const finalConfig = overrides
+    ? {
+        ...config,
+        storage: { ...config.storage, ...overrides.storage },
+      }
+    : config;
 
   // Build path to index ID file
-  const indexIdFile = path.join(finalConfig.storage.dataPath, finalConfig.storage.indexIdFile);
+  const indexIdFile = path.join(
+    finalConfig.storage.dataPath,
+    finalConfig.storage.indexIdFile
+  );
 
   // Try to load existing index document ID
   let indexDocumentId: string | null = null;

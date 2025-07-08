@@ -28,11 +28,16 @@ export class ConfigManager implements ConfigLoader {
     // Return OS-appropriate global config path
     switch (platform) {
       case 'win32':
-        return path.join(process.env.APPDATA || homeDir, 'autoblog', 'config.json');
+        return path.join(
+          process.env.APPDATA || homeDir,
+          'autoblog',
+          'config.json'
+        );
       case 'darwin':
       case 'linux':
       default:
-        const configHome = process.env.XDG_CONFIG_HOME || path.join(homeDir, '.config');
+        const configHome =
+          process.env.XDG_CONFIG_HOME || path.join(homeDir, '.config');
         return path.join(configHome, 'autoblog', 'config.json');
     }
   }
@@ -43,7 +48,9 @@ export class ConfigManager implements ConfigLoader {
     const cwd = process.cwd();
 
     // Check if we're using project-specific config
-    const projectConfigExists = this.fileExistsSync(path.join(cwd, '.autoblog', 'config.json'));
+    const projectConfigExists = this.fileExistsSync(
+      path.join(cwd, '.autoblog', 'config.json')
+    );
     if (projectConfigExists) {
       return path.join(cwd, '.autoblog', 'data');
     }
@@ -56,7 +63,8 @@ export class ConfigManager implements ConfigLoader {
         return path.join(homeDir, 'Library', 'Application Support', 'autoblog');
       case 'linux':
       default:
-        const dataHome = process.env.XDG_DATA_HOME || path.join(homeDir, '.local', 'share');
+        const dataHome =
+          process.env.XDG_DATA_HOME || path.join(homeDir, '.local', 'share');
         return path.join(dataHome, 'autoblog');
     }
   }
@@ -76,7 +84,10 @@ export class ConfigManager implements ConfigLoader {
     return configPath === projectConfigPath;
   }
 
-  private async createDefaultConfigFile(config: CliConfig, configPath: string): Promise<void> {
+  private async createDefaultConfigFile(
+    config: CliConfig,
+    configPath: string
+  ): Promise<void> {
     try {
       await fs.mkdir(path.dirname(configPath), { recursive: true });
       await fs.writeFile(configPath, JSON.stringify(config, null, 2));
@@ -105,8 +116,8 @@ export class ConfigManager implements ConfigLoader {
       ...DEFAULT_CONFIG,
       storage: {
         ...DEFAULT_CONFIG.storage,
-        dataPath: dataPath
-      }
+        dataPath: dataPath,
+      },
     };
 
     // Load from config file
@@ -131,20 +142,23 @@ export class ConfigManager implements ConfigLoader {
     return config;
   }
 
-  private mergeConfigs(base: CliConfig, override: Partial<CliConfig>): CliConfig {
+  private mergeConfigs(
+    base: CliConfig,
+    override: Partial<CliConfig>
+  ): CliConfig {
     return {
       network: {
         ...base.network,
-        ...override.network
+        ...override.network,
       },
       storage: {
         ...base.storage,
-        ...override.storage
+        ...override.storage,
       },
       sync: {
         ...base.sync,
-        ...override.sync
-      }
+        ...override.sync,
+      },
     };
   }
 
@@ -183,7 +197,7 @@ export class ConfigManager implements ConfigLoader {
 
     await fs.mkdir(path.dirname(configPath), { recursive: true });
     await fs.writeFile(configPath, JSON.stringify(newConfig, null, 2));
-    
+
     // Don't cache to ensure fresh configuration for each call
     // this.config = newConfig;
   }
@@ -195,7 +209,7 @@ export class ConfigManager implements ConfigLoader {
     } catch (error) {
       // File doesn't exist, that's fine
     }
-    
+
     // Don't cache to ensure fresh configuration for each call
     // this.config = null;
   }
@@ -203,7 +217,7 @@ export class ConfigManager implements ConfigLoader {
   async setConfigValue(key: string, value: any): Promise<void> {
     const config = await this.loadConfig();
     const keys = key.split('.');
-    
+
     let current: any = config;
     for (let i = 0; i < keys.length - 1; i++) {
       if (!(keys[i] in current)) {
@@ -211,7 +225,7 @@ export class ConfigManager implements ConfigLoader {
       }
       current = current[keys[i]];
     }
-    
+
     current[keys[keys.length - 1]] = value;
     await this.saveConfig(config);
   }
@@ -219,7 +233,7 @@ export class ConfigManager implements ConfigLoader {
   async getConfigValue(key: string): Promise<any> {
     const config = await this.loadConfig();
     const keys = key.split('.');
-    
+
     let current: any = config;
     for (const k of keys) {
       if (!(k in current)) {
@@ -227,7 +241,7 @@ export class ConfigManager implements ConfigLoader {
       }
       current = current[k];
     }
-    
+
     return current;
   }
 }

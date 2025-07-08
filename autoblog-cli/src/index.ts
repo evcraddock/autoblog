@@ -5,12 +5,12 @@ import chalk from 'chalk';
 import { uploadCommand } from './commands/upload.js';
 import { listCommand } from './commands/list.js';
 import { deleteCommand } from './commands/delete.js';
-import { 
-  configListCommand, 
-  configGetCommand, 
-  configSetCommand, 
-  configResetCommand, 
-  configPathCommand 
+import {
+  configListCommand,
+  configGetCommand,
+  configSetCommand,
+  configResetCommand,
+  configPathCommand,
 } from './commands/config.js';
 import { SyncSource } from './lib/automerge.js';
 

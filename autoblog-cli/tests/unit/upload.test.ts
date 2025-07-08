@@ -131,7 +131,8 @@ This is test content.`;
           description: 'A test blog post',
           content: '\n# Test Blog Post\n\nThis is test content.',
         },
-        'all'
+        'all',
+        {}
       );
       expect(mockProcessExit).toHaveBeenCalledWith(0);
     });
@@ -161,7 +162,8 @@ Minimal content.`;
           description: '',
           content: '\nMinimal content.',
         },
-        'all'
+        'all',
+        {}
       );
       expect(mockProcessExit).toHaveBeenCalledWith(0);
     });

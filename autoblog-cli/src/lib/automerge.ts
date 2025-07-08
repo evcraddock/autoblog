@@ -21,19 +21,24 @@ export type SyncSource = 'local' | 'remote' | 'all';
  * @returns Promise<Repo> - Configured Automerge repository instance
  * @throws Error if storage or network adapter creation fails
  */
-export async function initRepo(source: SyncSource = 'all', overrides?: Partial<CliConfig>): Promise<Repo> {
+export async function initRepo(
+  source: SyncSource = 'all',
+  overrides?: Partial<CliConfig>
+): Promise<Repo> {
   try {
     // Load configuration
     const configManager = getConfigManager();
     const config = await configManager.loadConfig();
-    
+
     // Apply any overrides
-    const finalConfig = overrides ? {
-      ...config,
-      network: { ...config.network, ...overrides.network },
-      storage: { ...config.storage, ...overrides.storage },
-      sync: { ...config.sync, ...overrides.sync }
-    } : config;
+    const finalConfig = overrides
+      ? {
+          ...config,
+          network: { ...config.network, ...overrides.network },
+          storage: { ...config.storage, ...overrides.storage },
+          sync: { ...config.sync, ...overrides.sync },
+        }
+      : config;
 
     // Start with empty repo config
     const repoConfig: any = {};
