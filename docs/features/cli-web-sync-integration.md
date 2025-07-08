@@ -106,20 +106,32 @@ To verify the integration works:
    node dist/index.js list
    ```
 
-### 5. Important Notes
+### 5. Testing Integration
 
-#### No Tests Were Updated
-**IMPORTANT**: No test files were updated during this integration. The existing tests in `/autoblog-web/src/services/__tests__/automerge.test.ts` still expect the old behavior and will fail. When tests need to be fixed:
+#### Test Updates Completed
+All test files have been updated to work with the CLI-web sync integration:
 
-1. Update test expectations to check for CLI index ID first
-2. Mock the `repo.find()` calls to handle the new priority order
-3. Update the hardcoded index IDs in tests from old values to `5yuf2779r3W6ntgFZgzR6S6RKiW`
+**autoblog-cli tests:**
+- Updated default sync source expectations from `'remote'` to `'all'` 
+- Fixed 6 failing tests in `tests/unit/list.test.ts` and `tests/unit/upload.test.ts`
+- All 97 tests now passing
+
+**autoblog-web tests:**
+- Updated `src/services/__tests__/automerge.test.ts` to handle new CLI index priority
+- Fixed test mocking for `getOrCreateIndex()` function's new call sequence
+- All 78 tests now passing
+
+#### Test Changes Made
+1. CLI tests updated to expect `'all'` as default sync source instead of `'remote'`
+2. Web tests updated to mock the CLI index check first, then localStorage fallback
+3. Test expectations updated to match the CLI index ID (`5yuf2779r3W6ntgFZgzR6S6RKiW`) priority
 
 #### Index Document Changes
 If the CLI's index document ID changes (e.g., if someone deletes and recreates the index), you must:
 1. Check the new ID in `autoblog-cli/autoblog-data/index-id.txt`
 2. Update the `CLI_INDEX_ID` constant in `automerge.ts`
-3. Clear browser localStorage to prevent conflicts
+3. Update the hardcoded CLI index ID in test files
+4. Clear browser localStorage to prevent conflicts
 
 #### Troubleshooting
 
@@ -145,8 +157,14 @@ If the CLI's index document ID changes (e.g., if someone deletes and recreates t
 2. `/autoblog-web/src/pages/HomePage.tsx`
    - Changed from `status: 'published'` to `status: 'all'`
 
-3. No test files were modified (tests will need updates when addressed)
+3. Test files updated to work with the new integration
 
 ## Summary
 
 The integration works by having the web app look for and use the same index document that the CLI uses. This creates a shared "catalog" of blog posts that both applications can read from and write to through Automerge's sync server. The key insight was that both apps need to reference the same index document ID to see the same posts.
+
+**Current Status: ✅ COMPLETE**
+- CLI-web sync integration fully implemented and tested
+- All test suites updated and passing (97 CLI tests + 78 web tests)
+- Build and lint checks passing for both projects
+- Ready for production use
