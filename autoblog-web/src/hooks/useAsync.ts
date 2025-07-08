@@ -98,6 +98,7 @@ export function useAsync<T>(
     if (immediate) {
       execute()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [immediate, execute, ...(deps || [])])
 
   return {

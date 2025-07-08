@@ -1,7 +1,7 @@
 import { useBlogPosts } from '../hooks/useAutomerge'
 import { PostList } from '../components/PostList'
 import { ErrorBoundary } from '../components/ErrorBoundary'
-import { useErrorHandler } from '../contexts/ErrorContext'
+import { useErrorHandler } from '../hooks/errorHooks'
 
 export function HomePage() {
   const { posts, isLoading } = useBlogPosts({ status: 'all' })

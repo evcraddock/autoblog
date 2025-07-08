@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { X, AlertCircle, CheckCircle, Info, AlertTriangle } from 'lucide-react'
-import { useError } from '../contexts/ErrorContext'
+import { useError } from '../hooks/useError'
 
 export interface ErrorToastProps {
   id: string

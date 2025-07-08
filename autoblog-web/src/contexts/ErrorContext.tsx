@@ -1,11 +1,10 @@
 import {
-  createContext,
-  useContext,
   useCallback,
   useReducer,
   ReactNode,
 } from 'react'
 import { AutomergeError } from '../utils/errorHandling'
+import { ErrorContext } from './ErrorContextDefinition'
 
 export interface ErrorState {
   id: string
@@ -103,10 +102,6 @@ function errorReducer(
   }
 }
 
-const ErrorContext = createContext<
-  (ErrorContextState & ErrorContextActions) | null
->(null)
-
 export interface ErrorProviderProps {
   children: ReactNode
   maxErrors?: number
@@ -142,7 +137,7 @@ export function ErrorProvider({
       // Return the ID for the new error (we need to generate it here too)
       return generateId()
     },
-    [state.errors.length, maxErrors, dispatch]
+    [state.errors, maxErrors, dispatch]
   )
 
   const removeError = useCallback((id: string) => {
@@ -173,33 +168,6 @@ export function ErrorProvider({
   return <ErrorContext.Provider value={value}>{children}</ErrorContext.Provider>
 }
 
-export function useError() {
-  const context = useContext(ErrorContext)
-  if (!context) {
-    throw new Error('useError must be used within an ErrorProvider')
-  }
-  return context
-}
 
-export function useErrorHandler() {
-  const { addError } = useError()
-
-  return useCallback(
-    (error: unknown, context?: string) => {
-      if (error instanceof AutomergeError) {
-        return addError(error, context)
-      }
-
-      const automergeError = new AutomergeError(
-        error instanceof Error ? error.message : String(error),
-        'unknown',
-        error instanceof Error ? error : undefined
-      )
-
-      return addError(automergeError, context)
-    },
-    [addError]
-  )
-}
 
 export default ErrorProvider
