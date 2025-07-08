@@ -44,7 +44,10 @@ export function sanitizeErrorMessage(message: string): string {
   // Remove sensitive information from error messages
   return message
     .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, '[email]')
-    .replace(/\b(?:https?:\/\/)?[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g, '[url]')
+    .replace(
+      /\b(?:https?:\/\/)?[A-Za-z0-9.-]+\.[A-Za-z]{2,}(?:\/\S*)?\b/g,
+      '[url]'
+    )
     .replace(
       /\b[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}\b/g,
       '[uuid]'
@@ -61,15 +64,22 @@ export function handleError(error: unknown, context: string): AutomergeError {
   // Determine error type based on message content
   let type: 'network' | 'storage' | 'document' | 'unknown' = 'unknown'
 
+  const lowerMessage = message.toLowerCase()
   if (
-    message.includes('network') ||
-    message.includes('websocket') ||
-    message.includes('connection')
+    lowerMessage.includes('network') ||
+    lowerMessage.includes('websocket') ||
+    lowerMessage.includes('connection')
   ) {
     type = 'network'
-  } else if (message.includes('storage') || message.includes('indexeddb')) {
+  } else if (
+    lowerMessage.includes('storage') ||
+    lowerMessage.includes('indexeddb')
+  ) {
     type = 'storage'
-  } else if (message.includes('document') || message.includes('not found')) {
+  } else if (
+    lowerMessage.includes('document') ||
+    lowerMessage.includes('not found')
+  ) {
     type = 'document'
   }
 
@@ -136,5 +146,8 @@ export function shouldRetryNetworkError(error: Error): boolean {
 }
 
 export function shouldRetryStorageError(error: Error): boolean {
-  return isStorageError(error) && !error.message.includes('quota exceeded')
+  return (
+    isStorageError(error) &&
+    !error.message.toLowerCase().includes('quota exceeded')
+  )
 }
