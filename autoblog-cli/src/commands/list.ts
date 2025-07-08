@@ -3,9 +3,7 @@ import Table from 'cli-table3';
 import { listBlogPosts, SyncSource } from '../lib/automerge.js';
 import type { BlogPost } from '../types/index.js';
 
-export async function listCommand(
-  source: SyncSource = 'all'
-): Promise<void> {
+export async function listCommand(source: SyncSource = 'all'): Promise<void> {
   try {
     console.log(chalk.blue(`📚 Fetching blog posts from ${source} source...`));
 
@@ -19,10 +17,12 @@ export async function listCommand(
       return;
     }
 
-    const sourceIndicator = 
-      source === 'local' ? '📱 Local' : 
-      source === 'remote' ? '🌐 Remote' : 
-      '🔄 All';
+    const sourceIndicator =
+      source === 'local'
+        ? '📱 Local'
+        : source === 'remote'
+          ? '🌐 Remote'
+          : '🔄 All';
     console.log(
       chalk.green(`\nFound ${posts.length} posts (${sourceIndicator}):\n`)
     );
