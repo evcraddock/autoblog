@@ -1,12 +1,15 @@
 import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 import { AutomergeProvider } from './contexts/AutomergeContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 
 function App() {
   return (
-    <AutomergeProvider>
-      <RouterProvider router={router} />
-    </AutomergeProvider>
+    <ThemeProvider>
+      <AutomergeProvider>
+        <RouterProvider router={router} />
+      </AutomergeProvider>
+    </ThemeProvider>
   )
 }
 

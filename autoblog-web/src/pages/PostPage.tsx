@@ -1,10 +1,12 @@
 import { useParams, Link } from 'react-router-dom'
 import MarkdownRenderer from '../components/MarkdownRenderer'
 import { useBlogPost } from '../hooks/useAutomerge'
+import { useTheme } from '../contexts/ThemeContext'
 
 export function PostPage() {
   const { slug } = useParams<{ slug: string }>()
   const { post, notFound } = useBlogPost(slug || '')
+  const { isDark } = useTheme()
 
   const isLoading = !post && !notFound
 
@@ -98,7 +100,7 @@ export function PostPage() {
         </Link>
       </nav>
 
-      <article className="max-w-4xl mx-auto">
+      <article className="max-w-6xl mx-auto">
         {/* Post Header */}
         <header className="mb-8">
           <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
@@ -109,16 +111,14 @@ export function PostPage() {
             <time dateTime={post.published.toISOString()}>
               {formatDate(post.published)}
             </time>
-            <span>•</span>
-            <span
-              className={`px-2 py-1 rounded text-sm ${
-                post.status === 'published'
-                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                  : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-              }`}
-            >
-              {post.status}
-            </span>
+            {post.status === 'draft' && (
+              <>
+                <span>•</span>
+                <span className="px-2 py-1 rounded text-sm bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100">
+                  {post.status}
+                </span>
+              </>
+            )}
           </div>
 
           {post.description && (
@@ -139,8 +139,12 @@ export function PostPage() {
         </header>
 
         {/* Post Content */}
-        <div className="prose prose-lg dark:prose-invert max-w-none">
-          <MarkdownRenderer content={post.content} />
+        <div>
+          <MarkdownRenderer
+            content={post.content}
+            className="prose-lg"
+            isDark={isDark}
+          />
         </div>
       </article>
     </div>

@@ -44,22 +44,20 @@ export function PostCard({ post, viewMode }: PostCardProps) {
             </Link>
           </h2>
 
-          <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex flex-wrap gap-4 text-sm text-gray-700 dark:text-gray-300">
             <span>By {post.author}</span>
             <span>•</span>
             <time dateTime={post.published.toISOString()}>
               {formatDate(post.published)}
             </time>
-            <span>•</span>
-            <span
-              className={`px-2 py-1 rounded text-xs ${
-                post.status === 'published'
-                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                  : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-              }`}
-            >
-              {post.status}
-            </span>
+            {post.status === 'draft' && (
+              <>
+                <span>•</span>
+                <span className="px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100">
+                  {post.status}
+                </span>
+              </>
+            )}
           </div>
         </header>
 
