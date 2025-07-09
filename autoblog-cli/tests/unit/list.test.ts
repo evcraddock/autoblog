@@ -71,12 +71,12 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('all', {});
+    expect(mockListBlogPosts).toHaveBeenCalledWith({});
     expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('BLUE: 📚 Fetching blog posts from all source...')
+      expect.stringContaining('BLUE: 📚 Fetching blog posts...')
     );
     expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Found 2 posts (🔄 All)')
+      expect.stringContaining('Found 2 posts')
     );
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('Another Post')
@@ -93,7 +93,7 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('all', {});
+    expect(mockListBlogPosts).toHaveBeenCalledWith({});
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('YELLOW: No blog posts found')
     );
@@ -133,7 +133,7 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('all', {});
+    expect(mockListBlogPosts).toHaveBeenCalledWith({});
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('First Post')
     );
@@ -149,46 +149,9 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith('all', {});
+    expect(mockListBlogPosts).toHaveBeenCalledWith({});
     expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('BLUE: 📚 Fetching blog posts from all source...')
+      expect.stringContaining('BLUE: 📚 Fetching blog posts...')
     );
-  });
-
-  it('should use local source when specified', async () => {
-    mockListBlogPosts.mockResolvedValue([]);
-
-    await listCommand('local');
-    vi.runAllTimers();
-
-    expect(mockListBlogPosts).toHaveBeenCalledWith('local', {});
-    expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'BLUE: 📚 Fetching blog posts from local source...'
-      )
-    );
-  });
-
-  it('should use remote source when explicitly specified', async () => {
-    mockListBlogPosts.mockResolvedValue([]);
-
-    await listCommand('remote');
-    vi.runAllTimers();
-
-    expect(mockListBlogPosts).toHaveBeenCalledWith('remote', {});
-    expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'BLUE: 📚 Fetching blog posts from remote source...'
-      )
-    );
-  });
-
-  it('should handle invalid source parameter', async () => {
-    mockListBlogPosts.mockResolvedValue([]);
-
-    await listCommand('invalid' as any);
-    vi.runAllTimers();
-
-    expect(mockListBlogPosts).toHaveBeenCalledWith('invalid', {});
   });
 });

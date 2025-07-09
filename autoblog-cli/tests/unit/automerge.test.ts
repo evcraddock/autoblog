@@ -148,10 +148,13 @@ describe('Automerge Module', () => {
   });
 
   describe('initRepo', () => {
-    it('should create repo with storage adapter', async () => {
+    it('should create repo with storage and network adapters', async () => {
       const repo = await initRepo();
 
       expect(NodeFSStorageAdapter).toHaveBeenCalledWith('./autoblog-data');
+      expect(WebSocketClientAdapter).toHaveBeenCalledWith(
+        'wss://sync.automerge.org'
+      );
       expect(Repo).toHaveBeenCalledWith({
         storage: expect.objectContaining({
           path: './autoblog-data',
@@ -165,18 +168,6 @@ describe('Automerge Module', () => {
         ],
       });
       expect(repo).toBeDefined();
-    });
-
-    it('should create repo with local source (no network)', async () => {
-      await initRepo('local');
-
-      expect(WebSocketClientAdapter).not.toHaveBeenCalled();
-      expect(Repo).toHaveBeenCalledWith({
-        storage: expect.objectContaining({
-          path: './autoblog-data',
-          type: 'NodeFSStorageAdapter',
-        }),
-      });
     });
 
     it('should handle initialization errors', async () => {
@@ -420,27 +411,43 @@ describe('Automerge Module', () => {
       expect(deleted).toBe(true);
     });
 
-    it('should handle multiple posts with different sync sources', async () => {
-      const localPost: Partial<BlogPost> = {
-        title: 'Local Post',
-        slug: 'local-post',
-        content: 'Local content',
+    it('should handle multiple posts upload and retrieval', async () => {
+      // Mock the behavior for multiple posts
+      mockIndexHandle.doc.mockResolvedValue({
+        posts: {
+          'first-post': 'first-doc-id',
+          'second-post': 'second-doc-id',
+        },
+        lastUpdated: new Date(),
+      });
+
+      const firstDocHandle = {
+        ...mockDocHandle,
+        doc: vi.fn().mockResolvedValue({
+          title: 'First Post',
+          slug: 'first-post',
+          content: 'First post content',
+        }),
       };
 
-      const remotePost: Partial<BlogPost> = {
-        title: 'Remote Post',
-        slug: 'remote-post',
-        content: 'Remote content',
+      const secondDocHandle = {
+        ...mockDocHandle,
+        doc: vi.fn().mockResolvedValue({
+          title: 'Second Post',
+          slug: 'second-post',
+          content: 'Second post content',
+        }),
       };
 
-      await uploadBlogPost(localPost, 'local');
-      await uploadBlogPost(remotePost, 'remote');
+      mockRepo.find
+        .mockResolvedValueOnce(firstDocHandle)
+        .mockResolvedValueOnce(secondDocHandle);
 
-      const localPosts = await listBlogPosts('local');
-      const remotePosts = await listBlogPosts('remote');
+      const posts = await listBlogPosts();
 
-      expect(localPosts).toHaveLength(1);
-      expect(remotePosts).toHaveLength(1);
+      expect(posts).toHaveLength(2);
+      expect(posts[0].title).toBe('First Post');
+      expect(posts[1].title).toBe('Second Post');
     });
   });
 });

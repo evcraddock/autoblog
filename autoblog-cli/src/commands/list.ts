@@ -1,15 +1,16 @@
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import { listBlogPosts, SyncSource } from '../lib/automerge.js';
+import { listBlogPosts } from '../lib/automerge.js';
 import type { BlogPost } from '../types/index.js';
 import type { CliConfig } from '../types/config.js';
 
-export async function listCommand(
-  source: SyncSource = 'all',
-  options?: { syncUrl?: string; dataPath?: string; [key: string]: any }
-): Promise<void> {
+export async function listCommand(options?: {
+  syncUrl?: string;
+  dataPath?: string;
+  [key: string]: any;
+}): Promise<void> {
   try {
-    console.log(chalk.blue(`📚 Fetching blog posts from ${source} source...`));
+    console.log(chalk.blue(`📚 Fetching blog posts...`));
 
     // Create config overrides from CLI options
     const configOverrides: Partial<CliConfig> = {};
@@ -27,7 +28,7 @@ export async function listCommand(
     }
 
     // Get all blog posts
-    const posts = await listBlogPosts(source, configOverrides);
+    const posts = await listBlogPosts(configOverrides);
 
     // Check if we have any posts
     if (posts.length === 0) {
@@ -36,15 +37,7 @@ export async function listCommand(
       return;
     }
 
-    const sourceIndicator =
-      source === 'local'
-        ? '📱 Local'
-        : source === 'remote'
-          ? '🌐 Remote'
-          : '🔄 All';
-    console.log(
-      chalk.green(`\nFound ${posts.length} posts (${sourceIndicator}):\n`)
-    );
+    console.log(chalk.green(`\nFound ${posts.length} posts:\n`));
 
     // Create a table for display
     const table = new Table({

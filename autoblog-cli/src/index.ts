@@ -12,7 +12,6 @@ import {
   configResetCommand,
   configPathCommand,
 } from './commands/config.js';
-import { SyncSource } from './lib/automerge.js';
 
 const program = new Command();
 
@@ -24,16 +23,11 @@ program
 program
   .command('upload <file>')
   .description('Upload a markdown file to the blog')
-  .option('--source [source]', 'Sync source: local, remote, or all', 'all')
   .option('--sync-url [url]', 'Override sync URL for this command')
   .option('--data-path [path]', 'Override data path for this command')
   .action(async (file: string, options) => {
     try {
-      const source = options.source as SyncSource;
-      if (source !== 'local' && source !== 'remote' && source !== 'all') {
-        throw new Error('Source must be "local", "remote", or "all"');
-      }
-      await uploadCommand(file, source, options);
+      await uploadCommand(file, options);
     } catch (error) {
       console.error(
         chalk.red(
@@ -48,16 +42,11 @@ program
 program
   .command('list')
   .description('List all blog posts')
-  .option('--source [source]', 'Sync source: local, remote, or all', 'all')
   .option('--sync-url [url]', 'Override sync URL for this command')
   .option('--data-path [path]', 'Override data path for this command')
   .action(async (options) => {
     try {
-      const source = options.source as SyncSource;
-      if (source !== 'local' && source !== 'remote' && source !== 'all') {
-        throw new Error('Source must be "local", "remote", or "all"');
-      }
-      await listCommand(source, options);
+      await listCommand(options);
     } catch (error) {
       console.error(
         chalk.red(
@@ -72,16 +61,11 @@ program
 program
   .command('delete <slug>')
   .description('Delete a blog post by its slug')
-  .option('--source [source]', 'Sync source: local, remote, or all', 'all')
   .option('--sync-url [url]', 'Override sync URL for this command')
   .option('--data-path [path]', 'Override data path for this command')
   .action(async (slug: string, options) => {
     try {
-      const source = options.source as SyncSource;
-      if (source !== 'local' && source !== 'remote' && source !== 'all') {
-        throw new Error('Source must be "local", "remote", or "all"');
-      }
-      await deleteCommand(slug, source, options);
+      await deleteCommand(slug, options);
     } catch (error) {
       console.error(
         chalk.red(

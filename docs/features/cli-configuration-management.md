@@ -59,9 +59,6 @@ The complete configuration schema with default values:
   "storage": {
     "dataPath": "/path/to/os/appropriate/data/dir",
     "indexIdFile": "index-id.txt"
-  },
-  "sync": {
-    "defaultSource": "all"
   }
 }
 ```
@@ -88,12 +85,6 @@ The complete configuration schema with default values:
   - Default: `"index-id.txt"`
   - Purpose: Relative path within dataPath for index tracking
 
-#### Sync Configuration
-
-- **`defaultSource`** (string): Default synchronization behavior
-  - Default: `"all"`
-  - Options: `"local"`, `"remote"`, `"all"`
-  - Purpose: Controls whether operations sync locally, remotely, or both
 
 ## Environment Variables
 
@@ -106,9 +97,6 @@ export AUTOBLOG_TIMEOUT=60000
 
 # Storage configuration
 export AUTOBLOG_DATA_PATH="~/my-blog-data"
-
-# Sync configuration
-export AUTOBLOG_SYNC_SOURCE="local"
 ```
 
 Environment variables take precedence over both global and project configuration files.

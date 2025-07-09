@@ -167,10 +167,6 @@ export class ConfigManager implements ConfigLoader {
         ...base.storage,
         ...override.storage,
       },
-      sync: {
-        ...base.sync,
-        ...override.sync,
-      },
     };
   }
 
@@ -190,13 +186,6 @@ export class ConfigManager implements ConfigLoader {
 
     if (process.env.AUTOBLOG_DATA_PATH) {
       result.storage.dataPath = process.env.AUTOBLOG_DATA_PATH;
-    }
-
-    if (process.env.AUTOBLOG_SYNC_SOURCE) {
-      const source = process.env.AUTOBLOG_SYNC_SOURCE;
-      if (source === 'local' || source === 'remote' || source === 'all') {
-        result.sync.defaultSource = source;
-      }
     }
 
     return result;

@@ -102,9 +102,9 @@ describe('CLI Entry Point', () => {
     await import('../../src/index.js');
 
     const testFile = 'test-post.md';
-    const testOptions = { source: 'local' };
+    const testOptions = { syncUrl: 'wss://test.com' };
     await capturedActions['upload'](testFile, testOptions);
 
-    expect(uploadCommand).toHaveBeenCalledWith(testFile, 'local', testOptions);
+    expect(uploadCommand).toHaveBeenCalledWith(testFile, testOptions);
   });
 });
