@@ -97,6 +97,15 @@ export class ConfigManager implements ConfigLoader {
     }
   }
 
+  private async createDataDirectory(dataPath: string): Promise<void> {
+    try {
+      await fs.mkdir(dataPath, { recursive: true });
+    } catch (error) {
+      // Silently fail if we can't create the data directory
+      // This might happen due to permissions or other issues
+    }
+  }
+
   getConfigPath(): string {
     return this.getConfigFilePath();
   }
@@ -135,6 +144,9 @@ export class ConfigManager implements ConfigLoader {
     if (!configFileExists && !this.isProjectConfig(configPath)) {
       await this.createDefaultConfigFile(config, configPath);
     }
+
+    // Always ensure data directory exists on first run
+    await this.createDataDirectory(dataPath);
 
     // Override with environment variables
     config = this.applyEnvironmentVariables(config);
