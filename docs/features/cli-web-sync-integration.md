@@ -81,28 +81,23 @@ export function HomePage() {
 - Both sync through the same WebSocket server at `wss://sync.automerge.org`
 
 #### Sync Behavior
-- CLI with `--source local`: Only uses local filesystem storage
-- CLI with `--source remote`: Only uses WebSocket sync (no local storage)
-- CLI with `--source all` (default): Uses both local storage and WebSocket sync
-- Web app defaults to `remote` source: Always uses IndexedDB + WebSocket sync
+- CLI: Always uses both local filesystem storage and WebSocket sync
+- Web app: Always uses IndexedDB + WebSocket sync
 
 ### 4. Testing the Integration
 
 To verify the integration works:
 
-1. **Upload a post via CLI with remote sync**:
+1. **Upload a post via CLI**:
    ```bash
-   node dist/index.js upload test-post.md --source remote
+   node dist/index.js upload test-post.md
    ```
 
 2. **Check the web app**: Posts should appear within seconds at `http://localhost:3001`
 
 3. **Verify sync status**:
    ```bash
-   # Check what's on remote
-   node dist/index.js list --source remote
-   
-   # Check what's local + remote
+   # Check all posts (both local and remote)
    node dist/index.js list
    ```
 
@@ -112,9 +107,9 @@ To verify the integration works:
 All test files have been updated to work with the CLI-web sync integration:
 
 **autoblog-cli tests:**
-- Updated default sync source expectations from `'remote'` to `'all'` 
-- Fixed 6 failing tests in `tests/unit/list.test.ts` and `tests/unit/upload.test.ts`
-- All 97 tests now passing
+- Updated tests to work without sync source parameters
+- Fixed failing tests across all test files
+- All tests now passing
 
 **autoblog-web tests:**
 - Updated `src/services/__tests__/automerge.test.ts` to handle new CLI index priority
@@ -122,7 +117,7 @@ All test files have been updated to work with the CLI-web sync integration:
 - All 78 tests now passing
 
 #### Test Changes Made
-1. CLI tests updated to expect `'all'` as default sync source instead of `'remote'`
+1. CLI tests updated to work without sync source parameters
 2. Web tests updated to mock the CLI index check first, then localStorage fallback
 3. Test expectations updated to match the CLI index ID (`5yuf2779r3W6ntgFZgzR6S6RKiW`) priority
 
@@ -136,15 +131,15 @@ If the CLI's index document ID changes (e.g., if someone deletes and recreates t
 #### Troubleshooting
 
 **Posts not appearing in web app**:
-- Ensure CLI uploads use `--source remote` or default (no source flag)
+- Ensure CLI uploads are successful (they automatically sync to remote)
 - Check browser console for connection errors
 - Verify the index ID hasn't changed
 - Clear browser localStorage and reload
 
 **Different post counts between CLI and web**:
-- Posts uploaded with `--source local` won't sync to web
-- Use `node dist/index.js list --source remote` to see what web should show
-- The web app only sees posts that have synced to the remote server
+- All CLI uploads automatically sync to remote, so counts should match
+- Use `node dist/index.js list` to see all posts
+- The web app sees all posts that have synced to the remote server
 
 ### 6. Files Modified
 

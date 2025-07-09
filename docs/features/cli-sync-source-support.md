@@ -1,182 +1,57 @@
-# Sync Source Support
+# CLI Sync Source Support - DEPRECATED
 
-## Purpose
+## Status: REMOVED
 
-Sync source support allows all Autoblog CLI commands to operate in either local-only mode or with remote synchronization. This feature provides flexibility for users to work offline, maintain private local blogs, or sync content across devices using Automerge's distributed architecture.
+**This feature has been removed as of the latest version.** The CLI now always uses both local storage and remote synchronization without configuration options.
 
-## Implementation Details
+## Summary of Changes
 
-### Core Components
+The sync source support system that allowed users to choose between 'local', 'remote', or 'all' synchronization modes has been simplified. The CLI now:
 
-1. **Repository Initialization**: `src/lib/automerge.ts`
-   - `initRepo(source)` configures storage and network
-   - Conditional network adapter based on source
-   - Same storage location for both modes
+- **Always uses NodeFSStorageAdapter** for local filesystem storage
+- **Always uses WebSocketClientAdapter** for remote synchronization to `wss://sync.automerge.org`
+- **Removed the `--source` CLI option** from all commands
+- **Removed the `sync.defaultSource` configuration** option
 
-2. **Source Type Definition**:
-   ```typescript
-   export type SyncSource = 'local' | 'remote';
-   ```
+## Migration Guide
 
-3. **Command Integration**:
-   - All commands accept `--source` option
-   - Default value: 'remote'
-   - Passed to repository initialization
-
-### Configuration Modes
-
-#### Local Mode (`--source local`)
-- **Storage**: NodeFS adapter at `./autoblog-data/`
-- **Network**: No network adapter configured
-- **Behavior**: 
-  - All operations are offline
-  - No WebSocket connections
-  - Data stays on local machine
-  - Fast operations, no network latency
-
-#### Remote Mode (`--source remote`)
-- **Storage**: NodeFS adapter at `./autoblog-data/`
-- **Network**: WebSocket to `wss://sync.automerge.org`
-- **Behavior**:
-  - Automatic synchronization
-  - Cross-device accessibility
-  - Real-time updates
-  - Requires internet connection
-
-## Usage Examples
-
-### Upload Commands
+### Before (Deprecated)
 ```bash
-# Upload with remote sync (default)
-autoblog upload post.md
-
-# Upload to local storage only
+# These commands no longer work
 autoblog upload post.md --source local
-
-# Explicitly specify remote
-autoblog upload post.md --source remote
+autoblog upload post.md --source remote  
+autoblog upload post.md --source all
 ```
 
-### List Commands
+### After (Current)
 ```bash
-# List from remote (includes synced posts)
-autoblog list
-
-# List from local storage only
-autoblog list --source local
+# This is now the only way to use the CLI
+autoblog upload post.md  # Uses both local storage and remote sync
 ```
 
-### Delete Commands
-```bash
-# Delete from remote
-autoblog delete my-post
+## Benefits of Simplification
 
-# Delete from local only
-autoblog delete my-post --source local
+1. **Reduced Complexity**: No conditional logic for different sync modes
+2. **Better Reliability**: Local storage ensures data persistence even during network issues
+3. **Consistent Behavior**: All users get the same reliable local-first experience
+4. **Simplified Configuration**: Fewer options to configure and maintain
+
+## Architecture
+
+The CLI now always initializes both adapters:
+
+```typescript
+const repoConfig = {
+  storage: new NodeFSStorageAdapter(dataPath),
+  network: [new WebSocketClientAdapter(syncUrl)]
+};
 ```
 
-## Technical Decisions
+This provides a robust local-first architecture with automatic cloud synchronization for cross-device access.
 
-### Unified Storage Location
-- Both modes use `./autoblog-data/`
-- Simplifies data management
-- Easy to switch between modes
-- No data duplication
+## See Also
 
-### Default to Remote
-- Encourages distributed usage
-- Matches typical blog workflow
-- Local mode for special cases
-- Explicit opt-in for offline
-
-### Network Adapter Strategy
-- Conditional initialization
-- No adapter for local mode
-- Clean separation of concerns
-- Reduces resource usage offline
-
-### Public Sync Server
-- Uses `wss://sync.automerge.org`
-- No server setup required
-- Free for public data
-- Well-maintained infrastructure
-
-## Error Handling
-
-### Network Failures (Remote Mode)
-- Connection errors logged
-- Operations may timeout
-- Local changes preserved
-- Sync resumes when online
-
-### Local Mode Constraints
-- No cross-device sync
-- Manual backup needed
-- No collaboration features
-- Data isolation guaranteed
-
-## Testing
-
-### Unit Tests
-- Mock network adapter creation
-- Verify correct mode configuration
-- Test both source options
-- Ensure proper initialization
-
-### Integration Scenarios
-1. **Mode Switching**: Same data accessible in both modes
-2. **Offline First**: Local mode works without network
-3. **Sync Verification**: Remote mode connects properly
-4. **Error Resilience**: Graceful network failures
-
-## Use Cases
-
-### Local Mode Use Cases
-1. **Private Blogs**: Content never leaves machine
-2. **Development**: Fast iteration without sync delays
-3. **Offline Writing**: Work without internet
-4. **Compliance**: Data residency requirements
-
-### Remote Mode Use Cases
-1. **Multi-Device**: Write on laptop, publish from server
-2. **Collaboration**: Multiple authors (future)
-3. **Backup**: Automatic off-site storage
-4. **Publishing**: Web viewer can access posts
-
-## Migration Scenarios
-
-### Local to Remote
-1. Start with `--source local`
-2. Write posts offline
-3. Switch to `--source remote`
-4. Existing posts sync automatically
-
-### Remote to Local
-1. Use `--source remote` normally
-2. Switch to `--source local`
-3. Previously synced posts available
-4. New changes stay local
-
-## Verification Status
-
-✅ **VERIFIED COMPLETE** - All documented features are fully implemented and tested.
-
-### Implementation Notes
-- SyncSource type definition exists and is used correctly
-- initRepo function properly supports both local and remote modes
-- All commands (upload, list, delete) accept --source option
-- Local mode uses NodeFS adapter without network connections
-- Remote mode uses NodeFS + WebSocket to wss://sync.automerge.org
-- Unified storage location (./autoblog-data/) working for both modes
-- Comprehensive unit tests for core sync functionality
-
-### Configuration Discrepancy Found
-- **Documentation states**: Default source is 'remote'
-- **CLI implementation**: Default source is 'local' (lines 20, 42, 64 in index.ts)
-- **Library function**: Defaults to 'remote' when no parameter passed
-- **Impact**: Inconsistent default behavior between CLI and docs
-
-### Recommendations
-- Update CLI defaults to 'remote' to match documentation
-- OR update documentation to reflect 'local' as the actual default
-- Add integration tests for CLI --source option usage
+- [CLI Configuration Management](./cli-configuration-management.md) - Updated configuration options
+- [CLI Upload Command](./cli-upload-command.md) - Updated command usage
+- [CLI List Command](./cli-list-command.md) - Updated command usage
+- [CLI Delete Command](./cli-delete-command.md) - Updated command usage

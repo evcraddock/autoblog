@@ -8,7 +8,7 @@ A command-line interface for managing markdown files in the Automerge-powered bl
 
 Autoblog CLI allows authors to upload markdown files to a local-first blog system built on Automerge 2.0. It parses markdown files with frontmatter, creates Automerge documents, and syncs them across devices using CRDT technology.
 
-By default, all commands sync with both local storage and the Automerge sync server at `wss://sync.automerge.org` for cross-device synchronization. The CLI supports flexible configuration through config files, environment variables, and command-line options.
+The CLI uses both local storage and the Automerge sync server at `wss://sync.automerge.org` for reliable local-first operation with cross-device synchronization. The CLI supports flexible configuration through config files, environment variables, and command-line options.
 
 ## Installation
 
@@ -65,9 +65,6 @@ Autoblog CLI supports flexible configuration through multiple methods with clear
   "storage": {
     "dataPath": "~/.local/share/autoblog",
     "indexIdFile": "index-id.txt"
-  },
-  "sync": {
-    "defaultSource": "all"
   }
 }
 ```
@@ -84,7 +81,6 @@ Autoblog CLI supports flexible configuration through multiple methods with clear
 ```bash
 AUTOBLOG_SYNC_URL=wss://sync.automerge.org
 AUTOBLOG_DATA_PATH=~/.local/share/autoblog
-AUTOBLOG_SYNC_SOURCE=all
 AUTOBLOG_TIMEOUT=30000
 ```
 
@@ -111,14 +107,6 @@ autoblog config path
 
 ## Usage
 
-### Sync Options
-
-All commands support a `--source` option to control where data is stored and synced:
-
-- `--source all` (default): Syncs with both local storage and remote server
-- `--source local`: Works with local storage only (no network sync)
-- `--source remote`: Works with remote server only (no local storage)
-
 ### Configuration Overrides
 
 All commands support configuration override options:
@@ -129,14 +117,8 @@ All commands support configuration override options:
 ### Upload a Blog Post
 
 ```bash
-# Upload a markdown file (syncs to both local and remote by default)
+# Upload a markdown file (uses both local storage and remote sync)
 autoblog upload post.md
-
-# Upload to local storage only
-autoblog upload post.md --source local
-
-# Upload to remote only
-autoblog upload post.md --source remote
 
 # Override sync URL for this command
 autoblog upload post.md --sync-url wss://custom.sync.server
@@ -151,14 +133,8 @@ npm run start upload post.md
 ### List All Blog Posts
 
 ```bash
-# List all posts (from both local and remote by default)
+# List all posts (from both local storage and remote sync)
 autoblog list
-
-# List posts from local storage only
-autoblog list --source local
-
-# List posts from remote only
-autoblog list --source remote
 
 # Override sync URL for this command
 autoblog list --sync-url wss://custom.sync.server
@@ -173,14 +149,8 @@ npm run start list
 ### Delete a Blog Post
 
 ```bash
-# Delete a post by its slug (from both local and remote by default)
+# Delete a post by its slug (removes from both local storage and remote sync)
 autoblog delete <slug>
-
-# Delete from local storage only
-autoblog delete <slug> --source local
-
-# Delete from remote only
-autoblog delete <slug> --source remote
 
 # Override sync URL for this command
 autoblog delete <slug> --sync-url wss://custom.sync.server
