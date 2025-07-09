@@ -1,14 +1,13 @@
 import fs from 'fs/promises';
 import path from 'path';
 import chalk from 'chalk';
-import { uploadBlogPost, SyncSource } from '../lib/automerge.js';
+import { uploadBlogPost } from '../lib/automerge.js';
 import { parseMarkdownFile, generateSlug } from '../lib/parser.js';
 import type { BlogPost } from '../types/index.js';
 import type { CliConfig } from '../types/config.js';
 
 export async function uploadCommand(
   filePath: string,
-  source: SyncSource = 'all',
   options?: { syncUrl?: string; dataPath?: string; [key: string]: any }
 ): Promise<void> {
   // Validate file path is provided
@@ -85,7 +84,7 @@ export async function uploadCommand(
     }
 
     // Upload the blog post
-    const documentId = await uploadBlogPost(blogPost, source, configOverrides);
+    const documentId = await uploadBlogPost(blogPost, configOverrides);
 
     console.log(chalk.green(`✅ Successfully uploaded blog post!`));
     console.log(chalk.blue(`   📄 Title: ${blogPost.title}`));

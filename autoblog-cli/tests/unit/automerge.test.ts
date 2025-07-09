@@ -148,10 +148,13 @@ describe('Automerge Module', () => {
   });
 
   describe('initRepo', () => {
-    it('should create repo with storage adapter', async () => {
+    it('should create repo with storage and network adapters', async () => {
       const repo = await initRepo();
 
       expect(NodeFSStorageAdapter).toHaveBeenCalledWith('./autoblog-data');
+      expect(WebSocketClientAdapter).toHaveBeenCalledWith(
+        'wss://sync.automerge.org'
+      );
       expect(Repo).toHaveBeenCalledWith({
         storage: expect.objectContaining({
           path: './autoblog-data',
@@ -165,18 +168,6 @@ describe('Automerge Module', () => {
         ],
       });
       expect(repo).toBeDefined();
-    });
-
-    it('should create repo with local source (no network)', async () => {
-      await initRepo('local');
-
-      expect(WebSocketClientAdapter).not.toHaveBeenCalled();
-      expect(Repo).toHaveBeenCalledWith({
-        storage: expect.objectContaining({
-          path: './autoblog-data',
-          type: 'NodeFSStorageAdapter',
-        }),
-      });
     });
 
     it('should handle initialization errors', async () => {
@@ -433,14 +424,12 @@ describe('Automerge Module', () => {
         content: 'Remote content',
       };
 
-      await uploadBlogPost(localPost, 'local');
-      await uploadBlogPost(remotePost, 'remote');
+      await uploadBlogPost(localPost);
+      await uploadBlogPost(remotePost);
 
-      const localPosts = await listBlogPosts('local');
-      const remotePosts = await listBlogPosts('remote');
+      const posts = await listBlogPosts();
 
-      expect(localPosts).toHaveLength(1);
-      expect(remotePosts).toHaveLength(1);
+      expect(posts).toHaveLength(2);
     });
   });
 });

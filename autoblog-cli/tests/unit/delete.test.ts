@@ -41,10 +41,10 @@ describe('Delete Command', () => {
   it('should successfully delete an existing post', async () => {
     mockDeleteBlogPost.mockResolvedValue(true);
 
-    await deleteCommand('test-post', 'local');
+    await deleteCommand('test-post');
     vi.runAllTimers();
 
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post', 'local', {});
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post', {});
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('BLUE: 🗑️ Deleting post with slug: test-post')
     );
@@ -57,14 +57,10 @@ describe('Delete Command', () => {
   it('should handle non-existent slug gracefully', async () => {
     mockDeleteBlogPost.mockResolvedValue(false);
 
-    await deleteCommand('non-existent-slug', 'local');
+    await deleteCommand('non-existent-slug');
     vi.runAllTimers();
 
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith(
-      'non-existent-slug',
-      'local',
-      {}
-    );
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('non-existent-slug', {});
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining(
         'BLUE: 🗑️ Deleting post with slug: non-existent-slug'
@@ -79,18 +75,14 @@ describe('Delete Command', () => {
   });
 
   it('should validate slug parameter', async () => {
-    await expect(deleteCommand('', 'local')).rejects.toThrow(
-      'Slug is required'
-    );
-    await expect(deleteCommand('   ', 'local')).rejects.toThrow(
-      'Slug is required'
-    );
+    await expect(deleteCommand('')).rejects.toThrow('Slug is required');
+    await expect(deleteCommand('   ')).rejects.toThrow('Slug is required');
   });
 
   it('should handle initialization errors', async () => {
     mockDeleteBlogPost.mockRejectedValue(new Error('Init failed'));
 
-    await expect(deleteCommand('test-post', 'local')).rejects.toThrow(
+    await expect(deleteCommand('test-post')).rejects.toThrow(
       'Delete failed: Init failed'
     );
   });
@@ -98,7 +90,7 @@ describe('Delete Command', () => {
   it('should handle index errors', async () => {
     mockDeleteBlogPost.mockRejectedValue(new Error('Index failed'));
 
-    await expect(deleteCommand('test-post', 'local')).rejects.toThrow(
+    await expect(deleteCommand('test-post')).rejects.toThrow(
       'Delete failed: Index failed'
     );
   });
@@ -106,10 +98,10 @@ describe('Delete Command', () => {
   it('should handle empty index gracefully', async () => {
     mockDeleteBlogPost.mockResolvedValue(false);
 
-    await deleteCommand('any-slug', 'local');
+    await deleteCommand('any-slug');
     vi.runAllTimers();
 
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('any-slug', 'local', {});
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('any-slug', {});
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('YELLOW: Post not found with slug: any-slug')
     );

@@ -8,14 +8,9 @@ export interface StorageConfig {
   indexIdFile: string;
 }
 
-export interface SyncConfig {
-  defaultSource: 'local' | 'remote' | 'all';
-}
-
 export interface CliConfig {
   network: NetworkConfig;
   storage: StorageConfig;
-  sync: SyncConfig;
 }
 
 export interface ConfigLoader {
@@ -36,8 +31,5 @@ export const DEFAULT_CONFIG: CliConfig = {
   storage: {
     dataPath: '', // Will be set to OS-appropriate path
     indexIdFile: 'index-id.txt',
-  },
-  sync: {
-    defaultSource: 'all',
   },
 };

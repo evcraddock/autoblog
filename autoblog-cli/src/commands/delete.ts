@@ -1,10 +1,9 @@
 import chalk from 'chalk';
-import { deleteBlogPost, SyncSource } from '../lib/automerge.js';
+import { deleteBlogPost } from '../lib/automerge.js';
 import type { CliConfig } from '../types/config.js';
 
 export async function deleteCommand(
   slug: string,
-  source: SyncSource = 'all',
   options?: { syncUrl?: string; dataPath?: string; [key: string]: any }
 ): Promise<void> {
   // Validate slug parameter
@@ -33,11 +32,7 @@ export async function deleteCommand(
     }
 
     // Delete the blog post
-    const wasDeleted = await deleteBlogPost(
-      trimmedSlug,
-      source,
-      configOverrides
-    );
+    const wasDeleted = await deleteBlogPost(trimmedSlug, configOverrides);
 
     if (!wasDeleted) {
       console.log(chalk.yellow(`Post not found with slug: ${trimmedSlug}`));

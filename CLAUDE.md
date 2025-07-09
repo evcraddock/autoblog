@@ -31,3 +31,7 @@ After finishing the code implementation:
 ## Testing Guidelines
 
 - never test .tsx files unless specifically told to
+
+### Commit and Version Control Guidelines
+
+- NEVER bypass the pre-commit hooks
