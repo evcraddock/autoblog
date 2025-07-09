@@ -411,25 +411,43 @@ describe('Automerge Module', () => {
       expect(deleted).toBe(true);
     });
 
-    it('should handle multiple posts with different sync sources', async () => {
-      const localPost: Partial<BlogPost> = {
-        title: 'Local Post',
-        slug: 'local-post',
-        content: 'Local content',
+    it('should handle multiple posts upload and retrieval', async () => {
+      // Mock the behavior for multiple posts
+      mockIndexHandle.doc.mockResolvedValue({
+        posts: {
+          'first-post': 'first-doc-id',
+          'second-post': 'second-doc-id',
+        },
+        lastUpdated: new Date(),
+      });
+
+      const firstDocHandle = {
+        ...mockDocHandle,
+        doc: vi.fn().mockResolvedValue({
+          title: 'First Post',
+          slug: 'first-post',
+          content: 'First post content',
+        }),
       };
 
-      const remotePost: Partial<BlogPost> = {
-        title: 'Remote Post',
-        slug: 'remote-post',
-        content: 'Remote content',
+      const secondDocHandle = {
+        ...mockDocHandle,
+        doc: vi.fn().mockResolvedValue({
+          title: 'Second Post',
+          slug: 'second-post',
+          content: 'Second post content',
+        }),
       };
 
-      await uploadBlogPost(localPost);
-      await uploadBlogPost(remotePost);
+      mockRepo.find
+        .mockResolvedValueOnce(firstDocHandle)
+        .mockResolvedValueOnce(secondDocHandle);
 
       const posts = await listBlogPosts();
 
       expect(posts).toHaveLength(2);
+      expect(posts[0].title).toBe('First Post');
+      expect(posts[1].title).toBe('Second Post');
     });
   });
 });

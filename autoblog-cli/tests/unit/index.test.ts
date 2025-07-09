@@ -191,7 +191,10 @@ describe('Index Module', () => {
 
       // Verify the change function was called with correct logic
       const changeCallback = mockDocHandle.change.mock.calls[0][0];
-      const mockDoc = { posts: {}, lastUpdated: new Date() };
+      const mockDoc = {
+        posts: {} as Record<string, string>,
+        lastUpdated: new Date(),
+      };
       changeCallback(mockDoc);
 
       expect(mockDoc.posts['new-post']).toBe('new-doc-id');
