@@ -61,26 +61,28 @@ export async function initRepo(
 export async function getOrCreateIndex(
   repo: Repo
 ): Promise<DocHandle<BlogIndex>> {
-  // First try to use the CLI's index document ID
-  try {
-    const existingHandle = await repo.find<BlogIndex>(
-      config.cliIndexId as DocumentId
-    )
-    if (existingHandle) {
-      await existingHandle.whenReady()
-      // Save to localStorage for future reference
-      try {
-        localStorage.setItem(INDEX_ID_KEY, config.cliIndexId)
-      } catch {
-        // localStorage not available, continue anyway
+  // Try to use configured index ID if provided (for CLI integration)
+  if (config.indexId) {
+    try {
+      const existingHandle = await repo.find<BlogIndex>(
+        config.indexId as DocumentId
+      )
+      if (existingHandle) {
+        await existingHandle.whenReady()
+        // Save to localStorage for future reference
+        try {
+          localStorage.setItem(INDEX_ID_KEY, config.indexId)
+        } catch {
+          // localStorage not available, continue anyway
+        }
+        return existingHandle
       }
-      return existingHandle
+    } catch {
+      // Configured index document not found, fall back to localStorage
     }
-  } catch {
-    // CLI index document not found, try localStorage fallback
   }
 
-  // Fallback: Try to load existing index document ID from localStorage
+  // Try to load existing index document ID from localStorage
   let indexDocumentId: string | null = null
 
   try {
@@ -90,7 +92,7 @@ export async function getOrCreateIndex(
   }
 
   // If we have an existing index ID, try to find it
-  if (indexDocumentId && indexDocumentId !== config.cliIndexId) {
+  if (indexDocumentId) {
     try {
       const existingHandle = await repo.find<BlogIndex>(
         indexDocumentId as DocumentId
@@ -104,7 +106,7 @@ export async function getOrCreateIndex(
     }
   }
 
-  // Create a new index document
+  // Create a new index document (independent operation)
   const handle = repo.create<BlogIndex>()
   handle.change(doc => {
     doc.posts = {}
