@@ -5,21 +5,17 @@ import { handleError } from '../utils/errorHandling'
 import type { BlogIndex } from '../types'
 import { config } from '../config'
 
-export type SyncSource = 'local' | 'remote' | 'all'
-
 const INDEX_ID_KEY = 'autoblog-index-id'
 
 let repoInstance: Repo | null = null
 
 /**
- * Initialize an Automerge repository with IndexedDB storage and optional WebSocket networking
- * @param source - The sync source to use ('local', 'remote', or 'all'), defaults to 'remote'
+ * Initialize an Automerge repository with IndexedDB storage and WebSocket networking
  * @param syncUrl - WebSocket URL for sync server, defaults to Automerge public server
  * @returns Promise<Repo> - Configured Automerge repository instance
  * @throws Error if storage or network adapter creation fails
  */
 export async function initRepo(
-  source: SyncSource = 'remote',
   syncUrl: string = config.syncUrl
 ): Promise<Repo> {
   try {
@@ -31,18 +27,13 @@ export async function initRepo(
     // Always use IndexedDB storage for the web app
     const storage = new IndexedDBStorageAdapter(config.databaseName)
 
-    // Configure network adapter based on source
-    const repoConfig: {
-      storage: IndexedDBStorageAdapter
-      network?: BrowserWebSocketClientAdapter[]
-    } = { storage }
+    // Always use WebSocket networking for sync
+    const network = new BrowserWebSocketClientAdapter(syncUrl)
 
-    // Add network adapter for remote sync (default behavior)
-    if (source === 'remote' || source === 'all') {
-      const network = new BrowserWebSocketClientAdapter(syncUrl)
-      repoConfig.network = [network]
+    const repoConfig = {
+      storage,
+      network: [network],
     }
-    // For 'local' source, no network adapter is added
 
     // Create and cache repo instance
     repoInstance = new Repo(repoConfig)
