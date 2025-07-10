@@ -19,6 +19,14 @@ INDEX_ID_FILE_NAME=$(echo "$CONFIG_OUTPUT" | grep "indexIdFile:" | cut -d'"' -f2
 # Construct full path to index ID file
 INDEX_ID_FILE="$DATA_PATH/$INDEX_ID_FILE_NAME"
 
+# Display extracted configuration values
+echo ""
+echo "CLI Configuration values:"
+echo "  SYNC_URL: $SYNC_URL"
+echo "  DATA_PATH: $DATA_PATH"
+echo "  INDEX_ID_FILE: $INDEX_ID_FILE"
+echo ""
+
 # Read index ID from file if it exists
 if [ -f "$INDEX_ID_FILE" ]; then
     INDEX_ID=$(cat "$INDEX_ID_FILE")
@@ -31,6 +39,7 @@ fi
 # Set environment variables and start the web application in a new tmux session
 SESSION_NAME="autoblog-web"
 
+echo ""
 echo "Starting autoblog-web with configuration:"
 echo "  APP_AUTOBLOG_SYNC_URL=$SYNC_URL"
 echo "  APP_AUTOBLOG_INDEX_ID=$INDEX_ID"
