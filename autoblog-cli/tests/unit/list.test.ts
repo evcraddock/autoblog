@@ -71,7 +71,7 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith({});
+    expect(mockListBlogPosts).toHaveBeenCalledWith();
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('BLUE: 📚 Fetching blog posts...')
     );
@@ -84,7 +84,6 @@ describe('List Command', () => {
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('Test Post')
     );
-    expect(processExitSpy).toHaveBeenCalledWith(0);
   });
 
   it('should handle empty blog index', async () => {
@@ -93,11 +92,10 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith({});
+    expect(mockListBlogPosts).toHaveBeenCalledWith();
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('YELLOW: No blog posts found')
     );
-    expect(processExitSpy).toHaveBeenCalledWith(0);
   });
 
   it('should handle initialization errors', async () => {
@@ -133,14 +131,13 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith({});
+    expect(mockListBlogPosts).toHaveBeenCalledWith();
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('First Post')
     );
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('Second Post')
     );
-    expect(processExitSpy).toHaveBeenCalledWith(0);
   });
 
   it('should use all source when none specified', async () => {
@@ -149,7 +146,7 @@ describe('List Command', () => {
     await listCommand();
     vi.runAllTimers();
 
-    expect(mockListBlogPosts).toHaveBeenCalledWith({});
+    expect(mockListBlogPosts).toHaveBeenCalledWith();
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('BLUE: 📚 Fetching blog posts...')
     );

@@ -1,29 +1,16 @@
-import fs from 'fs/promises';
-import path from 'path';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 import { Repo, DocHandle, DocumentId } from '@automerge/automerge-repo';
 import type { BlogIndex } from '../types/index.js';
-import { getConfigManager } from './config.js';
-import type { CliConfig } from '../types/config.js';
+import { getConfig } from './config.js';
 
 export async function getOrCreateIndex(
-  repo: Repo,
-  overrides?: Partial<CliConfig>
+  repo: Repo
 ): Promise<DocHandle<BlogIndex>> {
-  // Load configuration
-  const configManager = getConfigManager();
-  const config = await configManager.loadConfig();
-  const finalConfig = overrides
-    ? {
-        ...config,
-        storage: { ...config.storage, ...overrides.storage },
-      }
-    : config;
+  const config = getConfig();
 
   // Build path to index ID file
-  const indexIdFile = path.join(
-    finalConfig.storage.dataPath,
-    finalConfig.storage.indexIdFile
-  );
+  const indexIdFile = path.join(config.dataPath, 'index-id.txt');
 
   // Try to load existing index document ID
   let indexDocumentId: string | null = null;

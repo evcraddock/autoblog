@@ -1,15 +1,11 @@
-import fs from 'fs/promises';
-import path from 'path';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 import chalk from 'chalk';
 import { uploadBlogPost } from '../lib/automerge.js';
 import { parseMarkdownFile, generateSlug } from '../lib/parser.js';
 import type { BlogPost } from '../types/index.js';
-import type { CliConfig } from '../types/config.js';
 
-export async function uploadCommand(
-  filePath: string,
-  options?: { syncUrl?: string; dataPath?: string; [key: string]: any }
-): Promise<void> {
+export async function uploadCommand(filePath: string): Promise<void> {
   // Validate file path is provided
   if (!filePath || filePath.trim() === '') {
     throw new Error('File path is required');
@@ -68,23 +64,8 @@ export async function uploadCommand(
 
     console.log(chalk.blue('🔄 Uploading blog post...'));
 
-    // Create config overrides from CLI options
-    const configOverrides: Partial<CliConfig> = {};
-    if (options?.syncUrl) {
-      configOverrides.network = {
-        syncUrl: options.syncUrl,
-        timeout: 30000, // Default timeout
-      };
-    }
-    if (options?.dataPath) {
-      configOverrides.storage = {
-        dataPath: options.dataPath,
-        indexIdFile: 'index-id.txt', // Default index file
-      };
-    }
-
     // Upload the blog post
-    const documentId = await uploadBlogPost(blogPost, configOverrides);
+    const documentId = await uploadBlogPost(blogPost);
 
     console.log(chalk.green(`✅ Successfully uploaded blog post!`));
     console.log(chalk.blue(`   📄 Title: ${blogPost.title}`));
@@ -92,12 +73,6 @@ export async function uploadCommand(
     console.log(chalk.blue(`   🏷️  Slug: ${slug}`));
     console.log(chalk.blue(`   📅 Status: ${blogPost.status}`));
     console.log(chalk.blue(`   🔗 Document ID: ${documentId}`));
-
-    // Force process exit after a short delay to allow output to flush
-    // This is needed because the WebSocket connection keeps the process alive
-    setTimeout(() => {
-      process.exit(0);
-    }, 100);
   } catch (error) {
     throw new Error(
       `Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`

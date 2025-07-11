@@ -11,6 +11,7 @@ declare global {
 export const getRuntimeConfig = () => {
   // In development, use process.env
   if (import.meta.env.DEV) {
+    // Development mode - using env vars
     return {
       syncUrl:
         import.meta.env.VITE_APP_AUTOBLOG_SYNC_URL ||

@@ -17,6 +17,7 @@ export interface BlogIndex {
 export interface AppConfig {
   syncUrl: string
   theme: 'light' | 'dark' | 'system'
+  indexId?: string
 }
 
 export interface AutomergeState {

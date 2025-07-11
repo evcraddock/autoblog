@@ -44,14 +44,13 @@ describe('Delete Command', () => {
     await deleteCommand('test-post');
     vi.runAllTimers();
 
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post', {});
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('BLUE: 🗑️ Deleting post with slug: test-post')
     );
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('GREEN: ✅ Successfully deleted post: test-post')
     );
-    expect(processExitSpy).toHaveBeenCalledWith(0);
   });
 
   it('should handle non-existent slug gracefully', async () => {
@@ -60,7 +59,7 @@ describe('Delete Command', () => {
     await deleteCommand('non-existent-slug');
     vi.runAllTimers();
 
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('non-existent-slug', {});
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('non-existent-slug');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining(
         'BLUE: 🗑️ Deleting post with slug: non-existent-slug'
@@ -71,7 +70,6 @@ describe('Delete Command', () => {
         'YELLOW: Post not found with slug: non-existent-slug'
       )
     );
-    expect(processExitSpy).toHaveBeenCalledWith(0);
   });
 
   it('should validate slug parameter', async () => {
@@ -101,10 +99,9 @@ describe('Delete Command', () => {
     await deleteCommand('any-slug');
     vi.runAllTimers();
 
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('any-slug', {});
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('any-slug');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.stringContaining('YELLOW: Post not found with slug: any-slug')
     );
-    expect(processExitSpy).toHaveBeenCalledWith(0);
   });
 });

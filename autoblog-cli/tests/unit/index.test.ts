@@ -31,14 +31,15 @@ vi.mock('path', () => ({
 
 // Mock the config module
 vi.mock('../../src/lib/config.js', () => ({
-  getConfigManager: vi.fn(() => ({
-    loadConfig: vi.fn(),
+  getConfig: vi.fn(() => ({
+    syncUrl: 'wss://sync.automerge.org',
+    dataPath: './test-data',
   })),
 }));
 
-import fs from 'fs/promises';
-import path from 'path';
-import { getConfigManager } from '../../src/lib/config.js';
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import { getConfig } from '../../src/lib/config.js';
 
 // Mock implementations
 const mockRepo = {
@@ -62,11 +63,9 @@ describe('Index Module', () => {
     vi.clearAllMocks();
 
     // Setup config mock
-    (getConfigManager as any).mockReturnValue(mockConfigManager);
-    mockConfigManager.loadConfig.mockResolvedValue({
-      storage: { dataPath: './autoblog-data', indexIdFile: 'index-id.txt' },
-      network: { syncUrl: 'wss://sync.automerge.org' },
-      sync: { defaultSource: 'all' },
+    vi.mocked(getConfig).mockReturnValue({
+      dataPath: './autoblog-data',
+      syncUrl: 'wss://sync.automerge.org',
     });
 
     // Setup path mocks
