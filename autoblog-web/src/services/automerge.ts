@@ -53,7 +53,7 @@ export async function getOrCreateIndex(
   repo: Repo
 ): Promise<DocHandle<BlogIndex>> {
   // Getting or creating index document
-  
+
   // Try to use configured index ID if provided (for CLI integration)
   if (config.indexId) {
     try {
@@ -64,7 +64,6 @@ export async function getOrCreateIndex(
       // Found existing handle check
       if (existingHandle) {
         await existingHandle.whenReady()
-        const _doc = await existingHandle.doc()
         // Index document loaded successfully
         // Save to localStorage for future reference
         try {
