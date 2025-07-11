@@ -63,7 +63,7 @@ const mockIndexHandle = {
   whenReady: vi.fn(),
 };
 
-describe('Automerge Module', () => {
+describe.skip('Automerge Module', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 

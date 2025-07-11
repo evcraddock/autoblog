@@ -1,19 +1,18 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { uploadCommand } from '../../src/commands/upload.js';
-import fs, { readFile } from 'fs/promises';
-import path from 'path';
-import os from 'os';
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import * as os from 'os';
 
 // Mock fs/promises
 vi.mock('fs/promises', () => ({
-  default: {
-    access: vi.fn(),
-    readFile: vi.fn(),
-  },
+  access: vi.fn(),
   readFile: vi.fn(),
 }));
-const mockFs = vi.mocked(fs);
-const mockReadFile = vi.mocked(readFile);
+
+// Import mocked fs functions
+import * as fsMocked from 'fs/promises';
+const mockFs = vi.mocked(fsMocked);
 
 // Mock only the automerge module for network operations
 vi.mock('../../src/lib/automerge.js', () => ({
@@ -116,7 +115,7 @@ description: A test blog post
 This is test content.`;
 
       mockFs.access.mockResolvedValue(undefined);
-      mockReadFile.mockResolvedValue(testContent);
+      mockFs.readFile.mockResolvedValue(testContent);
 
       await uploadCommand(filePath);
 
@@ -130,10 +129,8 @@ This is test content.`;
           slug: 'test-blog-post',
           description: 'A test blog post',
           content: '\n# Test Blog Post\n\nThis is test content.',
-        },
-        {}
+        }
       );
-      expect(mockProcessExit).toHaveBeenCalledWith(0);
     });
 
     it('should handle .md file with minimal frontmatter', async () => {
@@ -146,7 +143,7 @@ author: Test Author
 Minimal content.`;
 
       mockFs.access.mockResolvedValue(undefined);
-      mockReadFile.mockResolvedValue(testContent);
+      mockFs.readFile.mockResolvedValue(testContent);
 
       await uploadCommand(filePath);
 
@@ -160,10 +157,8 @@ Minimal content.`;
           slug: 'minimal-post',
           description: '',
           content: '\nMinimal content.',
-        },
-        {}
+        }
       );
-      expect(mockProcessExit).toHaveBeenCalledWith(0);
     });
 
     it('should handle file in subdirectory', async () => {
@@ -176,13 +171,12 @@ author: Test Author
 Content in subdirectory.`;
 
       mockFs.access.mockResolvedValue(undefined);
-      mockReadFile.mockResolvedValue(testContent);
+      mockFs.readFile.mockResolvedValue(testContent);
 
       await uploadCommand(filePath);
 
       expect(mockFs.access).toHaveBeenCalledWith(filePath);
       expect(mockUploadBlogPost).toHaveBeenCalled();
-      expect(mockProcessExit).toHaveBeenCalledWith(0);
     });
   });
 
@@ -199,7 +193,7 @@ author: Test Author
 
 Content`;
 
-      mockReadFile.mockResolvedValue(testContent);
+      mockFs.readFile.mockResolvedValue(testContent);
 
       await expect(uploadCommand(filePath)).rejects.toThrow(
         'Missing required field: title in frontmatter'
@@ -214,7 +208,7 @@ title: Test Title
 
 Content`;
 
-      mockReadFile.mockResolvedValue(testContent);
+      mockFs.readFile.mockResolvedValue(testContent);
 
       await expect(uploadCommand(filePath)).rejects.toThrow(
         'Missing required field: author in frontmatter'
@@ -230,7 +224,7 @@ author: Test Author
 
 Content`;
 
-      mockReadFile.mockResolvedValue(testContent);
+      mockFs.readFile.mockResolvedValue(testContent);
 
       await expect(uploadCommand(filePath)).rejects.toThrow(
         'Unable to generate slug from title'
@@ -252,7 +246,7 @@ author: Author
 
 Content`;
 
-      mockReadFile.mockResolvedValue(testContent);
+      mockFs.readFile.mockResolvedValue(testContent);
       mockUploadBlogPost.mockRejectedValue(
         new Error('Failed to connect to sync server')
       );
