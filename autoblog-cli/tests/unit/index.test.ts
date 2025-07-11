@@ -38,7 +38,7 @@ vi.mock('../../src/lib/config.js', () => ({
 }));
 
 import * as fs from 'fs/promises';
-import path from 'path';
+import * as path from 'path';
 import { getConfig } from '../../src/lib/config.js';
 
 // Mock implementations

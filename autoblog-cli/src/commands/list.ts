@@ -13,7 +13,6 @@ export async function listCommand(): Promise<void> {
     // Check if we have any posts
     if (posts.length === 0) {
       console.log(chalk.yellow('No blog posts found.'));
-      setTimeout(() => process.exit(0), 100);
       return;
     }
 
@@ -48,9 +47,6 @@ export async function listCommand(): Promise<void> {
     });
 
     console.log(table.toString());
-
-    // Force process exit after a short delay
-    setTimeout(() => process.exit(0), 100);
   } catch (error) {
     throw new Error(
       `List failed: ${error instanceof Error ? error.message : 'Unknown error'}`

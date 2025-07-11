@@ -1,4 +1,4 @@
-import { Repo } from '@automerge/automerge-repo';
+import { Repo, DocHandle } from '@automerge/automerge-repo';
 import { NodeFSStorageAdapter } from '@automerge/automerge-repo-storage-nodefs';
 import { WebSocketClientAdapter } from '@automerge/automerge-repo-network-websocket';
 import { DocumentId } from '@automerge/automerge-repo';

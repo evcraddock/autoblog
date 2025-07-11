@@ -1,5 +1,5 @@
 import * as fs from 'fs/promises';
-import path from 'path';
+import * as path from 'path';
 import { Repo, DocHandle, DocumentId } from '@automerge/automerge-repo';
 import type { BlogIndex } from '../types/index.js';
 import { getConfig } from './config.js';
