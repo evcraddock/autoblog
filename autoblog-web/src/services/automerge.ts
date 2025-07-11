@@ -52,20 +52,20 @@ export async function initRepo(
 export async function getOrCreateIndex(
   repo: Repo
 ): Promise<DocHandle<BlogIndex>> {
-  console.log('getOrCreateIndex called with config.indexId:', config.indexId)
+  // Getting or creating index document
   
   // Try to use configured index ID if provided (for CLI integration)
   if (config.indexId) {
     try {
-      console.log('Trying to find existing index with ID:', config.indexId)
+      // Trying to find existing index with configured ID
       const existingHandle = await repo.find<BlogIndex>(
         config.indexId as DocumentId
       )
-      console.log('Found existing handle:', !!existingHandle)
+      // Found existing handle check
       if (existingHandle) {
         await existingHandle.whenReady()
-        const doc = await existingHandle.doc()
-        console.log('Index document loaded, posts:', Object.keys(doc?.posts || {}))
+        const _doc = await existingHandle.doc()
+        // Index document loaded successfully
         // Save to localStorage for future reference
         try {
           localStorage.setItem(INDEX_ID_KEY, config.indexId)
@@ -74,8 +74,8 @@ export async function getOrCreateIndex(
         }
         return existingHandle
       }
-    } catch (error) {
-      console.error('Error finding configured index document:', error)
+    } catch {
+      // Error finding configured index document, falling back
       // Configured index document not found, fall back to localStorage
     }
   }

@@ -17,7 +17,8 @@ function getDefaultDataPath(): string {
       return path.join(homeDir, 'Library', 'Application Support', 'autoblog');
     case 'linux':
     default:
-      const dataHome = process.env.XDG_DATA_HOME || path.join(homeDir, '.local', 'share');
+      const dataHome =
+        process.env.XDG_DATA_HOME || path.join(homeDir, '.local', 'share');
       return path.join(dataHome, 'autoblog');
   }
 }
@@ -28,6 +29,6 @@ export function getConfig(): SimpleConfig {
 
   return {
     syncUrl,
-    dataPath
+    dataPath,
   };
 }

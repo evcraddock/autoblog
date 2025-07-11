@@ -4,7 +4,9 @@ import { Repo, DocHandle, DocumentId } from '@automerge/automerge-repo';
 import type { BlogIndex } from '../types/index.js';
 import { getConfig } from './config.js';
 
-export async function getOrCreateIndex(repo: Repo): Promise<DocHandle<BlogIndex>> {
+export async function getOrCreateIndex(
+  repo: Repo
+): Promise<DocHandle<BlogIndex>> {
   const config = getConfig();
 
   // Build path to index ID file

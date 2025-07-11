@@ -16,9 +16,7 @@ function App() {
     indexId: config.indexId,
   }
 
-  // Debug logging
-  console.log('App config:', config)
-  console.log('App appConfig:', appConfig)
+  // Debug logging removed for production
 
   return (
     <ErrorBoundary>

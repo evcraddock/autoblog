@@ -33,15 +33,23 @@ export async function configSetCommand(
   key: string,
   value: string
 ): Promise<void> {
-  console.log(chalk.yellow('Configuration is now read-only from environment variables.'));
+  console.log(
+    chalk.yellow('Configuration is now read-only from environment variables.')
+  );
   console.log(chalk.blue('Set the following environment variables:'));
   console.log(chalk.blue('  AUTOBLOG_SYNC_URL - WebSocket sync server URL'));
   console.log(chalk.blue('  AUTOBLOG_DATA_PATH - Local data storage path'));
 }
 
 export async function configResetCommand(key?: string): Promise<void> {
-  console.log(chalk.yellow('Configuration is now read-only from environment variables.'));
-  console.log(chalk.blue('Configuration cannot be reset - remove environment variables to use defaults.'));
+  console.log(
+    chalk.yellow('Configuration is now read-only from environment variables.')
+  );
+  console.log(
+    chalk.blue(
+      'Configuration cannot be reset - remove environment variables to use defaults.'
+    )
+  );
 }
 
 export async function configPathCommand(): Promise<void> {
