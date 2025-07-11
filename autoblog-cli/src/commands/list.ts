@@ -2,33 +2,13 @@ import chalk from 'chalk';
 import Table from 'cli-table3';
 import { listBlogPosts } from '../lib/automerge.js';
 import type { BlogPost } from '../types/index.js';
-import type { CliConfig } from '../types/config.js';
 
-export async function listCommand(options?: {
-  syncUrl?: string;
-  dataPath?: string;
-  [key: string]: any;
-}): Promise<void> {
+export async function listCommand(): Promise<void> {
   try {
     console.log(chalk.blue(`📚 Fetching blog posts...`));
 
-    // Create config overrides from CLI options
-    const configOverrides: Partial<CliConfig> = {};
-    if (options?.syncUrl) {
-      configOverrides.network = {
-        syncUrl: options.syncUrl,
-        timeout: 30000, // Default timeout
-      };
-    }
-    if (options?.dataPath) {
-      configOverrides.storage = {
-        dataPath: options.dataPath,
-        indexIdFile: 'index-id.txt', // Default index file
-      };
-    }
-
     // Get all blog posts
-    const posts = await listBlogPosts(configOverrides);
+    const posts = await listBlogPosts();
 
     // Check if we have any posts
     if (posts.length === 0) {

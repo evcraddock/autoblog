@@ -9,34 +9,21 @@ import {
   removeFromIndex,
 } from './index.js';
 import type { BlogPost } from '../types/index.js';
-import { getConfigManager } from './config.js';
-import type { CliConfig } from '../types/config.js';
+import { getConfig } from './config.js';
 
 /**
  * Initialize an Automerge repository with file system storage and WebSocket networking
- * @param overrides - Optional configuration overrides
  * @returns Promise<Repo> - Configured Automerge repository instance
  * @throws Error if storage or network adapter creation fails
  */
-export async function initRepo(overrides?: Partial<CliConfig>): Promise<Repo> {
+export async function initRepo(): Promise<Repo> {
   try {
-    // Load configuration
-    const configManager = getConfigManager();
-    const config = await configManager.loadConfig();
-
-    // Apply any overrides
-    const finalConfig = overrides
-      ? {
-          ...config,
-          network: { ...config.network, ...overrides.network },
-          storage: { ...config.storage, ...overrides.storage },
-        }
-      : config;
+    const config = getConfig();
 
     // Create repo config with both storage and network
     const repoConfig: any = {
-      storage: new NodeFSStorageAdapter(finalConfig.storage.dataPath),
-      network: [new WebSocketClientAdapter(finalConfig.network.syncUrl)],
+      storage: new NodeFSStorageAdapter(config.dataPath),
+      network: [new WebSocketClientAdapter(config.syncUrl)],
     };
 
     // Create and return repo instance
@@ -53,17 +40,15 @@ export async function initRepo(overrides?: Partial<CliConfig>): Promise<Repo> {
 /**
  * Upload a blog post to the Automerge repository
  * @param blogPost - The blog post data to upload
- * @param overrides - Optional configuration overrides
  * @returns Promise<string> - The document ID of the created blog post
  * @throws Error if upload fails
  */
 export async function uploadBlogPost(
-  blogPost: Partial<BlogPost>,
-  overrides?: Partial<CliConfig>
+  blogPost: Partial<BlogPost>
 ): Promise<string> {
   try {
     // Initialize Automerge repo
-    const repo = await initRepo(overrides);
+    const repo = await initRepo();
 
     // Create a new document for the blog post
     const docHandle = repo.create<BlogPost>();
@@ -75,7 +60,7 @@ export async function uploadBlogPost(
     const documentId = docHandle.documentId;
 
     // Get or create the blog index and add this post
-    const indexHandle = await getOrCreateIndex(repo, overrides);
+    const indexHandle = await getOrCreateIndex(repo);
     await updateIndex(indexHandle, blogPost.slug!, documentId);
 
     return documentId;
@@ -88,19 +73,16 @@ export async function uploadBlogPost(
 
 /**
  * List all blog posts from the Automerge repository
- * @param overrides - Optional configuration overrides
  * @returns Promise<BlogPost[]> - Array of blog posts sorted by published date (newest first)
  * @throws Error if listing fails
  */
-export async function listBlogPosts(
-  overrides?: Partial<CliConfig>
-): Promise<BlogPost[]> {
+export async function listBlogPosts(): Promise<BlogPost[]> {
   try {
     // Initialize Automerge repo
-    const repo = await initRepo(overrides);
+    const repo = await initRepo();
 
     // Get the blog index
-    const indexHandle = await getOrCreateIndex(repo, overrides);
+    const indexHandle = await getOrCreateIndex(repo);
     const index = await indexHandle.doc();
 
     // Check if we have any posts
@@ -144,20 +126,16 @@ export async function listBlogPosts(
 /**
  * Delete a blog post from the Automerge repository
  * @param slug - The slug of the blog post to delete
- * @param overrides - Optional configuration overrides
  * @returns Promise<boolean> - True if post was found and deleted, false if not found
  * @throws Error if deletion fails
  */
-export async function deleteBlogPost(
-  slug: string,
-  overrides?: Partial<CliConfig>
-): Promise<boolean> {
+export async function deleteBlogPost(slug: string): Promise<boolean> {
   try {
     // Initialize Automerge repo
-    const repo = await initRepo(overrides);
+    const repo = await initRepo();
 
     // Get the blog index
-    const indexHandle = await getOrCreateIndex(repo, overrides);
+    const indexHandle = await getOrCreateIndex(repo);
 
     // Find the post ID by slug
     const postDocumentId = await findPostBySlug(indexHandle, slug);

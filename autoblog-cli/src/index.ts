@@ -23,11 +23,9 @@ program
 program
   .command('upload <file>')
   .description('Upload a markdown file to the blog')
-  .option('--sync-url [url]', 'Override sync URL for this command')
-  .option('--data-path [path]', 'Override data path for this command')
-  .action(async (file: string, options) => {
+  .action(async (file: string) => {
     try {
-      await uploadCommand(file, options);
+      await uploadCommand(file);
     } catch (error) {
       console.error(
         chalk.red(
@@ -42,11 +40,9 @@ program
 program
   .command('list')
   .description('List all blog posts')
-  .option('--sync-url [url]', 'Override sync URL for this command')
-  .option('--data-path [path]', 'Override data path for this command')
-  .action(async (options) => {
+  .action(async () => {
     try {
-      await listCommand(options);
+      await listCommand();
     } catch (error) {
       console.error(
         chalk.red(
@@ -61,11 +57,9 @@ program
 program
   .command('delete <slug>')
   .description('Delete a blog post by its slug')
-  .option('--sync-url [url]', 'Override sync URL for this command')
-  .option('--data-path [path]', 'Override data path for this command')
-  .action(async (slug: string, options) => {
+  .action(async (slug: string) => {
     try {
-      await deleteCommand(slug, options);
+      await deleteCommand(slug);
     } catch (error) {
       console.error(
         chalk.red(

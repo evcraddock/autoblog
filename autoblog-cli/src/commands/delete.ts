@@ -1,11 +1,7 @@
 import chalk from 'chalk';
 import { deleteBlogPost } from '../lib/automerge.js';
-import type { CliConfig } from '../types/config.js';
 
-export async function deleteCommand(
-  slug: string,
-  options?: { syncUrl?: string; dataPath?: string; [key: string]: any }
-): Promise<void> {
+export async function deleteCommand(slug: string): Promise<void> {
   // Validate slug parameter
   if (!slug || slug.trim() === '') {
     throw new Error('Slug is required');
@@ -16,23 +12,8 @@ export async function deleteCommand(
   try {
     console.log(chalk.blue(`🗑️ Deleting post with slug: ${trimmedSlug}`));
 
-    // Create config overrides from CLI options
-    const configOverrides: Partial<CliConfig> = {};
-    if (options?.syncUrl) {
-      configOverrides.network = {
-        syncUrl: options.syncUrl,
-        timeout: 30000, // Default timeout
-      };
-    }
-    if (options?.dataPath) {
-      configOverrides.storage = {
-        dataPath: options.dataPath,
-        indexIdFile: 'index-id.txt', // Default index file
-      };
-    }
-
     // Delete the blog post
-    const wasDeleted = await deleteBlogPost(trimmedSlug, configOverrides);
+    const wasDeleted = await deleteBlogPost(trimmedSlug);
 
     if (!wasDeleted) {
       console.log(chalk.yellow(`Post not found with slug: ${trimmedSlug}`));

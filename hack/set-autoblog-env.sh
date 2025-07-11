@@ -4,13 +4,12 @@
 echo "Getting autoblog configuration..."
 CONFIG_OUTPUT=$(autoblog config list)
 
-# Extract sync URL, data path, and index ID file name from JSON output
+# Extract sync URL and data path from JSON output
 SYNC_URL=$(echo "$CONFIG_OUTPUT" | grep '"syncUrl"' | cut -d'"' -f4)
 DATA_PATH=$(echo "$CONFIG_OUTPUT" | grep '"dataPath"' | cut -d'"' -f4)
-INDEX_ID_FILE_NAME=$(echo "$CONFIG_OUTPUT" | grep '"indexIdFile"' | cut -d'"' -f4)
 
-# Construct full path to index ID file
-INDEX_ID_FILE="$DATA_PATH/$INDEX_ID_FILE_NAME"
+# Construct full path to index ID file (using hardcoded filename)
+INDEX_ID_FILE="$DATA_PATH/index-id.txt"
 
 # Display extracted configuration values
 echo ""

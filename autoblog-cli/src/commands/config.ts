@@ -1,11 +1,9 @@
 import chalk from 'chalk';
-import { getConfigManager } from '../lib/config.js';
-import { CliConfig } from '../types/config.js';
+import { getConfig } from '../lib/config.js';
 
 export async function configListCommand(): Promise<void> {
   try {
-    const configManager = getConfigManager();
-    const config = await configManager.loadConfig();
+    const config = getConfig();
     console.log(chalk.bold('Current configuration:'));
     console.log(JSON.stringify(config, null, 2));
   } catch (error) {
@@ -17,8 +15,8 @@ export async function configListCommand(): Promise<void> {
 
 export async function configGetCommand(key: string): Promise<void> {
   try {
-    const configManager = getConfigManager();
-    const value = await configManager.getConfigValue(key);
+    const config = getConfig();
+    const value = (config as any)[key];
     if (value === undefined) {
       console.log(chalk.yellow(`Configuration key '${key}' not found`));
     } else {
@@ -35,111 +33,26 @@ export async function configSetCommand(
   key: string,
   value: string
 ): Promise<void> {
-  try {
-    const configManager = getConfigManager();
-
-    // Try to parse the value as JSON first, fallback to string
-    let parsedValue: any;
-    try {
-      parsedValue = JSON.parse(value);
-    } catch {
-      parsedValue = value;
-    }
-
-    // Validate the key exists in the config structure
-    const validKeys = [
-      'network.syncUrl',
-      'network.timeout',
-      'storage.dataPath',
-      'storage.indexIdFile',
-      'sync.defaultSource',
-    ];
-
-    if (!validKeys.includes(key)) {
-      throw new Error(
-        `Invalid configuration key: ${key}. Valid keys are: ${validKeys.join(', ')}`
-      );
-    }
-
-    // Additional validation for specific keys
-    if (key === 'sync.defaultSource') {
-      if (
-        parsedValue !== 'local' &&
-        parsedValue !== 'remote' &&
-        parsedValue !== 'all'
-      ) {
-        throw new Error(
-          'sync.defaultSource must be "local", "remote", or "all"'
-        );
-      }
-    }
-
-    if (key === 'network.timeout' && typeof parsedValue !== 'number') {
-      throw new Error('network.timeout must be a number');
-    }
-
-    await configManager.setConfigValue(key, parsedValue);
-    console.log(
-      chalk.green(
-        `Configuration updated: ${key} = ${JSON.stringify(parsedValue)}`
-      )
-    );
-  } catch (error) {
-    throw new Error(
-      `Failed to set configuration value: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
+  console.log(chalk.yellow('Configuration is now read-only from environment variables.'));
+  console.log(chalk.blue('Set the following environment variables:'));
+  console.log(chalk.blue('  AUTOBLOG_SYNC_URL - WebSocket sync server URL'));
+  console.log(chalk.blue('  AUTOBLOG_DATA_PATH - Local data storage path'));
 }
 
 export async function configResetCommand(key?: string): Promise<void> {
-  try {
-    const configManager = getConfigManager();
-
-    if (key) {
-      // Reset specific key to default
-      const defaultConfig = await configManager.loadConfig();
-      await configManager.resetConfig();
-      const newConfig = await configManager.loadConfig();
-      await configManager.setConfigValue(key, getDefaultValue(key, newConfig));
-      console.log(chalk.green(`Configuration key '${key}' reset to default`));
-    } else {
-      // Reset entire config
-      await configManager.resetConfig();
-      console.log(chalk.green('Configuration reset to defaults'));
-    }
-  } catch (error) {
-    throw new Error(
-      `Failed to reset configuration: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
+  console.log(chalk.yellow('Configuration is now read-only from environment variables.'));
+  console.log(chalk.blue('Configuration cannot be reset - remove environment variables to use defaults.'));
 }
 
 export async function configPathCommand(): Promise<void> {
   try {
-    const configManager = getConfigManager();
-    const configPath = configManager.getConfigPath();
-    const dataPath = configManager.getDataPath();
-
+    const config = getConfig();
     console.log(chalk.bold('Configuration paths:'));
-    console.log(`Config file: ${configPath}`);
-    console.log(`Data directory: ${dataPath}`);
+    console.log(`Data directory: ${config.dataPath}`);
+    console.log(`Sync URL: ${config.syncUrl}`);
   } catch (error) {
     throw new Error(
       `Failed to get configuration paths: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
-}
-
-function getDefaultValue(key: string, config: CliConfig): any {
-  const keys = key.split('.');
-  let current: any = config;
-
-  for (const k of keys) {
-    if (!(k in current)) {
-      return undefined;
-    }
-    current = current[k];
-  }
-
-  return current;
 }
