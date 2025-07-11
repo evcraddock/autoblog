@@ -1,6 +1,6 @@
 {
   "name": "autoblog-web",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "description": "Web viewer for Autoblog - a local-first blog platform built on Automerge CRDT",
   "scripts": {
