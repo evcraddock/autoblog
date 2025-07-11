@@ -1,6 +1,10 @@
+import { getRuntimeConfig } from './runtime'
+
+const runtimeConfig = getRuntimeConfig()
+
 export const config = {
-  syncUrl: import.meta.env.APP_AUTOBLOG_SYNC_URL || 'wss://sync.automerge.org',
+  syncUrl: runtimeConfig.syncUrl,
   databaseName: import.meta.env.APP_AUTOBLOG_DB_NAME || 'autoblog-web',
   // Optional: Specific index ID to use (for CLI integration)
-  indexId: import.meta.env.APP_AUTOBLOG_INDEX_ID || undefined,
+  indexId: runtimeConfig.indexId || undefined,
 }
