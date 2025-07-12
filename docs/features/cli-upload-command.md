@@ -35,7 +35,7 @@ The upload command allows authors to upload markdown files with frontmatter meta
 #### Command Options
 - `--source <source>`: Choose sync source (default: 'remote')
   - `local`: Store only in local file system
-  - `remote`: Sync with Automerge server at `wss://sync.automerge.org`
+  - `remote`: Sync with Automerge server at `wss://sync_server`
 
 #### Required Frontmatter Fields
 - `title`: The blog post title (required)

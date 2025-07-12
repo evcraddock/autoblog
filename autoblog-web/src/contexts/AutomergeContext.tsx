@@ -14,7 +14,7 @@ interface AutomergeProviderProps {
 }
 
 const DEFAULT_CONFIG: AppConfig = {
-  syncUrl: 'wss://sync.automerge.org',
+  syncUrl: 'wss://sync_server',
   theme: 'system',
 }
 

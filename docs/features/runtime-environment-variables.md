@@ -81,14 +81,14 @@ export const getRuntimeConfig = () => {
   // In development, use import.meta.env
   if (import.meta.env.DEV) {
     return {
-      syncUrl: import.meta.env.VITE_AUTOBLOG_SYNC_URL || 'wss://sync.automerge.org',
+      syncUrl: import.meta.env.VITE_AUTOBLOG_SYNC_URL || 'wss://sync_server',
       indexId: import.meta.env.VITE_AUTOBLOG_INDEX_ID || '',
     };
   }
   
   // In production, use window._env_ (injected by Docker)
   return {
-    syncUrl: window._env_?.REACT_AUTOBLOG_SYNC_URL || 'wss://sync.automerge.org',
+    syncUrl: window._env_?.REACT_AUTOBLOG_SYNC_URL || 'wss://sync_server',
     indexId: window._env_?.REACT_AUTOBLOG_INDEX_ID || '',
   };
 };
@@ -122,7 +122,7 @@ services:
   autoblog-web:
     image: evcraddock/autoblog-web:latest
     environment:
-      - AUTOBLOG_SYNC_URL=wss://sync.automerge.org
+      - AUTOBLOG_SYNC_URL=wss://sync_server
       - AUTOBLOG_INDEX_ID=your-index-id
     ports:
       - "8085:80"
@@ -132,7 +132,7 @@ services:
 
 ```bash
 docker run -d \
-  -e AUTOBLOG_SYNC_URL=wss://sync.automerge.org \
+  -e AUTOBLOG_SYNC_URL=wss://sync_server \
   -e AUTOBLOG_INDEX_ID=your-index-id \
   -p 8085:80 \
   evcraddock/autoblog-web:latest
@@ -153,7 +153,7 @@ spec:
         image: evcraddock/autoblog-web:latest
         env:
         - name: AUTOBLOG_SYNC_URL
-          value: "wss://sync.automerge.org"
+          value: "wss://sync_server"
         - name: AUTOBLOG_INDEX_ID
           valueFrom:
             secretKeyRef:

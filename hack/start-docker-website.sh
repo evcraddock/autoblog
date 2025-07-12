@@ -15,7 +15,7 @@ echo ""
 
 # Start docker-compose
 cd "$PROJECT_ROOT"
-docker-compose up -d
+docker compose up -d
 
 echo ""
 echo "Autoblog website started in Docker container"

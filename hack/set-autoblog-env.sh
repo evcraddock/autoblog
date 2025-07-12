@@ -8,10 +8,10 @@ echo "Setting autoblog environment for configuration: $CONFIG"
 if [ "$CONFIG" = "local" ]; then
     # Use local development configuration
     echo "Using local development configuration..."
-    SYNC_URL="http://localhost:3030"
+    SYNC_URL="ws://localhost:3030"
 else
     # Set default sync URL
-    SYNC_URL="wss://sync.automerge.org"
+    SYNC_URL="ws://10.10.1.122:3030"
 fi    
 
 # Set default data path using cross-platform method

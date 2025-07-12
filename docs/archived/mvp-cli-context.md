@@ -208,7 +208,7 @@ Create src/lib/automerge.ts that:
 2. Imports NodeFSStorageAdapter and WebSocketClientAdapter
 3. Creates an initRepo() function that:
    - Creates a storage adapter pointing to "./autoblog-data"
-   - Creates a network adapter connecting to "wss://sync.automerge.org"
+   - Creates a network adapter connecting to "wss://sync_server"
    - Returns a new Repo instance with both adapters
 4. Exports the initRepo function
 

@@ -32,7 +32,7 @@ vi.mock('path', () => ({
 // Mock the config module
 vi.mock('../../src/lib/config.js', () => ({
   getConfig: vi.fn(() => ({
-    syncUrl: 'wss://sync.automerge.org',
+    syncUrl: 'wss://sync_server',
     dataPath: './test-data',
   })),
 }));
@@ -65,7 +65,7 @@ describe('Index Module', () => {
     // Setup config mock
     vi.mocked(getConfig).mockReturnValue({
       dataPath: './autoblog-data',
-      syncUrl: 'wss://sync.automerge.org',
+      syncUrl: 'wss://sync_server',
     });
 
     // Setup path mocks

@@ -99,7 +99,7 @@ Create a `.env.local` file for local development:
 
 ```env
 # Automerge sync server URL (optional - defaults to public server)
-VITE_SYNC_URL=wss://sync.automerge.org
+VITE_SYNC_URL=wss://sync_server
 ```
 
 ### Build Configuration

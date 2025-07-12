@@ -93,7 +93,7 @@ import { WebSocketClientAdapter } from "@automerge/automerge-repo-network-websoc
 
 export function initRepo() {
   const storage = new NodeFSStorageAdapter("./autoblog-data")
-  const network = [new WebSocketClientAdapter("ws://localhost:3030")] // Or wss://sync.automerge.org
+  const network = [new WebSocketClientAdapter("ws://localhost:3030")] // Or wss://sync_server
   
   return new Repo({ 
     storage,
@@ -259,9 +259,9 @@ Simple hash-based routing for MVP:
 ### Sync Server Options
 
 #### Option 1: Automerge Sync Server (Recommended for MVP)
-- Use the public sync server at `wss://sync.automerge.org`
+- Use the public sync server at `wss://sync_server`
 - No setup required
-- Replace `ws://localhost:3030` with `wss://sync.automerge.org` in both apps
+- Replace `ws://localhost:3030` with `wss://sync_server` in both apps
 
 #### Option 2: Self-Hosted Sync Server
 ```bash

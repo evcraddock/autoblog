@@ -53,7 +53,7 @@ The complete configuration schema with default values:
 ```json
 {
   "network": {
-    "syncUrl": "wss://sync.automerge.org",
+    "syncUrl": "wss://sync_server",
     "timeout": 30000
   },
   "storage": {
@@ -68,7 +68,7 @@ The complete configuration schema with default values:
 #### Network Configuration
 
 - **`syncUrl`** (string): WebSocket URL for Automerge CRDT synchronization
-  - Default: `"wss://sync.automerge.org"`
+  - Default: `"wss://sync_server"`
   - Purpose: Remote synchronization server endpoint
 
 - **`timeout`** (number): Network timeout in milliseconds

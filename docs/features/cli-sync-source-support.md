@@ -9,7 +9,7 @@
 The sync source support system that allowed users to choose between 'local', 'remote', or 'all' synchronization modes has been simplified. The CLI now:
 
 - **Always uses NodeFSStorageAdapter** for local filesystem storage
-- **Always uses WebSocketClientAdapter** for remote synchronization to `wss://sync.automerge.org`
+- **Always uses WebSocketClientAdapter** for remote synchronization to `wss://sync_server`
 - **Removed the `--source` CLI option** from all commands
 - **Removed the `sync.defaultSource` configuration** option
 
