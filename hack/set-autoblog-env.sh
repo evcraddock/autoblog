@@ -8,23 +8,31 @@ echo "Setting autoblog environment for configuration: $CONFIG"
 if [ "$CONFIG" = "local" ]; then
     # Use local development configuration
     echo "Using local development configuration..."
-    export APP_AUTOBLOG_SYNC_URL="http://localhost:3030"
-    export APP_AUTOBLOG_INDEX_ID="LOCALSYNC"
-elif [ "$CONFIG" = "default" ]; then
-    # Get autoblog configuration from CLI
-    echo "Getting autoblog configuration from CLI..."
-    CONFIG_OUTPUT=$(autoblog config list)
-
-    # Extract sync URL and data path from JSON output
-    SYNC_URL=$(echo "$CONFIG_OUTPUT" | grep '"syncUrl"' | cut -d'"' -f4)
-    DATA_PATH=$(echo "$CONFIG_OUTPUT" | grep '"dataPath"' | cut -d'"' -f4)
+    export AUTOBLOG_SYNC_URL="http://localhost:3030"
+    export AUTOBLOG_INDEX_ID="LOCALSYNC"
+else
+    # Set default sync URL
+    SYNC_URL="wss://sync.automerge.org"
+    
+    # Set default data path using cross-platform method
+    case "$(uname)" in
+      Darwin)
+        DATA_PATH="$HOME/Library/Application Support/autoblog"
+        ;;
+      Linux)
+        DATA_PATH="${XDG_DATA_HOME:-$HOME/.local/share}/autoblog"
+        ;;
+      *)
+        DATA_PATH="${XDG_DATA_HOME:-$HOME/.local/share}/autoblog"
+        ;;
+    esac
 
     # Construct full path to index ID file (using hardcoded filename)
     INDEX_ID_FILE="$DATA_PATH/index-id.txt"
 
-    # Display extracted configuration values
+    # Display configuration values
     echo ""
-    echo "CLI Configuration values:"
+    echo "Default configuration values:"
     echo "  SYNC_URL: $SYNC_URL"
     echo "  DATA_PATH: $DATA_PATH"
     echo "  INDEX_ID_FILE: $INDEX_ID_FILE"
@@ -40,17 +48,14 @@ elif [ "$CONFIG" = "default" ]; then
     fi
 
     # Export environment variables
-    export APP_AUTOBLOG_SYNC_URL="$SYNC_URL"
-    export APP_AUTOBLOG_INDEX_ID="$INDEX_ID"
-else
-    echo "Error: Invalid configuration '$CONFIG'. Use 'local' or 'default'."
-    exit 1
+    export AUTOBLOG_SYNC_URL="$SYNC_URL"
+    export AUTOBLOG_INDEX_ID="$INDEX_ID"
 fi
 
 echo ""
 echo "Environment variables set:"
-echo "  APP_AUTOBLOG_SYNC_URL=$APP_AUTOBLOG_SYNC_URL"
-echo "  APP_AUTOBLOG_INDEX_ID=$APP_AUTOBLOG_INDEX_ID"
+echo "  AUTOBLOG_SYNC_URL=$AUTOBLOG_SYNC_URL"
+echo "  AUTOBLOG_INDEX_ID=$AUTOBLOG_INDEX_ID"
 echo ""
 echo "Note: Run this script with 'source' to export variables to your current shell:"
 echo "  source ./hack/set-autoblog-env.sh [local|default]"

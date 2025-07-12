@@ -23,8 +23,13 @@ function getDefaultDataPath(): string {
   }
 }
 
+function getDefaultSyncServer(): string {
+  // TODO: get from config file
+  return 'wss://sync.automerge.org';
+}
+
 export function getConfig(): SimpleConfig {
-  const syncUrl = process.env.AUTOBLOG_SYNC_URL || 'wss://sync.automerge.org';
+  const syncUrl = process.env.AUTOBLOG_SYNC_URL || getDefaultSyncServer();
   const dataPath = process.env.AUTOBLOG_DATA_PATH || getDefaultDataPath();
 
   return {

@@ -5,13 +5,7 @@ import chalk from 'chalk';
 import { uploadCommand } from './commands/upload.js';
 import { listCommand } from './commands/list.js';
 import { deleteCommand } from './commands/delete.js';
-import {
-  configListCommand,
-  configGetCommand,
-  configSetCommand,
-  configResetCommand,
-  configPathCommand,
-} from './commands/config.js';
+import { configListCommand } from './commands/config.js';
 
 const program = new Command();
 
@@ -93,81 +87,8 @@ configCmd
     }
   });
 
-configCmd
-  .command('get <key>')
-  .description('Get a configuration value')
-  .action(async (key: string) => {
-    try {
-      await configGetCommand(key);
-    } catch (error) {
-      console.error(
-        chalk.red(
-          'Error:',
-          error instanceof Error ? error.message : 'Unknown error'
-        )
-      );
-      process.exit(1);
-    }
-  });
-
-configCmd
-  .command('set <key> <value>')
-  .description('Set a configuration value')
-  .action(async (key: string, value: string) => {
-    try {
-      await configSetCommand(key, value);
-    } catch (error) {
-      console.error(
-        chalk.red(
-          'Error:',
-          error instanceof Error ? error.message : 'Unknown error'
-        )
-      );
-      process.exit(1);
-    }
-  });
-
-configCmd
-  .command('reset [key]')
-  .description('Reset configuration to defaults (optionally specify a key)')
-  .action(async (key?: string) => {
-    try {
-      await configResetCommand(key);
-    } catch (error) {
-      console.error(
-        chalk.red(
-          'Error:',
-          error instanceof Error ? error.message : 'Unknown error'
-        )
-      );
-      process.exit(1);
-    }
-  });
-
-configCmd
-  .command('path')
-  .description('Show configuration file and data directory paths')
-  .action(async () => {
-    try {
-      await configPathCommand();
-    } catch (error) {
-      console.error(
-        chalk.red(
-          'Error:',
-          error instanceof Error ? error.message : 'Unknown error'
-        )
-      );
-      process.exit(1);
-    }
-  });
-
-process.on('uncaughtException', (error) => {
-  console.error(chalk.red('Uncaught Exception:', error.message));
-  process.exit(1);
-});
-
 process.on('unhandledRejection', (reason) => {
-  console.error(chalk.red('Unhandled Rejection:', reason));
+  console.error(chalk.red('invalid command:', reason));
   process.exit(1);
 });
 

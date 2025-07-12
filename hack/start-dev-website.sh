@@ -11,8 +11,8 @@ SESSION_NAME="autoblog-web"
 
 echo ""
 echo "Starting autoblog-web with configuration:"
-echo "  APP_AUTOBLOG_SYNC_URL=$APP_AUTOBLOG_SYNC_URL"
-echo "  APP_AUTOBLOG_INDEX_ID=$APP_AUTOBLOG_INDEX_ID"
+echo "  AUTOBLOG_SYNC_URL=$AUTOBLOG_SYNC_URL"
+echo "  AUTOBLOG_INDEX_ID=$AUTOBLOG_INDEX_ID"
 
 # Kill existing session if it exists
 tmux kill-session -t "$SESSION_NAME" 2>/dev/null || true
@@ -23,7 +23,7 @@ WEB_DIR="$PROJECT_ROOT/autoblog-web"
 
 # Create new tmux session and run the application
 tmux new-session -d -s "$SESSION_NAME" -c "$WEB_DIR" \
-    "APP_AUTOBLOG_SYNC_URL='$APP_AUTOBLOG_SYNC_URL' APP_AUTOBLOG_INDEX_ID='$APP_AUTOBLOG_INDEX_ID' npm run dev"
+    "AUTOBLOG_SYNC_URL='$AUTOBLOG_SYNC_URL' AUTOBLOG_INDEX_ID='$AUTOBLOG_INDEX_ID' npm run dev"
 
 echo "Development website started in tmux session: $SESSION_NAME"
 echo "Access it at: http://localhost:3000/"

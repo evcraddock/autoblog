@@ -36,8 +36,8 @@ touch /usr/share/nginx/html/env-config.js
 echo "window._env_ = {" >> /usr/share/nginx/html/env-config.js
 
 # Read environment variables and write them to the config file
-echo "  REACT_APP_AUTOBLOG_SYNC_URL: \"${APP_AUTOBLOG_SYNC_URL}\"," >> /usr/share/nginx/html/env-config.js
-echo "  REACT_APP_AUTOBLOG_INDEX_ID: \"${APP_AUTOBLOG_INDEX_ID}\"" >> /usr/share/nginx/html/env-config.js
+echo "  REACT_AUTOBLOG_SYNC_URL: \"${AUTOBLOG_SYNC_URL}\"," >> /usr/share/nginx/html/env-config.js
+echo "  REACT_AUTOBLOG_INDEX_ID: \"${AUTOBLOG_INDEX_ID}\"" >> /usr/share/nginx/html/env-config.js
 
 echo "}" >> /usr/share/nginx/html/env-config.js
 ```
@@ -71,8 +71,8 @@ This script tag loads the dynamically generated configuration before the React a
 declare global {
   interface Window {
     _env_?: {
-      REACT_APP_AUTOBLOG_SYNC_URL?: string;
-      REACT_APP_AUTOBLOG_INDEX_ID?: string;
+      REACT_AUTOBLOG_SYNC_URL?: string;
+      REACT_AUTOBLOG_INDEX_ID?: string;
     };
   }
 }
@@ -81,15 +81,15 @@ export const getRuntimeConfig = () => {
   // In development, use import.meta.env
   if (import.meta.env.DEV) {
     return {
-      syncUrl: import.meta.env.VITE_APP_AUTOBLOG_SYNC_URL || 'wss://sync.automerge.org',
-      indexId: import.meta.env.VITE_APP_AUTOBLOG_INDEX_ID || '',
+      syncUrl: import.meta.env.VITE_AUTOBLOG_SYNC_URL || 'wss://sync.automerge.org',
+      indexId: import.meta.env.VITE_AUTOBLOG_INDEX_ID || '',
     };
   }
   
   // In production, use window._env_ (injected by Docker)
   return {
-    syncUrl: window._env_?.REACT_APP_AUTOBLOG_SYNC_URL || 'wss://sync.automerge.org',
-    indexId: window._env_?.REACT_APP_AUTOBLOG_INDEX_ID || '',
+    syncUrl: window._env_?.REACT_AUTOBLOG_SYNC_URL || 'wss://sync.automerge.org',
+    indexId: window._env_?.REACT_AUTOBLOG_INDEX_ID || '',
   };
 };
 ```
@@ -108,7 +108,7 @@ const runtimeConfig = getRuntimeConfig();
 
 export const config = {
   syncUrl: runtimeConfig.syncUrl,
-  databaseName: import.meta.env.APP_AUTOBLOG_DB_NAME || 'autoblog-web',
+  databaseName: import.meta.env.AUTOBLOG_DB_NAME || 'autoblog-web',
   indexId: runtimeConfig.indexId || undefined,
 }
 ```
@@ -122,8 +122,8 @@ services:
   autoblog-web:
     image: evcraddock/autoblog-web:latest
     environment:
-      - APP_AUTOBLOG_SYNC_URL=wss://sync.automerge.org
-      - APP_AUTOBLOG_INDEX_ID=your-index-id
+      - AUTOBLOG_SYNC_URL=wss://sync.automerge.org
+      - AUTOBLOG_INDEX_ID=your-index-id
     ports:
       - "8085:80"
 ```
@@ -132,8 +132,8 @@ services:
 
 ```bash
 docker run -d \
-  -e APP_AUTOBLOG_SYNC_URL=wss://sync.automerge.org \
-  -e APP_AUTOBLOG_INDEX_ID=your-index-id \
+  -e AUTOBLOG_SYNC_URL=wss://sync.automerge.org \
+  -e AUTOBLOG_INDEX_ID=your-index-id \
   -p 8085:80 \
   evcraddock/autoblog-web:latest
 ```
@@ -152,9 +152,9 @@ spec:
       - name: autoblog-web
         image: evcraddock/autoblog-web:latest
         env:
-        - name: APP_AUTOBLOG_SYNC_URL
+        - name: AUTOBLOG_SYNC_URL
           value: "wss://sync.automerge.org"
-        - name: APP_AUTOBLOG_INDEX_ID
+        - name: AUTOBLOG_INDEX_ID
           valueFrom:
             secretKeyRef:
               name: autoblog-secrets
@@ -179,7 +179,7 @@ To verify the configuration is being injected correctly:
 
 2. Check environment variables are passed to the container:
    ```bash
-   docker exec -it autoblog-web env | grep APP_
+   docker exec -it autoblog-web env | grep AUTOBLOG_
    ```
 
 3. In the browser console, check the configuration:
