@@ -26,7 +26,7 @@ Based on the Automerge documentation, here are the available adapters:
 
 **Network Adapters for syncing:**
 - **BroadcastChannelNetworkAdapter** - Syncs between browser tabs locally
-- **WebSocketClientAdapter** - Syncs across devices via a server (e.g., wss://sync.automerge.org)
+- **WebSocketClientAdapter** - Syncs across devices via a server (e.g., wss://sync_server)
 
 Given these options, which approach appeals to you for your blog?
 1. Pure local with IndexedDB (browser-only, no syncing between devices)

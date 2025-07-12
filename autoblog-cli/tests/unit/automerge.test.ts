@@ -32,7 +32,7 @@ vi.mock('../../src/lib/index.js', () => ({
 // Mock the config module
 vi.mock('../../src/lib/config.js', () => ({
   getConfig: vi.fn(() => ({
-    syncUrl: 'wss://sync.automerge.org',
+    syncUrl: 'wss://sync_server',
     dataPath: './test-data',
   })),
 }));
@@ -70,7 +70,7 @@ describe.skip('Automerge Module', () => {
     // Setup config mock
     vi.mocked(getConfig).mockReturnValue({
       dataPath: './autoblog-data',
-      syncUrl: 'wss://sync.automerge.org',
+      syncUrl: 'wss://sync_server',
     });
 
     // Setup basic mocks
@@ -85,7 +85,7 @@ describe.skip('Automerge Module', () => {
     vi.mocked(WebSocketClientAdapter).mockImplementation(
       () =>
         ({
-          url: 'wss://sync.automerge.org',
+          url: 'wss://sync_server',
           type: 'WebSocketClientAdapter',
         }) as any
     );
@@ -147,9 +147,7 @@ describe.skip('Automerge Module', () => {
       const repo = await initRepo();
 
       expect(NodeFSStorageAdapter).toHaveBeenCalledWith('./autoblog-data');
-      expect(WebSocketClientAdapter).toHaveBeenCalledWith(
-        'wss://sync.automerge.org'
-      );
+      expect(WebSocketClientAdapter).toHaveBeenCalledWith('wss://sync_server');
       expect(Repo).toHaveBeenCalledWith({
         storage: expect.objectContaining({
           path: './autoblog-data',
@@ -157,7 +155,7 @@ describe.skip('Automerge Module', () => {
         }),
         network: [
           expect.objectContaining({
-            url: 'wss://sync.automerge.org',
+            url: 'wss://sync_server',
             type: 'WebSocketClientAdapter',
           }),
         ],

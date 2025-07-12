@@ -17,7 +17,7 @@ The project consists of two main components:
 1. Author writes markdown files locally with frontmatter metadata
 2. CLI tool parses markdown files and extracts frontmatter (title, author, publish date, etc.)
 3. Content is stored as Automerge documents with local NodeFS storage
-4. Documents sync to Automerge's public sync server (`wss://sync.automerge.org`)
+4. Documents sync to Automerge's public sync server to local sync server 
 5. Multiple clients can sync the same documents for collaborative editing
 
 ### Key Technologies

@@ -13,16 +13,14 @@ export const getRuntimeConfig = () => {
   if (import.meta.env.DEV) {
     // Development mode - using env vars
     return {
-      syncUrl:
-        import.meta.env.VITE_AUTOBLOG_SYNC_URL || 'wss://sync.automerge.org',
+      syncUrl: import.meta.env.VITE_AUTOBLOG_SYNC_URL,
       indexId: import.meta.env.VITE_AUTOBLOG_INDEX_ID || '',
     }
   }
 
   // In production, use window._env_ (injected by Docker)
   return {
-    syncUrl:
-      window._env_?.REACT_AUTOBLOG_SYNC_URL || 'wss://sync.automerge.org',
+    syncUrl: window._env_?.REACT_AUTOBLOG_SYNC_URL,
     indexId: window._env_?.REACT_AUTOBLOG_INDEX_ID || '',
   }
 }

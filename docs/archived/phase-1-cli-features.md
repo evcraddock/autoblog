@@ -158,7 +158,7 @@ export interface BlogIndex {
 #### Current Sync Configuration
 ```typescript
 // From lib/automerge.ts
-const network = [new WebSocketClientAdapter("wss://sync.automerge.org")]
+const network = [new WebSocketClientAdapter("wss://sync_server")]
 ```
 
 #### Implementation Requirements

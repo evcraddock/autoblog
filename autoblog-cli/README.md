@@ -8,7 +8,7 @@ A command-line interface for managing markdown files in the Automerge-powered bl
 
 Autoblog CLI allows authors to upload markdown files to a local-first blog system built on Automerge 2.0. It parses markdown files with frontmatter, creates Automerge documents, and syncs them across devices using CRDT technology.
 
-The CLI uses both local storage and the Automerge sync server at `wss://sync.automerge.org` for reliable local-first operation with cross-device synchronization. The CLI supports flexible configuration through config files, environment variables, and command-line options.
+The CLI uses both local storage and the local Automerge sync server for reliable local-first operation with cross-device synchronization. The CLI supports flexible configuration through config files, environment variables, and command-line options.
 
 ## Installation
 
@@ -75,14 +75,6 @@ Autoblog CLI supports flexible configuration through multiple methods with clear
 - **Linux**: `~/.local/share/autoblog/` (or `$XDG_DATA_HOME/autoblog/`)
 - **Windows**: `%APPDATA%/autoblog/data/`
 - **Project-specific**: `.autoblog/data/` (when using project config)
-
-### Environment Variables
-
-```bash
-AUTOBLOG_SYNC_URL=wss://sync.automerge.org
-AUTOBLOG_DATA_PATH=~/.local/share/autoblog
-AUTOBLOG_TIMEOUT=30000
-```
 
 ### Configuration Management Commands
 

@@ -25,7 +25,7 @@ function getDefaultDataPath(): string {
 
 function getDefaultSyncServer(): string {
   // TODO: get from config file
-  return 'wss://sync.automerge.org';
+  return 'ws://10.10.1.122:3030';
 }
 
 export function getConfig(): SimpleConfig {

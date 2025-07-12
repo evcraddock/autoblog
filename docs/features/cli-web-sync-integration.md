@@ -9,7 +9,7 @@ This document describes the integration between the Autoblog CLI and Web applica
 The CLI and Web applications were using different index documents, preventing them from sharing blog posts:
 - CLI stored an index document ID in `autoblog-cli/autoblog-data/index-id.txt`
 - Web app created its own index document and stored the ID in browser localStorage
-- Both apps connected to the same sync server (`wss://sync.automerge.org`) but couldn't see each other's posts
+- Both apps connected to the same sync server (`wss://sync_server`) but couldn't see each other's posts
 
 ## Solution Implementation
 
@@ -78,7 +78,7 @@ export function HomePage() {
 #### Storage Architecture
 - **CLI**: Uses `NodeFSStorageAdapter('./autoblog-data')` for filesystem storage
 - **Web**: Uses `IndexedDBStorageAdapter('autoblog-web')` for browser storage
-- Both sync through the same WebSocket server at `wss://sync.automerge.org`
+- Both sync through the same WebSocket server at `wss://sync_server`
 
 #### Sync Behavior
 - CLI: Always uses both local filesystem storage and WebSocket sync

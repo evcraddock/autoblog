@@ -12,7 +12,7 @@ The following values need to be configurable:
 
 ```bash
 # WebSocket sync server URL
-AUTOBLOG_SYNC_URL=wss://sync.automerge.org
+AUTOBLOG_SYNC_URL=wss://sync_server
 
 # Browser database name
 AUTOBLOG_DB_NAME=autoblog-web
@@ -30,7 +30,7 @@ Create a simple configuration service that reads from environment variables:
 ```typescript
 // src/config/index.ts
 export const config = {
-  syncUrl: import.meta.env.AUTOBLOG_SYNC_URL || 'wss://sync.automerge.org',
+  syncUrl: import.meta.env.AUTOBLOG_SYNC_URL || 'wss://sync_server',
   databaseName: import.meta.env.AUTOBLOG_DB_NAME || 'autoblog-web',
   // Optional: Specific index ID to use (for CLI integration)
   indexId: import.meta.env.AUTOBLOG_INDEX_ID || undefined,
@@ -43,7 +43,7 @@ Replace hardcoded values with config references:
 
 ```typescript
 // Before
-const syncUrl = 'wss://sync.automerge.org'
+const syncUrl = 'wss://sync_server'
 
 // After
 import { config } from '@/config'
@@ -57,7 +57,7 @@ services:
   autoblog-web:
     image: autoblog-web:latest
     environment:
-      - AUTOBLOG_SYNC_URL=wss://sync.automerge.org
+      - AUTOBLOG_SYNC_URL=wss://sync_server
       - AUTOBLOG_DB_NAME=autoblog-web
       - AUTOBLOG_INDEX_ID=your-index-id
     ports:
@@ -69,7 +69,7 @@ services:
 For Vite-based builds, create a `.env` file:
 
 ```bash
-AUTOBLOG_SYNC_URL=wss://sync.automerge.org
+AUTOBLOG_SYNC_URL=wss://sync_server
 AUTOBLOG_DB_NAME=autoblog-web
 AUTOBLOG_INDEX_ID=your-index-id
 ```

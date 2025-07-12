@@ -31,7 +31,7 @@ The list command displays all blog posts in the Autoblog system in a formatted t
 #### Command Options
 - `--source <source>`: Choose sync source (default: 'remote')
   - `local`: Read from local file system only
-  - `remote`: Sync with Automerge server at `wss://sync.automerge.org`
+  - `remote`: Sync with Automerge server at `wss://sync_server`
 
 #### Table Columns
 1. **Title** (30 chars): Post title with word wrap
