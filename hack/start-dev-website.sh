@@ -23,7 +23,7 @@ WEB_DIR="$PROJECT_ROOT/autoblog-web"
 
 # Create new tmux session and run the application
 tmux new-session -d -s "$SESSION_NAME" -c "$WEB_DIR" \
-    "AUTOBLOG_SYNC_URL='$AUTOBLOG_SYNC_URL' AUTOBLOG_INDEX_ID='$AUTOBLOG_INDEX_ID' npm run dev"
+    "VITE_AUTOBLOG_SYNC_URL='$AUTOBLOG_SYNC_URL' VITE_AUTOBLOG_INDEX_ID='$AUTOBLOG_INDEX_ID' npm run dev"
 
 echo "Development website started in tmux session: $SESSION_NAME"
 echo "Access it at: http://localhost:3000/"
