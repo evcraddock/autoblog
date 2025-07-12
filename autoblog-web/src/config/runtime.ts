@@ -2,8 +2,8 @@
 declare global {
   interface Window {
     _env_?: {
-      REACT_AUTOBLOG_SYNC_URL?: string
-      REACT_AUTOBLOG_INDEX_ID?: string
+      AUTOBLOG_SYNC_URL?: string
+      AUTOBLOG_INDEX_ID?: string
     }
   }
 }
@@ -20,7 +20,7 @@ export const getRuntimeConfig = () => {
 
   // In production, use window._env_ (injected by Docker)
   return {
-    syncUrl: window._env_?.REACT_AUTOBLOG_SYNC_URL,
-    indexId: window._env_?.REACT_AUTOBLOG_INDEX_ID || '',
+    syncUrl: window._env_?.AUTOBLOG_SYNC_URL,
+    indexId: window._env_?.AUTOBLOG_INDEX_ID || '',
   }
 }
