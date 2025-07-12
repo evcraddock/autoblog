@@ -1,36 +1,51 @@
 #!/bin/bash
 
-# Get autoblog configuration
-echo "Getting autoblog configuration..."
-CONFIG_OUTPUT=$(autoblog config list)
+# Get configuration argument (default to "default" if not provided)
+CONFIG="${1:-default}"
 
-# Extract sync URL and data path from JSON output
-SYNC_URL=$(echo "$CONFIG_OUTPUT" | grep '"syncUrl"' | cut -d'"' -f4)
-DATA_PATH=$(echo "$CONFIG_OUTPUT" | grep '"dataPath"' | cut -d'"' -f4)
+echo "Setting autoblog environment for configuration: $CONFIG"
 
-# Construct full path to index ID file (using hardcoded filename)
-INDEX_ID_FILE="$DATA_PATH/index-id.txt"
+if [ "$CONFIG" = "local" ]; then
+    # Use local development configuration
+    echo "Using local development configuration..."
+    export APP_AUTOBLOG_SYNC_URL="http://localhost:3030"
+    export APP_AUTOBLOG_INDEX_ID="LOCALSYNC"
+elif [ "$CONFIG" = "default" ]; then
+    # Get autoblog configuration from CLI
+    echo "Getting autoblog configuration from CLI..."
+    CONFIG_OUTPUT=$(autoblog config list)
 
-# Display extracted configuration values
-echo ""
-echo "CLI Configuration values:"
-echo "  SYNC_URL: $SYNC_URL"
-echo "  DATA_PATH: $DATA_PATH"
-echo "  INDEX_ID_FILE: $INDEX_ID_FILE"
-echo ""
+    # Extract sync URL and data path from JSON output
+    SYNC_URL=$(echo "$CONFIG_OUTPUT" | grep '"syncUrl"' | cut -d'"' -f4)
+    DATA_PATH=$(echo "$CONFIG_OUTPUT" | grep '"dataPath"' | cut -d'"' -f4)
 
-# Read index ID from file if it exists
-if [ -f "$INDEX_ID_FILE" ]; then
-    INDEX_ID=$(cat "$INDEX_ID_FILE")
-    echo "Using index ID: $INDEX_ID"
+    # Construct full path to index ID file (using hardcoded filename)
+    INDEX_ID_FILE="$DATA_PATH/index-id.txt"
+
+    # Display extracted configuration values
+    echo ""
+    echo "CLI Configuration values:"
+    echo "  SYNC_URL: $SYNC_URL"
+    echo "  DATA_PATH: $DATA_PATH"
+    echo "  INDEX_ID_FILE: $INDEX_ID_FILE"
+    echo ""
+
+    # Read index ID from file if it exists
+    if [ -f "$INDEX_ID_FILE" ]; then
+        INDEX_ID=$(cat "$INDEX_ID_FILE")
+        echo "Using index ID: $INDEX_ID"
+    else
+        echo "Index ID file not found: $INDEX_ID_FILE"
+        INDEX_ID=""
+    fi
+
+    # Export environment variables
+    export APP_AUTOBLOG_SYNC_URL="$SYNC_URL"
+    export APP_AUTOBLOG_INDEX_ID="$INDEX_ID"
 else
-    echo "Index ID file not found: $INDEX_ID_FILE"
-    INDEX_ID=""
+    echo "Error: Invalid configuration '$CONFIG'. Use 'local' or 'default'."
+    exit 1
 fi
-
-# Export environment variables
-export APP_AUTOBLOG_SYNC_URL="$SYNC_URL"
-export APP_AUTOBLOG_INDEX_ID="$INDEX_ID"
 
 echo ""
 echo "Environment variables set:"
@@ -38,4 +53,4 @@ echo "  APP_AUTOBLOG_SYNC_URL=$APP_AUTOBLOG_SYNC_URL"
 echo "  APP_AUTOBLOG_INDEX_ID=$APP_AUTOBLOG_INDEX_ID"
 echo ""
 echo "Note: Run this script with 'source' to export variables to your current shell:"
-echo "  source ./hack/set-autoblog-env.sh"
+echo "  source ./hack/set-autoblog-env.sh [local|default]"

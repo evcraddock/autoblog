@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   autoblog-web:
-    image: evcraddock/autoblog-web:1.0.2
+    image: evcraddock/autoblog-web:1.0.3
     container_name: autoblog-web
     ports:
       - "8085:80"
