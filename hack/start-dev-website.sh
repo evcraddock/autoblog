@@ -4,7 +4,7 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Source the set-autoblog-env script to get environment variables
-source "$SCRIPT_DIR/set-autoblog-env.sh"
+source "$SCRIPT_DIR/set-autoblog-env.sh" "$1"
 
 # Set tmux session name
 SESSION_NAME="autoblog-web"
