@@ -11,13 +11,13 @@ services:
   #     - autoblog-network
 
   autoblog-web:
-    image: evcraddock/autoblog-web:1.0.4
+    image: evcraddock/autoblog-web:1.0.6
     container_name: autoblog-web
     ports:
       - "8085:80"
     environment:
-      - REACT_AUTOBLOG_SYNC_URL=${AUTOBLOG_SYNC_URL}
-      - REACT_AUTOBLOG_INDEX_ID=${AUTOBLOG_INDEX_ID}
+      - AUTOBLOG_SYNC_URL=${AUTOBLOG_SYNC_URL}
+      - AUTOBLOG_INDEX_ID=${AUTOBLOG_INDEX_ID}
     # depends_on:
     #   - sync-server
     restart: unless-stopped
