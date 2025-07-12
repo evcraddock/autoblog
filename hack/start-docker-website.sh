@@ -9,8 +9,8 @@ source "$SCRIPT_DIR/set-autoblog-env.sh"
 
 echo ""
 echo "Starting autoblog-web Docker container with configuration:"
-echo "  APP_AUTOBLOG_SYNC_URL=$APP_AUTOBLOG_SYNC_URL"
-echo "  APP_AUTOBLOG_INDEX_ID=$APP_AUTOBLOG_INDEX_ID"
+echo "  AUTOBLOG_SYNC_URL=$AUTOBLOG_SYNC_URL"
+echo "  AUTOBLOG_INDEX_ID=$AUTOBLOG_INDEX_ID"
 echo ""
 
 # Start docker-compose

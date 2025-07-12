@@ -12,13 +12,13 @@ The following values need to be configurable:
 
 ```bash
 # WebSocket sync server URL
-APP_AUTOBLOG_SYNC_URL=wss://sync.automerge.org
+AUTOBLOG_SYNC_URL=wss://sync.automerge.org
 
 # Browser database name
-APP_AUTOBLOG_DB_NAME=autoblog-web
+AUTOBLOG_DB_NAME=autoblog-web
 
 # Optional: Specific index ID to use (for CLI integration)
-APP_AUTOBLOG_INDEX_ID=your-index-id
+AUTOBLOG_INDEX_ID=your-index-id
 ```
 
 ## Implementation
@@ -30,10 +30,10 @@ Create a simple configuration service that reads from environment variables:
 ```typescript
 // src/config/index.ts
 export const config = {
-  syncUrl: import.meta.env.APP_AUTOBLOG_SYNC_URL || 'wss://sync.automerge.org',
-  databaseName: import.meta.env.APP_AUTOBLOG_DB_NAME || 'autoblog-web',
+  syncUrl: import.meta.env.AUTOBLOG_SYNC_URL || 'wss://sync.automerge.org',
+  databaseName: import.meta.env.AUTOBLOG_DB_NAME || 'autoblog-web',
   // Optional: Specific index ID to use (for CLI integration)
-  indexId: import.meta.env.APP_AUTOBLOG_INDEX_ID || undefined,
+  indexId: import.meta.env.AUTOBLOG_INDEX_ID || undefined,
 }
 ```
 
@@ -57,9 +57,9 @@ services:
   autoblog-web:
     image: autoblog-web:latest
     environment:
-      - APP_AUTOBLOG_SYNC_URL=wss://sync.automerge.org
-      - APP_AUTOBLOG_DB_NAME=autoblog-web
-      - APP_AUTOBLOG_INDEX_ID=your-index-id
+      - AUTOBLOG_SYNC_URL=wss://sync.automerge.org
+      - AUTOBLOG_DB_NAME=autoblog-web
+      - AUTOBLOG_INDEX_ID=your-index-id
     ports:
       - "3000:3000"
 ```
@@ -69,9 +69,9 @@ services:
 For Vite-based builds, create a `.env` file:
 
 ```bash
-APP_AUTOBLOG_SYNC_URL=wss://sync.automerge.org
-APP_AUTOBLOG_DB_NAME=autoblog-web
-APP_AUTOBLOG_INDEX_ID=your-index-id
+AUTOBLOG_SYNC_URL=wss://sync.automerge.org
+AUTOBLOG_DB_NAME=autoblog-web
+AUTOBLOG_INDEX_ID=your-index-id
 ```
 
 ## Independent Operation
@@ -91,7 +91,7 @@ To integrate with an existing CLI blog, set the index ID:
 cd path/to/cli && npx autoblog config get storage.indexIdFile
 
 # Set it in the web viewer
-APP_AUTOBLOG_INDEX_ID=your-cli-index-id
+AUTOBLOG_INDEX_ID=your-cli-index-id
 ```
 
 This allows the web viewer to display posts created by the CLI, but it's completely optional.
