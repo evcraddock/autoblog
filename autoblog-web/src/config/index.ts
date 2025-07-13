@@ -1,10 +1,15 @@
 import { getRuntimeConfig } from './runtime'
 
-const runtimeConfig = getRuntimeConfig()
-
+// Create config as a getter to ensure runtime config is evaluated when accessed
 export const config = {
-  syncUrl: runtimeConfig.syncUrl,
-  databaseName: import.meta.env.AUTOBLOG_DB_NAME || 'autoblog-web',
+  get syncUrl() {
+    return getRuntimeConfig().syncUrl
+  },
+  get databaseName() {
+    return import.meta.env.AUTOBLOG_DB_NAME || 'autoblog-web'
+  },
   // Optional: Specific index ID to use (for CLI integration)
-  indexId: runtimeConfig.indexId || undefined,
+  get indexId() {
+    return getRuntimeConfig().indexId || undefined
+  },
 }
