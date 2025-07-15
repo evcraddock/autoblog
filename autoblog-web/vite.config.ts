@@ -17,6 +17,9 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
+  ssr: {
+    noExternal: ['react-router-dom'],
+  },
   build: {
     outDir: 'dist',
     sourcemap: true,
@@ -24,9 +27,15 @@ export default defineConfig({
     target: 'es2022',
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          automerge: ['@automerge/automerge', '@automerge/automerge-repo'],
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'vendor'
+            }
+            if (id.includes('@automerge')) {
+              return 'automerge'
+            }
+          }
         },
       },
     },
