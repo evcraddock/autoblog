@@ -125,7 +125,7 @@ The following configuration files have been created and configured:
 - Troubleshooting guide for common development issues
 - Architecture overview and design decisions
 
-## Current Dependency Versions (Updated 2025-01-07)
+## Current Dependency Versions (Updated 2025-01-12)
 
 ### Core Dependencies ✅ UPGRADED
 - **react**: 19.1.0 (was 18.3.1)
@@ -167,13 +167,13 @@ The following configuration files have been created and configured:
 - **lucide-react**: 0.525.0 (was 0.263.1)
 - **@tailwindcss/typography**: 0.5.16 (was 0.5.9)
 
-### Automerge Stack ✅ STABLE
-- **@automerge/automerge**: 2.1.10
-- **@automerge/automerge-repo**: 2.0.7
-- **@automerge/automerge-repo-network-websocket**: 2.0.7
-- **@automerge/automerge-repo-react-hooks**: 2.0.7
-- **@automerge/automerge-repo-storage-indexeddb**: 2.0.7
-- **@automerge/react**: 2.0.7
+### Automerge Stack ✅ UPGRADED TO 3.0
+- **@automerge/automerge**: 3.0.0 (was 2.1.10) - Major upgrade with 10x+ memory improvements
+- **@automerge/automerge-repo**: 2.1.0 (was 2.0.7)
+- **@automerge/automerge-repo-network-websocket**: 2.1.0 (was 2.0.7)
+- **@automerge/automerge-repo-react-hooks**: 2.1.0 (via @automerge/react dependency)
+- **@automerge/automerge-repo-storage-indexeddb**: 2.1.0 (was 2.0.7)
+- **@automerge/react**: 2.1.0 (was 2.0.7)
 
 ## Major Upgrade Completed ✅
 
@@ -211,8 +211,8 @@ The following configuration files have been created and configured:
 The Automerge ecosystem currently has a dependency constraint that requires specific handling:
 
 #### Issue
-- **@automerge/automerge-repo-react-hooks**: v2.0.7 depends on React ^18.0.0
-- **@automerge/react**: v2.0.7 also requires React ^18.0.0  
+- **@automerge/automerge-repo-react-hooks**: v2.1.0 depends on React ^18.0.0
+- **@automerge/react**: v2.1.0 also requires React ^18.0.0  
 - **Project**: Running React 19.1.0 for latest features and performance
 
 #### Current Workaround

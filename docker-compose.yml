@@ -11,7 +11,7 @@ services:
   #     - autoblog-network
 
   autoblog-web:
-    image: evcraddock/autoblog-web:1.0.6
+    image: evcraddock/autoblog-web:1.0.7
     container_name: autoblog-web
     ports:
       - "8085:80"
