@@ -44,17 +44,13 @@ const template = fs.readFileSync(
   'utf-8'
 )
 
-// Import the SSR handler
-const { render } = await import('./dist/server/entry-server.js')
-
 app.use('*', async (req, res) => {
   try {
-    const url = req.originalUrl
-    const appHtml = await render(url)
-    const html = template.replace('<!--ssr-outlet-->', appHtml)
-
-    res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
+    // For now, serve client-side app without SSR
+    // TODO: Fix react-router-dom SSR compatibility issues
+    res.status(200).set({ 'Content-Type': 'text/html' }).end(template)
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.error(e)
     res.status(500).end(e.message)
   }
@@ -62,5 +58,6 @@ app.use('*', async (req, res) => {
 
 const port = process.env.PORT || 3000
 app.listen(port, () => {
+  // eslint-disable-next-line no-console
   console.log(`🚀 SSR Production server running at http://localhost:${port}`)
 })
