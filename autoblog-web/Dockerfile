@@ -12,7 +12,7 @@ RUN npm ci --legacy-peer-deps
 # Copy source code
 COPY . .
 
-# Build the application for SSR
+# Build the application
 RUN npm run build
 
 # Production stage
@@ -24,12 +24,12 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production --legacy-peer-deps
 
-# Copy built application from builder stage
+# Copy built application and server
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/server-prod.js ./
+COPY --from=builder /app/server.js ./
 
 # Expose port 3000
 EXPOSE 3000
 
-# Start the SSR Express server
-CMD ["node", "server-prod.js"]
+# Start the SSR server
+CMD ["node", "server.js"]

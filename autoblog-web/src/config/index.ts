@@ -8,8 +8,7 @@ export const config = {
   get databaseName() {
     return import.meta.env.AUTOBLOG_DB_NAME || 'autoblog-web'
   },
-  // Optional: Specific index ID to use (for CLI integration)
   get indexId() {
-    return getRuntimeConfig().indexId || undefined
+    return getRuntimeConfig().indexId
   },
 }
