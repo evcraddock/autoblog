@@ -126,37 +126,66 @@ autoblog-web/
 
 ### Environment Variables
 
-**Development (.env.local):**
+The application uses server-side environment variables that are injected at runtime:
 
 ```env
 # Automerge sync server URL
-VITE_AUTOBLOG_SYNC_URL=ws://localhost:3030
+AUTOBLOG_SYNC_URL=ws://localhost:3030
 
 # Optional: Specific index ID to use
-VITE_AUTOBLOG_INDEX_ID=main
+AUTOBLOG_INDEX_ID=
 ```
 
-**Production:**
+### Setting Environment Variables
 
-```env
-# Server configuration
-NODE_ENV=production
-PORT=3000
+**Local Development:**
 
-# Autoblog configuration (server-side)
-AUTOBLOG_SYNC_URL=ws://your-sync-server:3030
-AUTOBLOG_INDEX_ID=your-index-id
+```bash
+# Create .env file
+cp .env.example .env
+
+# Edit .env with your values
+# Then run the dev server
+npm run dev
 ```
 
-### Secure Configuration API
+**Docker:**
 
-The SSR server provides a `/api/config` endpoint that:
+```bash
+# Using docker run
+docker run -d \
+  -p 8085:3000 \
+  -e AUTOBLOG_SYNC_URL=ws://your-sync-server:3030 \
+  -e AUTOBLOG_INDEX_ID=your-index-id \
+  evcraddock/autoblog-web:latest
 
-- Keeps sensitive configuration server-side only
-- Prevents exposure of URLs and IDs in client bundles
-- Allows runtime configuration without rebuilds
+# Using docker-compose
+# Set in .env file or shell environment
+export AUTOBLOG_SYNC_URL=ws://your-sync-server:3030
+export AUTOBLOG_INDEX_ID=your-index-id
+docker-compose up
+```
 
-Example response:
+**Systemd Service:**
+
+```ini
+# /etc/systemd/system/autoblog-web.service
+[Service]
+Environment="AUTOBLOG_SYNC_URL=ws://your-sync-server:3030"
+Environment="AUTOBLOG_INDEX_ID=your-index-id"
+Environment="NODE_ENV=production"
+Environment="PORT=3000"
+ExecStart=/usr/bin/node /opt/autoblog-web/server.js
+```
+
+### Runtime Configuration
+
+Configuration is injected into the HTML at runtime by the Express server:
+
+- No build-time configuration needed
+- Same Docker image works in all environments
+- Environment variables read when container/process starts
+- Configuration available to client via injected script
 
 ```json
 {
@@ -326,7 +355,7 @@ This version migrates from a static SPA to SSR Express server:
 - **Security**: Configuration no longer exposed in client bundles
 - **Performance**: Faster initial page loads with SSR
 - **SEO**: Better search engine indexing
-- **Deployment**: Changed from nginx to Node.js Express server
+- **Deployment**: Uses Node.js Express server for SSR
 
 ## 🔗 Related
 

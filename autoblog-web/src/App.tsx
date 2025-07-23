@@ -13,7 +13,7 @@ function App() {
   const appConfig: AppConfig = {
     syncUrl: config.syncUrl,
     theme: 'system',
-    indexId: config.indexId || 'main',
+    indexId: config.indexId,
   }
 
   // Debug logging removed for production
